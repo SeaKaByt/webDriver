@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:7993/ -->
+<html lang="en" data-darkreader-mode="dynamic" data-darkreader-scheme="dark" data-darkreader-proxy-injected="true"><!--
+    HAXXXXXXXXXXXXXXXXX
+-->
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Ranorex Web Driver</title>
+    <style>
+        .content img {
+            width: 60%
+        }
+
+        .content #box {
+            border: 2px solid red;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .content input {
+            width: 500px;
+        }
+
+        .content #itemlabel {
+            min-height: 50px;
+        }
+    </style>
+    <style class="darkreader darkreader--sync" media="screen"></style>
+    <script>
+        // fetchival.js
+        (function (e) {
+            function n(e, n) { for (var t in n) e[t] = e[t] || n[t] }
+            function t(e) { var n = Object.keys(e).map(function (n) { return n + "=" + encodeURIComponent(e[n]) }); return "?" + n.join("&") }
+            function o(e, o, r, s, i) {
+                r.method = e; r.headers = r.headers || {}; r.responseAs = r.responseAs && ["json", "text", "response"].indexOf(r.responseAs) >= 0 ? r.responseAs : "json"; n(r.headers, { Accept: "application/json", "Content-Type": "application/json" });
+                if (i) { o += t(i) } if (s) { r.body = JSON.stringify(s) } else { delete r.body } return fetchival.fetch(o, r).then(function (e) {
+                    if (e.status >= 200 && e.status < 300) {
+                        if (r.responseAs == "response") return e; if (e.status == 204) return null; return e[r.responseAs]()
+                    } var n = new Error(e.statusText); n.response = e; throw n
+                })
+            }
+            function fetchival(e, t) {
+                t = t || {};
+                var r = function (o, r) { o = e + "/" + o; r = r || {}; n(r, t); return fetchival(o, r) };
+                r.get = function (n) { return o("GET", e, t, null, n) };
+                r.post = function (n) { return o("POST", e, t, n) };
+                r.put = function (n) { return o("PUT", e, t, n) };
+                r.patch = function (n) { return o("PATCH", e, t, n) };
+                r.delete = function () { return o("DELETE", e, t) }; return r
+            }
+            fetchival.fetch = typeof fetch !== "undefined" ? fetch.bind(e) : null;
+            if (typeof exports === "object") module.exports = fetchival;
+            else if (typeof define === "function" && define.amd) define(function () { return fetchival });
+            else e.fetchival = fetchival
+        })(typeof window != "undefined" ? window : undefined);
+    </script>
+    <meta name="darkreader" content="7f6b4094f006421894380e0a27f4c367">
+    <style class="darkreader darkreader--override" media="screen">
+        .vimvixen-hint {
+            background-color: var(--darkreader-background-ffd76e, #684b00) !important;
+            border-color: var(--darkreader-background-c59d00, #9e7e00) !important;
+            color: var(--darkreader-text-302505, #d7d4cf) !important;
+        }
+
+        #vimvixen-console-frame {
+            color-scheme: light !important;
+        }
+
+        ::placeholder {
+            opacity: 0.5 !important;
+        }
+
+        #edge-translate-panel-body,
+        .MuiTypography-body1,
+        .nfe-quote-text {
+            color: var(--darkreader-neutral-text) !important;
+        }
+
+        gr-main-header {
+            background-color: var(--darkreader-background-add8e6, #1b4958) !important;
+        }
+
+        .tl-watermark_SEE-LICENSE {
+            display: none !important;
+        }
+
+        .tou-z65h9k,
+        .tou-mignzq,
+        .tou-1b6i2ox,
+        .tou-lnqlqk {
+            background-color: var(--darkreader-neutral-background) !important;
+        }
+
+        .tou-75mvi {
+            background-color: var(--darkreader-background-cfecf5, #0f3a47) !important;
+        }
+
+        .tou-ta9e87,
+        .tou-1w3fhi0,
+        .tou-1b8t2us,
+        .tou-py7lfi,
+        .tou-1lpmd9d,
+        .tou-1frrtv8,
+        .tou-17ezmgn {
+            background-color: var(--darkreader-background-f5f5f5, #1e2021) !important;
+        }
+
+        .tou-uknfeu {
+            background-color: var(--darkreader-background-faedda, #432c09) !important;
+        }
+
+        .tou-6i3zyv {
+            background-color: var(--darkreader-background-85c3d8, #245d70) !important;
+        }
+
+        div.mermaid-viewer-control-panel .btn {
+            background-color: var(--darkreader-neutral-background);
+            fill: var(--darkreader-neutral-text);
+        }
+
+        svg g rect.er {
+            fill: var(--darkreader-neutral-background) !important;
+        }
+
+        svg g rect.er.entityBox {
+            fill: var(--darkreader-neutral-background) !important;
+        }
+
+        svg g rect.er.attributeBoxOdd {
+            fill: var(--darkreader-neutral-background) !important;
+        }
+
+        svg g rect.er.attributeBoxEven {
+            fill: var(--darkreader-selection-background);
+            fill-opacity: 0.8 !important;
+        }
+
+        svg rect.er.relationshipLabelBox {
+            fill: var(--darkreader-neutral-background) !important;
+        }
+
+        svg g g.nodes rect,
+        svg g g.nodes polygon {
+            fill: var(--darkreader-neutral-background) !important;
+        }
+
+        svg g rect.task {
+            fill: var(--darkreader-selection-background) !important;
+        }
+
+        svg line.messageLine0,
+        svg line.messageLine1 {
+            stroke: var(--darkreader-neutral-text) !important;
+        }
+
+        div.mermaid .actor {
+            fill: var(--darkreader-neutral-background) !important;
+        }
+
+        mitid-authenticators-code-app>.code-app-container {
+            background-color: white !important;
+            padding-top: 1rem;
+        }
+
+        iframe#unpaywall[src$="unpaywall.html"] {
+            color-scheme: light !important;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2c2c2c;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+
+        #pathbox {
+            width: 95vw;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Ranorex WebDriver</h1>
+
+    <div class="content">
+        <label for="pathbox">RxPath</label>&nbsp;<input id="pathbox" type="text">
+        <p id="itemlabel">Text 'F1 - Shipper Consignee Maintenance'</p>
+        <p></p>
+        <div style="position: relative">
+            <img id="screen" src="http://localhost:7993/rx/screenshot" alt="current session screenshot">
+            <div id="box" style="display: block; left: 609.929px; top: 54.6116px; width: 86.3695px; height: 3.26483px;">
+                &nbsp;</div>
+        </div>
+    </div>
+
+    <script>
+        var screenElem = document.getElementById("screen");
+        var boxElem = document.getElementById("box");
+        var pathElem = document.getElementById("pathbox");
+        var itemLabelElem = document.getElementById("itemlabel");
+
+        function getScale() {
+            return screenElem.naturalWidth / screenElem.width;
+        }
+
+        screenElem.addEventListener("mousedown", ev => {
+            var scale = getScale();
+            var x = ev.offsetX * scale;
+            var y = ev.offsetY * scale;
+
+            console.log("local coords: ", x, y);
+            beginGetElementFromPoint(x, y);
+        });
+
+        var ajaxPending = false;
+
+        function beginGetElementFromPoint(x, y) {
+            if (ajaxPending) { return; }
+            ajaxPending = true;
+            fetch('http://localhost:7993/rx/frompoint', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    x: x,
+                    y: y
+                })
+            })
+                .then(function (response) {
+                    ajaxPending = false;
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json()
+                    }
+                    throw new Error(response.statusText)
+                })
+                .catch(function () {
+                    ajaxPending = false;
+                })
+                .then(function (json) {
+                    if (json.found) {
+                        var s = getScale();
+                        boxElem.style.display = "block";
+                        boxElem.style.left = json.rect[0] / s + "px";
+                        boxElem.style.top = json.rect[1] / s + "px";
+                        boxElem.style.width = (json.rect[2] - 4) / s + "px";
+                        boxElem.style.height = (json.rect[3] - 4) / s + "px";
+                        itemLabelElem.innerText = json.role + " '" + json.label + "'";
+                        beginGetElementPath(json.elem);
+                    }
+                    else {
+                        boxElem.style.display = "none";
+                        itemLabelElem.innerText = "";
+                    }
+
+                });
+        }
+
+        function beginGetElementPath(elemId) {
+            if (ajaxPending) { return; }
+            ajaxPending = true;
+            fetch('http://localhost:7993/rx/path/' + elemId, {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(function (response) {
+                    ajaxPending = false;
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json()
+                    }
+                    throw new Error(response.statusText)
+                })
+                .catch(function () {
+                    ajaxPending = false;
+                })
+                .then(function (json) {
+                    pathElem.value = json.path;
+                    navigator.clipboard.writeText(json.path)
+                });
+        }
+    </script>
+
+</body>
+
+</html>

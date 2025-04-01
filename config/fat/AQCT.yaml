@@ -1,0 +1,9 @@
+defaults:
+  bu: SAPT
+  env: IUT
+
+nGen:
+  jal_path: D:/jal/SAPT-IUT.bat
+  password: abcd1234%
+  username: admin
+

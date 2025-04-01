@@ -1,0 +1,26 @@
+container:
+  POL: sgsin
+  cntr_id: test01
+  gross_wt: 16750
+  line: nvd
+  location:
+    block: fb1
+    lane: '01'
+    stack: '01'
+  material: s
+  max_gross_wt: 12500
+  owner: nvd
+  size: 20
+  status: if
+  type: 10
+  vessel: tshm
+  voyage: v01
+
+defaults:
+  bu: SAPT
+  env: IUT
+
+nGen:
+  jal_path: D:/jal/SAPT-IUT.bat
+  password: abcd1234%
+  username: admin
