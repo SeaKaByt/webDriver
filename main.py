@@ -10,16 +10,18 @@ from selenium.webdriver.support.wait import WebDriverWait
 from dotenv import load_dotenv
 
 from helper.decorators import debug_out_line
-from helper.utils import read_yaml, write_yaml
+from helper.utils import read_yaml, read_json
 
 load_dotenv()
 
-class GetDriver:
+class BaseDriver:
     driver = None
-    bu = os.environ.get("TEST_BU", "SAPT")
-    env = os.environ.get("TEST_ENV", "IUT")
+    bu = os.environ.get("TEST_BU", "AQCT")
+    env = os.environ.get("TEST_ENV", "FAT")
     yaml_path =  f"config/{bu}.yaml"
-    config = read_yaml(f"config/{bu}.yaml")
+    json_path = "interface/container_details.json"
+    config = read_yaml(f"config/{env.lower()}/{bu}.yaml")
+    config_j = read_json("interface/container_details.json")
 
     default_options = {
         "browserName": "Ranorex",
@@ -56,22 +58,20 @@ class GetDriver:
     #     self.wait_for(xpath,  timeout)
     #     return self.driver.find_element(By.XPATH, xpath)
 
-    @debug_out_line
+    # @debug_out_line
     def find(self, xpath,  timeout=10):
         self.wait_for_element(xpath,  timeout)
         element = self.driver.find_element(By.XPATH, xpath)
-        print("Found")
         return element
 
     # @debug_out_line
     def click(self, xpath,  timeout=10):
         self.find(xpath,  timeout).click()
-        print("Clicked")
 
     # @debug_out_line
-    def send_keys(self, xpath, keys,  timeout=10):
-        self.find(xpath,  timeout).send_keys(keys)
-        print("Sent")
+    # def send_keys(self, xpath, keys,  timeout=10):
+    #     self.find(xpath,  timeout).send_keys(keys)
+    #     print("Sent")
 
     def continue_on_error(self, xpath, timeout=10):
         try:
@@ -101,5 +101,5 @@ class GetDriver:
         print(element.text)
 
 if __name__ == '__main__':
-    driver = GetDriver()
+    driver = BaseDriver()
     # driver.click("/form[@title>'nGen IUT-SAPT - 14.7.0-M8']", timeout=10)

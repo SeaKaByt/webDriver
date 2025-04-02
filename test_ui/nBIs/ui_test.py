@@ -1,6 +1,6 @@
-from main import GetDriver
+from main import BaseDriver
 
-class NibsUiTest(GetDriver):
+class NibsUiTest(BaseDriver):
     login_btn = "/form[@title='Sprint']/container[@name>'NBISIV - ECT - Microsoft']//container[@classname='BrowserView']/container[@classname='SidebarContentsSplitView']/container[@classname='SidebarContentsSplitView']/container[@classname='SidebarContentsSplitView']/container[@classname='SidebarContentsSplitView']//container[@automationid='325002672']/text[@automationid='RootWebArea']/?/?/container[@automationid='kc-content']//container[@automationid='kc-form-wrapper']/container[@automationid='kc-form-login']/container[@automationid='kc-form-buttons']/?/?/button[@automationid='kc-login']"
 
     def __init__(self):

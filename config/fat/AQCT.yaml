@@ -1,9 +1,32 @@
 defaults:
-  bu: SAPT
-  env: IUT
+  bu: AQCT
+  env: FAT
 
 nGen:
-  jal_path: D:/jal/SAPT-IUT.bat
-  password: abcd1234%
-  username: admin
+  jal_path: D:/jal/ngen.bat
+  password: "!auto12345"
+  username: oscar
+  title: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/titlebar[@accessiblerole='TitleBar']
 
+app:
+  ngen: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
+  guider: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='Guider']
+
+dc:
+  voyage: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/element[@name='searchVoyageIdField']/text[@name='guiTextField1']
+  search_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='guiPanel2']/container[@name='searchButtonPanel']/button[@name='searchButton']
+  cntr_panel: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='detailPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/container[@name='guiPanel18']//container[@name='dischargePanel']
+  bay: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/?/?/container[@name='recordPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container[@name='guiPanel18']//container[@name='loadingPanel']/combobox[@name='dischargeBayComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  create_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='firstCarrierPane']/button[@name='firstCreateButton']
+  cntr_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='allPanel']/button[@name='dischargeContainerButton']
+
+cd:
+  cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='cntrNoComboBox']/text[@name='cntrNoEditField']
+  owner: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//container[@name='ownerPanel']/text[@name='ownerTextField']
+  voyage: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='topPanel']/container[@name='voyagePanel']/text[@name='voyageIdTextField']
+  pol: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='portPanel']/text[@name='polTextField']
+  max_gross_wt: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='gwPanel']/text[@name='grWtTextField']
+
+  create_yes_btn: /form[@title='Create Container']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
+  create_confirm_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
+  cancel_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='headButtonPanel']/container[@name='headOkCancelButtonPanel']/button[@name='amendCancelButton']
