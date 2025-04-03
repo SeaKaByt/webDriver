@@ -14,5 +14,4 @@ def enter_to_function_view(module=None):
     elif module == 'DC':
         send_keys("{F12}")
         send_keys("{F7}")
-        time.sleep(0.5)
         send_keys("{F2}")

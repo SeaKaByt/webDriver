@@ -22,6 +22,7 @@ class ApplicationLauncher(BaseDriver):
         super().__init__()
         self.username = self.config["nGen"]["username"]
         self.password = self.config["nGen"]["password"]
+        self.ngen_minimize = self.config["nGen"]["minimize"]
         self.app_ngen = self.config["app"]["ngen"]
         self.app_guider = self.config['app']['guider']
 
@@ -43,31 +44,34 @@ class ApplicationLauncher(BaseDriver):
     #     send_keys(self.password)
     #     self.click(self.ngen_login_btn)
 
-    def fat_login_ngen(self):
-        if not get_match_windows("Application Launcher"):
-            self.launch_application()
-            wait_for_window("Application Launcher")
-        if not get_match_windows("Login"):
-            self.click(self.app_ngen)
-        wait_for_window("Login")
-        send_keys_tab(self.username)
-        send_keys(self.password)
-        send_keys("{ENTER}")
+    def login_ngen(self):
+        if not get_match_windows("nGen"):
+            if not get_match_windows("Application Launcher"):
+                self.launch_application()
+                wait_for_window("Application Launcher")
+            if not get_match_windows("Login"):
+                self.click(self.app_ngen)
+            wait_for_window("Login")
+            send_keys_tab(self.username)
+            send_keys(self.password)
+            send_keys("{ENTER}")
 
     def login_guider(self):
-        if not get_match_windows("Application Launcher"):
-            self.launch_application()
-            wait_for_window("Application Launcher")
-        if not get_match_windows("Guider Logon"):
-            self.click(self.app_guider)
-        wait_for_window("Guider Logon")
-        send_keys_tab(self.username)
-        send_keys(self.password)
-        send_keys("{ENTER}")
+        if not get_match_windows("Guider"):
+            if not get_match_windows("Application Launcher"):
+                self.launch_application()
+                wait_for_window("Application Launcher")
+            if not get_match_windows("Guider Logon"):
+                self.click(self.app_guider)
+            wait_for_window("Guider Logon")
+            send_keys_tab(self.username)
+            send_keys(self.password)
+            send_keys("{ENTER}")
 
     def full_load(self):
-        self.fat_login_ngen()
+        self.login_ngen()
         wait_for_window('nGen')
+        self.click(self.ngen_minimize)
         self.login_guider()
 
     def test(self):

@@ -1,8 +1,9 @@
 import time
+import sys
 
 from helper.field_utils import send_keys_tab
 from helper.function_shortcut import enter_to_function_view
-from helper.utils import update_json, wait_for_window
+from helper.utils import update_json, wait_for_window, update_next_stowage, get_match_windows
 
 from pywinauto.keyboard import send_keys
 
@@ -19,11 +20,16 @@ class DischargeContainer(CntrBase):
         self.cntr_panel = self.config['dc']['cntr_panel']
         self.create_btn = self.config['dc']['create_btn']
         self.dc_bay = self.config['dc']['bay']
+        self.add_next = self.config['dc']['add_next_btn']
+        self.warning_ok = self.config['dc']['warning_ok_btn']
+        self.dc_pol = self.config['dc']['pol']
+
+        self.sp_menu = self.config["nGen"]["sp_menu"]
 
     def search_voyage(self):
         if not self.visible(self.dc_voyage, 1):
             self.click(self.title)
-            enter_to_function_view(module=self.module)
+            self.module_view()
         self.click(self.dc_voyage)
         send_keys("^a")
         send_keys_tab(self.line)
@@ -33,21 +39,24 @@ class DischargeContainer(CntrBase):
         if wait_for_window('User Information', 1.5):
             send_keys("{ENTER}")
         self.click(self.cntr_btn)
-        send_keys('%a')
+        # send_keys('%a')
 
     def create_cntr(self):
         if not self.visible(self.cntr_panel, 1):
-            self.search_voyage()
+            self.click(self.title)
+            self.module_view()
+            if not self.visible(self.cntr_panel, 1):
+                self.search_voyage()
+
+        if self.visible(self.create_btn, 1):
             self.click(self.create_btn)
+        # send_keys('{ENTER}')
         self.common_details()
         print('=== Done ===')
 
     def common_details(self):
-        time.sleep(0.2)
         self.click(self.dc_bay)
-        time.sleep(0.2)
         send_keys_tab(self.bay)
-        time.sleep(0.2)
         send_keys("^a")
         send_keys(self.row)
         send_keys(self.tier)
@@ -59,48 +68,41 @@ class DischargeContainer(CntrBase):
         send_keys(self.gross_wt)
         send_keys("{TAB}")
         send_keys(self.pol)
-        self.next_details()
+        if self.text_value(self.dc_pol) != self.pol.upper():
+            print(f"Values {self.text_value(self.dc_pol)} do not match {self.pol}. Exiting the program.")
+            sys.exit(1)
 
-    def next_details(self, next_update=None):
-        bay_l = self.bay[-1]
-        bay_n = int(self.bay[:-1])
+        self.click(self.add_next)
 
-        print("=== Generating next cntr ===")
-        cntr_id = int(self.cntr_id[4:])
-        self.cntr_id = f"test{cntr_id + 1:06}"
+        if get_match_windows('User Error'):
+            print(f"Warning message: {self.text_value('User Error')}")
+            sys.exit(1)
 
-        if int(self.row) == 12 and int(self.tier) == 98:
-            bay_l = "D" if bay_l == "H" else "H"
-            bay_n += 2 if bay_l == "D" else 0
-        self.bay = f"{bay_n:02d}{bay_l}"
+        if self.visible(self.warning_ok, 1):
+            self.click(self.warning_ok)
 
-        if int(self.tier) == 98 and self.row == "12":
-            self.tier = "82"
-        elif self.row == "12":
-            self.tier = f"{int(self.tier) + 2}"
+        d = update_next_stowage(self.cntr_id, self.bay, self.row, self.tier, self.json_path)
+        for k, v in d.items():
+            setattr(self, k, v)
 
-        self.row = "01" if int(self.row) == 12 else f"{int(self.row) + 1:02d}"
-
-        update_data = {
-            'cntr_id': self.cntr_id,
-            'bay': self.bay,
-            'row': self.row,
-            'tier': self.tier
-        }
-
-        for k, v in update_data.items():
-            print(f"{k}: {v}")
-            update_json(self.json_path, [k], v)
-        print("=== JSON Updated ===")
+    def module_view(self):
+        self.click(self.home)
+        self.click(self.sp_menu)
+        send_keys("{F2}")
 
     def test(self):
-        pass
+        if get_match_windows('User Error'):
+            print('True')
+            sys.exit(1)
+        print('keep going')
+        # self.click(self.create_btn)
 
 if __name__ == '__main__':
     # python -m test_ui.flow.discharge_container
     dc = DischargeContainer()
     # dc.search_voyage()
-    for _ in range(2):
-        # dc.create_cntr()
-        dc.next_details()
+    for _ in range(3):
+        dc.create_cntr()
+        # dc.test()
     # dc.test()
+    # dc.create_cntr()

@@ -6,6 +6,7 @@ class CntrBase(BaseDriver):
         super().__init__()
 
         self.title = self.config["nGen"]["title"]
+        self.home = self.config["nGen"]["home_btn"]
 
         self.cntr_id = self.config_j["cntr_id"]
         self.status = self.config_j["status"]

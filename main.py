@@ -50,7 +50,7 @@ class BaseDriver:
             WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located((By.XPATH, xpath)))
         except KeyboardInterrupt:
             print("Caught KeyboardInterrupt! Entering breakpoint...")
-            breakpoint()
+            # breakpoint()
         except (WebDriverException, TimeoutException) as e:
             print(f"Cannot find element: {xpath} after {timeout} seconds")
 
@@ -81,6 +81,7 @@ class BaseDriver:
             print(f"Found {element}")
             element.click()
         except Exception as e:
+            print(f"Element not found: {xpath}")
             return False
 
     def visible(self, xpath, timeout=10):
@@ -88,17 +89,27 @@ class BaseDriver:
             self.driver.implicitly_wait(timeout)
             element = self.driver.find_element(By.XPATH, xpath)
             element = element.get_dom_attribute("visible")
-            return element
+            if element == "True":
+                print(f"Element is visible")
+                return True
+            else:
+                print(f"Element is not visible")
+                return False
         except NoSuchElementException:
-            print(f"Element not found: {xpath}")
+            print(f"Element not found")
             return False
         except Exception as e:
             print(f"An error occurred: {e}")
             return False
 
+    def editable(self, xpath, timeout=10):
+        self.driver.implicitly_wait(timeout)
+        element = self.driver.find_element(By.XPATH, xpath)
+        return element.get_dom_attribute("editable")
+
     def text_value(self, xpath):
         element = self.driver.find_element(By.XPATH, xpath)
-        print(element.text)
+        return element.text
 
 if __name__ == '__main__':
     driver = BaseDriver()

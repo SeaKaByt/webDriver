@@ -64,4 +64,60 @@ def wait_for_window(title, timeout=30):
             return window
         time.sleep(1)
         timeout -= 1
-    return None
+    # breakpoint()
+
+def update_next_stowage(cntr_id, bay, row, tier, path):
+    bay_l = bay[-1]
+    bay_n = int(bay[:-1])
+
+    print("=== Generating next cntr ===")
+    cntr_id = f"test{int(cntr_id[4:]) + 1:06}"
+
+    if int(row) == 12 and int(tier) == 98:
+        bay_l = "D" if bay_l == "H" else "H"
+        bay_n += 2 if bay_l == "D" else 0
+    bay = f"{bay_n:02d}{bay_l}"
+
+    if int(tier) == 98 and row == "12":
+        tier = "82"
+    elif row == "12":
+        tier = f"{int(tier) + 2}"
+
+    row = "01" if int(row) == 12 else f"{int(row) + 1:02d}"
+
+    update_data = {
+        'cntr_id': cntr_id,
+        'bay': bay,
+        'row': row,
+        'tier': tier
+    }
+
+    for k, v in update_data.items():
+        print(f"{k}: {v}")
+        update_json(path, [k], v)
+    print("=== JSON Updated ===")
+
+    return update_data
+
+def next_loc(cntr_id, stack, lane, tier, path):
+    stack_n = int(stack)
+    lane_n = int(lane)
+
+    print(f'current tier: {tier}')
+    print("=== Generating next cntr ===")
+    cntr_id = f"test{int(cntr_id[4:]) + 1:06}"
+    stack_n += 2 if int(lane) == 99 and int(tier) == 5 else 0
+    lane_n += 1 if int(tier) == 5 else 0
+
+    update_data = {
+        'cntr_id': cntr_id,
+        'stack': str(stack_n),
+        'lane': str(lane_n),
+    }
+
+    for k, v in update_data.items():
+        print(f"{k}: {v}")
+        update_json(path, [k], v)
+    print("=== JSON Updated ===")
+
+    return update_data
