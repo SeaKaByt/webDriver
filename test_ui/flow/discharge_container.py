@@ -1,15 +1,11 @@
-import time
 import sys
 
 from helper.field_utils import send_keys_tab
-from helper.function_shortcut import enter_to_function_view
-from helper.utils import update_json, wait_for_window, update_next_stowage, get_match_windows
-
+from helper.utils import wait_for_window, update_next_stowage, get_match_windows
 from pywinauto.keyboard import send_keys
+from test_ui.base_flow import BaseFlow
 
-from test_ui.container_interface import CntrBase
-
-class DischargeContainer(CntrBase):
+class DischargeContainer(BaseFlow):
     module = "DC"
 
     def __init__(self):
@@ -24,12 +20,9 @@ class DischargeContainer(CntrBase):
         self.warning_ok = self.config['dc']['warning_ok_btn']
         self.dc_pol = self.config['dc']['pol']
 
-        self.sp_menu = self.config["nGen"]["sp_menu"]
-
     def search_voyage(self):
         if not self.visible(self.dc_voyage, 1):
-            self.click(self.title)
-            self.module_view()
+            self.module_view(self.module)
         self.click(self.dc_voyage)
         send_keys("^a")
         send_keys_tab(self.line)
@@ -44,7 +37,7 @@ class DischargeContainer(CntrBase):
     def create_cntr(self):
         if not self.visible(self.cntr_panel, 1):
             self.click(self.title)
-            self.module_view()
+            self.module_view(self.module)
             if not self.visible(self.cntr_panel, 1):
                 self.search_voyage()
 
@@ -85,24 +78,12 @@ class DischargeContainer(CntrBase):
         for k, v in d.items():
             setattr(self, k, v)
 
-    def module_view(self):
-        self.click(self.home)
-        self.click(self.sp_menu)
-        send_keys("{F2}")
-
     def test(self):
-        if get_match_windows('User Error'):
-            print('True')
-            sys.exit(1)
-        print('keep going')
-        # self.click(self.create_btn)
+        pass
 
 if __name__ == '__main__':
     # python -m test_ui.flow.discharge_container
     dc = DischargeContainer()
-    # dc.search_voyage()
-    for _ in range(3):
-        dc.create_cntr()
-        # dc.test()
-    # dc.test()
-    # dc.create_cntr()
+    dc.search_voyage()
+    # for _ in range(3):
+    #     dc.create_cntr()

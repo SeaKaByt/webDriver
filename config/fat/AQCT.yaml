@@ -12,6 +12,8 @@ nGen:
   home_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/?/?/button[@text='Home']
   inv_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[6]/tag[@tagname='p-implied']
   sp_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[6]/tag[@tagname='p-implied']
+  ioc_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[4]/tag[@tagname='p-implied']
+  gate_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[3]/tag[@tagname='p-implied']
 
 app:
   ngen: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
@@ -42,3 +44,32 @@ cd:
   cancel_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='headButtonPanel']/container[@name='headOkCancelButtonPanel']/button[@name='amendCancelButton']
   confirm_yes_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
   ags4999: /form[@title='User Error ags4999']/?/?/container[@name='OptionPane.buttonArea']/button[@name='OptionPane.button']
+
+cro:
+  reset: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/button[@name='resetButton']
+  create: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='mainPanel']/container[@name='buttonPanel']/?/?/button[@name='createButton']
+
+  cro_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchContanerNoTextField']
+  cro_cro_no: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchCROTextField']
+  create_cntr_id: /form[@title='Create CRO']//container[@name='guiPanel2']/text[@name='cntrIdText']
+  cro_status: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/combobox[@name='searchStatusComboBox']/text[@accessiblename='CRO Status:']
+  row0_pin: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='CROTable']/row[@index='0']/cell[@columnindex='1']
+
+bol:
+  line: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='panelSearch']/text[@name='txtLineCodeS']
+  add_cntr_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='allBtnPanel']/button[@name='btnAddCntr']
+  add_next: /form[@title>'Create Bill of lading con']/?/?/container[@name='buttonPanel']/button[@name='btnAddNext']
+  confirm_yes: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
+  create_cntr_id: /form[@title>'Create Bill of lading con']//element[@name='txtCntrId']/text[@name='guiTextField1']
+  create_cancel: /form[@title>'Create Bill of lading con']/?/?/container[@name='buttonPanel']/button[@name='btnCancel']
+  details_line: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='decPaneMaster']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='txtLineCode']
+
+hr:
+  release_tab: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabbedPanel']/tabpage[@title='* Release']
+  search_hold_condition: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/container[@name='holdConditionSPanel']/text[@name='searchHoldConditionTextField']
+  release_hold_condition: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/container[@name='holdConditionRPanel']/text[@name='releaseHoldConditionTextField']
+  search_tab: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='tabbedPanel']/container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/tabpage[@title='Search']
+  declaration: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/text[@name='declarationNoTextField']
+  bol: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/text[@name='billLadingNoTextField']
+  select_all: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='selectAllButton']
+  release_batch: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='releaseBatchButton']

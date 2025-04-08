@@ -1,5 +1,5 @@
 {
-    "cntr_id": "test000144",
+    "cntr_id": "test000074",
     "owner": "nvd",
     "status": "if",
     "size": "20",
@@ -14,7 +14,11 @@
     "vessel": "tshm04",
     "voyage": "v01",
     "bay": "11D",
-    "row": "12",
-    "tier": "84",
-    "POL": "sgsin"
+    "row": "09",
+    "tier": "86",
+    "POL": "sgsin",
+
+    "cro": {
+        "bol": "bl01"
+    }
 }

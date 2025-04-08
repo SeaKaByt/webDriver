@@ -10,7 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from dotenv import load_dotenv
 
 from helper.decorators import debug_out_line
-from helper.utils import read_yaml, read_json
+from helper.utils import read_yaml, read_json, read_excel
 
 load_dotenv()
 
@@ -18,10 +18,12 @@ class BaseDriver:
     driver = None
     bu = os.environ.get("TEST_BU", "AQCT")
     env = os.environ.get("TEST_ENV", "FAT")
-    yaml_path =  f"config/{bu}.yaml"
+    yaml_path =  f"config/{env.lower()}/{bu}.yaml"
     json_path = "interface/container_details.json"
+    data_path = "data.xlsx"
     config = read_yaml(f"config/{env.lower()}/{bu}.yaml")
     config_j = read_json("interface/container_details.json")
+    df = read_excel(data_path)
 
     default_options = {
         "browserName": "Ranorex",

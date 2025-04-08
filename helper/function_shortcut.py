@@ -3,6 +3,7 @@ import time
 from pywinauto.keyboard import send_keys
 
 def enter_to_function_view(module=None):
+
     # Enter to Container Details
     if module == 'CD':
         send_keys("{F12}")

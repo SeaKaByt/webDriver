@@ -58,10 +58,11 @@ class ApplicationLauncher(BaseDriver):
 
     def login_guider(self):
         if not get_match_windows("Guider"):
-            if not get_match_windows("Application Launcher"):
-                self.launch_application()
-                wait_for_window("Application Launcher")
+            # if not get_match_windows("Application Launcher"):
+            #     self.launch_application()
+            #     wait_for_window("Application Launcher")
             if not get_match_windows("Guider Logon"):
+                # self.click(self.ngen_minimize)
                 self.click(self.app_guider)
             wait_for_window("Guider Logon")
             send_keys_tab(self.username)
@@ -71,11 +72,7 @@ class ApplicationLauncher(BaseDriver):
     def full_load(self):
         self.login_ngen()
         wait_for_window('nGen')
-        self.click(self.ngen_minimize)
         self.login_guider()
-
-    def test(self):
-        pass
 
 if __name__ == '__main__':
     # python -m test_ui.app

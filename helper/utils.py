@@ -1,9 +1,13 @@
 import yaml
 import time
 import json
-
 import pywinauto
+import pandas as pd
+
 from pywinauto.keyboard import send_keys
+
+def read_excel(path: str):
+    return pd.read_excel(path)
 
 def read_yaml(path: str) -> dict:
     with open(path, "r") as f:

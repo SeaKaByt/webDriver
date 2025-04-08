@@ -1,13 +1,10 @@
-import sys
 import time
 
 from pywinauto.keyboard import send_keys
-
 from helper.utils import send_keys_tab, next_loc, wait_for_window, get_match_windows
+from test_ui.base_flow import BaseFlow
 
-from test_ui.container_interface import CntrBase
-
-class ContainerDetails(CntrBase):
+class ContainerDetails(BaseFlow):
     module = "CD"
 
     def __init__(self):
@@ -26,12 +23,10 @@ class ContainerDetails(CntrBase):
         self.confirm_yes = self.config["cd"]["confirm_yes_btn"]
         self.ags4999 = self.config["cd"]["ags4999"]
 
-        self.inv_menu = self.config["nGen"]["inv_menu"]
-
     def create_cntr(self):
         if not self.visible(self.cd_cntr_id, 1):
             self.click(self.title)
-            self.module_view()
+            self.module_view(self.module)
         self.common_details()
 
     def common_details(self):
@@ -88,18 +83,8 @@ class ContainerDetails(CntrBase):
         self.tier = v.split()[-1].split('/')[-1]
         return self.tier
 
-    def module_view(self):
-        self.click(self.home)
-        time.sleep(0.2)
-        if get_match_windows('Confirm'):
-            self.click(self.confirm_yes)
-        self.click(self.inv_menu)
-        send_keys("{F2}")
-        send_keys("{F1}")
-
     def test(self):
-        if self.editable(self.cd_cntr_id):
-            print('TURE')
+        pass
 
 if __name__ == '__main__':
     # python -m test_ui.flow.container_details
