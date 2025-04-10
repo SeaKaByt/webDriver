@@ -43,41 +43,41 @@ class BaseFlow(BaseDriver):
         self.agent = "TEST"
 
     def module_view(self, module=None):
-        self.click(self.title)
-        self.click(self.home)
+        self.actions.click(self.title)
+        self.actions.click(self.home)
 
         if module == "HR":
-            self.click(self.inv_menu)
+            self.actions.click(self.inv_menu)
             send_keys('{F2}')
             send_keys('{F4}')
 
         elif module == "DC":
-            self.click(self.sp_menu)
+            self.actions.click(self.sp_menu)
             send_keys("{F2}")
 
         elif module == "CRO":
-            self.click(self.ioc_menu)
+            self.actions.click(self.ioc_menu)
             send_keys('{F1}')
             send_keys('{F7}')
 
         elif module == "BOL":
-            self.click(self.ioc_menu)
+            self.actions.click(self.ioc_menu)
             send_keys('{F1}')
             send_keys('{F2}')
 
         elif module == "CD":
-            self.click(self.inv_menu)
+            self.actions.click(self.inv_menu)
             send_keys("{F2}")
             send_keys("{F1}")
 
         elif module == "GT":
-            self.click(self.gate_menu)
+            self.actions.click(self.gate_menu)
             send_keys("{F1}")
             send_keys("{F1}")
             if wait_for_window('Select Working Terminal', 1):
                 send_keys('{ENTER}')
 
         elif module == "QM":
-            self.click(self.mv_menu)
+            self.actions.click(self.mv_menu)
             send_keys("{F3}")
 

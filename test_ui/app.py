@@ -1,79 +1,70 @@
 import os
-
-from helper.utils import get_match_windows, wait_for_window, send_keys_tab
 from main import BaseDriver
+from helper.logger import logger
+from helper.utils import get_match_windows, wait_for_window, send_keys_tab, window_exists, send_keys
 from pywinauto import Application
-from pywinauto.keyboard import send_keys
 from dotenv import load_dotenv
 
 load_dotenv()
 
+class WinAppHandler:
+    def __init__(self):
+        self.app = Application()
+
+    def launch(self, app_path):
+        try:
+            logger.info(f"Launching {app_path}")
+            self.app.start(app_path, timeout=5, wait_for_idle=False, work_dir=os.path.dirname(app_path))
+        except Exception as e:
+            logger.error(f"Launch failed: {e}")
+            raise
+
+    def send_credentials(self, username, password):
+        send_keys_tab(username)
+        send_keys(password)
+        send_keys("{ENTER}")
+
 class ApplicationLauncher(BaseDriver):
-    app = Application()
-
-    # security_alert_yes = "/form[@title='Security Alert']/button[@text='&Yes']"
-
-    # ngen = "/form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=\" js csstransitions\"']//text[@accessiblename='nGen']"
-    # ngen_username = "/form[@title='Login']/container[@name='mainPanel']/?/?/text[@type='GuiTextField']"
-    # ngen_password = "/form[@title='Login']/container[@name='mainPanel']/?/?/text[@type='GuiPasswordField']"
-    # ngen_login_btn = "/form[@title='Login']/container[@name='mainPanel']/?/?/button[@name='okButton']"
-
     def __init__(self):
         super().__init__()
+        self.win_app = WinAppHandler()
         self.username = self.config["nGen"]["username"]
         self.password = self.config["nGen"]["password"]
-        self.ngen_minimize = self.config["nGen"]["minimize"]
         self.app_ngen = self.config["app"]["ngen"]
-        self.app_guider = self.config['app']['guider']
+        self.app_guider = self.config["app"]["guider"]
+        self.jal_path = self.config["nGen"]["jal_path"]
 
-    def launch_application(self):
-        app_path = self.config["nGen"]["jal_path"]
-        self.app.start(app_path, timeout=5, wait_for_idle=False, work_dir=os.path.dirname(app_path))
-
-    # def login_ngen(self):
-    #     if not get_match_windows("Application Launcher"):
-    #         self.launch_application()
-    #         wait_for_window("Security Alert")
-    #         self.click(self.security_alert_yes)
-    #     if not get_match_windows("Login"):
-    #         self.click(self.ngen)
-    #     wait_for_window("Login")
-    #     self.click(self.ngen_username)
-    #     send_keys(self.username)
-    #     self.click(self.ngen_password)
-    #     send_keys(self.password)
-    #     self.click(self.ngen_login_btn)
+    def _login(self, app_window, login_window, app_xpath):
+        """Generic login helper for nGen and Guider"""
+        try:
+            if not get_match_windows(app_window):
+                if not get_match_windows(login_window):
+                    self.actions.click(app_xpath)
+                wait_for_window(login_window)
+                self.win_app.send_credentials(self.username, self.password)
+        except Exception as e:
+            logger.error(f"Failed to login to {app_window}: {e}")
+            raise
 
     def login_ngen(self):
         if not get_match_windows("nGen"):
             if not get_match_windows("Application Launcher"):
-                self.launch_application()
+                self.win_app.launch(self.jal_path)
                 wait_for_window("Application Launcher")
-            if not get_match_windows("Login"):
-                self.click(self.app_ngen)
-            wait_for_window("Login")
-            send_keys_tab(self.username)
-            send_keys(self.password)
-            send_keys("{ENTER}")
+            self._login("nGen", "Logon", self.app_ngen)
 
     def login_guider(self):
-        if not get_match_windows("Guider"):
-            # if not get_match_windows("Application Launcher"):
-            #     self.launch_application()
-            #     wait_for_window("Application Launcher")
-            if not get_match_windows("Guider Logon"):
-                # self.click(self.ngen_minimize)
-                self.click(self.app_guider)
-            wait_for_window("Guider Logon")
-            send_keys_tab(self.username)
-            send_keys(self.password)
-            send_keys("{ENTER}")
+        self._login("Guider", "Guider Logon", self.app_guider)
 
     def full_load(self):
+        logger.info("Starting full load")
         self.login_ngen()
-        wait_for_window('nGen')
+        window_exists("nGen")
         self.login_guider()
+        window_exists("Guider")
+        self.cleanup()
 
-if __name__ == '__main__':
-    a = ApplicationLauncher()
-    a.full_load()
+if __name__ == "__main__":
+    app = ApplicationLauncher()
+    print("Starting full load")
+    app.full_load()

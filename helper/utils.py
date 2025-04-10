@@ -4,7 +4,6 @@ import json
 import pywinauto
 import pandas as pd
 from helper.logger import logger
-from pywinauto.keyboard import send_keys
 
 def read_excel(path: str):
     return pd.read_excel(path)
@@ -51,7 +50,12 @@ def update_json(path, keys, value):
 
     write_json(path, data)
 
+def send_keys(keys):
+    logger.info(f"Sending keys: {keys}")
+    send_keys(keys)
+
 def send_keys_tab(keys):
+    logger.info(f"Sending keys: {keys}")
     send_keys(keys)
     send_keys('{TAB}')
 
@@ -62,14 +66,20 @@ def get_match_windows(title):
 
 def wait_for_window(title, timeout=30):
     logger.info(f"Waiting for window: {title}")
-    while timeout > 0:
+    for _ in range(timeout):
         window = pywinauto.findwindows.find_windows(title_re=title)
         if window:
             logger.info(f"Found window: {window}")
             return window
         time.sleep(1)
-        timeout -= 1
     logger.info(f"Window not found: {title} after {timeout} seconds")
+
+def window_exists(title, timeout=10):
+    if wait_for_window(title, timeout):
+        logger.info(f"Window exists: {title}")
+        return True
+    logger.warning(f"Window does not exist: {title}")
+    raise
 
 def update_next_stowage(cntr_id, bay, row, tier, path):
     logger.info("=== Generating next cntr ===")

@@ -1,12 +1,9 @@
 import sys
 import time
-
-from pywinauto.keyboard import send_keys
-
-from helper.utils import wait_for_window
-from main import BaseDriver
 from test_ui.base_flow import BaseFlow
-
+from helper.utils import wait_for_window
+from pywinauto.keyboard import send_keys
+from helper.logger import logger
 
 class QMon(BaseFlow):
     module = 'QM'

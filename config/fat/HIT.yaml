@@ -1,0 +1,8 @@
+defaults:
+  bu: HIT
+  env: FAT
+
+nGen:
+  jal_path: D:/jal/ngen.bat
+  password: "abcd1234."
+  username: "rxusr"

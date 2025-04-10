@@ -26,7 +26,7 @@ class ContainerDetails(BaseFlow):
         self.ags4999 = self.config["cd"]["ags4999"]
 
     def create_cntr(self, count):
-        if not self.visible(self.cd_cntr_id, 1):
+        if not self.properties.visible(self.cd_cntr_id, 1):
             self.module_view(self.module)
         for i in range(count):
             self.common_details()
@@ -34,20 +34,20 @@ class ContainerDetails(BaseFlow):
 
     def common_details(self):
         self.cntr_list.append(self.cntr_id)
-        self.click(self.cd_cntr_id)
+        self.actions.click(self.cd_cntr_id)
         send_keys('^a')
         send_keys(self.cntr_id)
         send_keys('{ENTER}')
         if wait_for_window('Create Container', 5):
-            self.click(self.create_yes)
-            self.click(self.create_confirm)
+            self.actions.click(self.create_yes)
+            self.actions.click(self.create_confirm)
         else:
             sys.exit(1)
-        self.click(self.cd_status)
+        self.actions.click(self.cd_status)
         send_keys(self.status)
         send_keys(self.size)
         send_keys(self.type)
-        self.click(self.cd_owner)
+        self.actions.click(self.cd_owner)
         send_keys_tab(self.owner)
         send_keys('{TAB}')
         send_keys(self.block)
@@ -58,14 +58,14 @@ class ContainerDetails(BaseFlow):
 
         if wait_for_window('User Error ags4999', 1):
             self.lane = f'{int(self.lane) + 1}'
-            self.click(self.ags4999)
-            self.click(self.cd_yard)
+            self.actions.click(self.ags4999)
+            self.actions.click(self.cd_yard)
             send_keys('{TAB}')
             send_keys('{TAB}')
             send_keys(self.lane)
             send_keys('{ENTER}')
 
-        if self.editable(self.cd_cntr_id):
+        if self.properties.editable(self.cd_cntr_id):
             d = next_loc(self.cntr_id, self.stack, self.lane, self.get_tier(), self.json_path)
             for k, v in d.items():
                 setattr(self, k, v)
@@ -73,18 +73,18 @@ class ContainerDetails(BaseFlow):
             sys.exit(1)
 
     def voyage_details(self):
-        self.click(self.cd_voyage)
+        self.actions.click(self.cd_voyage)
         send_keys('^a')
         send_keys_tab(self.line)
         send_keys(self.vessel)
         send_keys(self.voyage)
-        self.click(self.cd_pol)
+        self.actions.click(self.cd_pol)
         send_keys(self.pol)
-        self.click(self.cd_gross_wt)
+        self.actions.click(self.cd_gross_wt)
         send_keys(self.gross_wt)
 
     def get_tier(self):
-        v = self.text_value(self.cd_yard)
+        v = self.properties.text_value(self.cd_yard)
         self.tier = v.split()[-1].split('/')[-1]
         return self.tier
 

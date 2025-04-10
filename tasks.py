@@ -5,7 +5,12 @@ def initiate(c):
     """
     Initialize the environment for the container details task.
     """
-    c.run("python -m test_ui.app")
+    try:
+        print("Initializing environment...")
+        c.run("python -m test_ui.app", timeout=10)
+    except Exception as e:
+        print(f"Failed to initialize environment: {e}")
+        raise
 
 @task
 def create_cntr(c, count=1):
@@ -20,21 +25,21 @@ def create_cntr(c, count=1):
 @task
 def add_bol(c):
     """
-    Add Bill of Lading (BOL) using the container details.
+    Add Bill of Lading (BOL) for the container.
     """
     c.run("python -m test_ui.flow.bol_maintenance")
 
 @task
 def test_code(c):
     """
-    Run the test code for container details.
+    Run the test code for code test.
     """
     c.run(f"python -m test_ui.flow.container_details --test")
 
 @task
-def full_task(c):
+def pickup_task(c):
     """
-    Full task to create containers, add BOL, and run tests.
+    Run the pickup task.
     """
     initiate(c)
     create_cntr(c, count=2)
