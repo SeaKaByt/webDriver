@@ -3,7 +3,7 @@ import time
 import json
 import pywinauto
 import pandas as pd
-
+from helper.logger import logger
 from pywinauto.keyboard import send_keys
 
 def read_excel(path: str):
@@ -57,24 +57,25 @@ def send_keys_tab(keys):
 
 def get_match_windows(title):
     window = pywinauto.findwindows.find_windows(title_re=title)
-    print(f"Found windows: {window}")
+    logger.info(f"Found window: {window}")
     return window
 
 def wait_for_window(title, timeout=30):
-    print(f"Waiting for window: {title}")
+    logger.info(f"Waiting for window: {title}")
     while timeout > 0:
         window = pywinauto.findwindows.find_windows(title_re=title)
         if window:
+            logger.info(f"Found window: {window}")
             return window
         time.sleep(1)
         timeout -= 1
-    # breakpoint()
+    logger.info(f"Window not found: {title} after {timeout} seconds")
 
 def update_next_stowage(cntr_id, bay, row, tier, path):
+    logger.info("=== Generating next cntr ===")
     bay_l = bay[-1]
     bay_n = int(bay[:-1])
 
-    print("=== Generating next cntr ===")
     cntr_id = f"test{int(cntr_id[4:]) + 1:06}"
 
     if int(row) == 12 and int(tier) == 98:
@@ -97,18 +98,18 @@ def update_next_stowage(cntr_id, bay, row, tier, path):
     }
 
     for k, v in update_data.items():
-        print(f"{k}: {v}")
+        logger.info(f"{k}: {v}")
         update_json(path, [k], v)
-    print("=== JSON Updated ===")
 
+    logger.info("=== JSON Updated ===")
     return update_data
 
 def next_loc(cntr_id, stack, lane, tier, path):
     stack_n = int(stack)
     lane_n = int(lane)
 
-    print(f'current tier: {tier}')
-    print("=== Generating next cntr ===")
+    logger.info(f"Current tier: {tier}")
+    logger.info("=== Generating next cntr ===")
     cntr_id = f"test{int(cntr_id[4:]) + 1:06}"
     stack_n += 2 if int(lane) == 99 and int(tier) == 5 else 0
     lane_n += 1 if int(tier) == 5 else 0
@@ -120,8 +121,8 @@ def next_loc(cntr_id, stack, lane, tier, path):
     }
 
     for k, v in update_data.items():
-        print(f"{k}: {v}")
+        logger.info(f"{k}: {v}")
         update_json(path, [k], v)
-    print("=== JSON Updated ===")
+    logger.info("=== JSON Updated ===")
 
     return update_data

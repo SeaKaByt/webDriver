@@ -1,12 +1,12 @@
 {
-    "cntr_id": "test000074",
+    "cntr_id": "test000180",
     "owner": "nvd",
     "status": "if",
     "size": "20",
     "type": "10",
     "block": "fb1",
     "stack": "1",
-    "lane": "11",
+    "lane": "16",
     "material": "s",
     "max_gross_wt": "32500",
     "gross_wt": "16750",
@@ -17,7 +17,6 @@
     "row": "09",
     "tier": "86",
     "POL": "sgsin",
-
     "cro": {
         "bol": "bl01"
     }

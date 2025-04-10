@@ -14,6 +14,7 @@ nGen:
   sp_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[6]/tag[@tagname='p-implied']
   ioc_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[4]/tag[@tagname='p-implied']
   gate_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[3]/tag[@tagname='p-implied']
+  mv_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[3]/tag[@tagname='p-implied']
 
 app:
   ngen: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
@@ -73,3 +74,19 @@ hr:
   bol: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/text[@name='billLadingNoTextField']
   select_all: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='selectAllButton']
   release_batch: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='releaseBatchButton']
+
+gt:
+  search_tractor: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='detailPanel']/container[@name='guiPanel2']/text[@name='tractorNoTextField']
+  create_pin: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='pinNoPanel']/text[@name='pinNoTextField']
+  create_driver: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='sealPanel']/text[@name='driverIdTextField']
+  row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='resultTable']/row[@index='0']/cell[@columnindex='2']
+  inspection_seal: /form[@title='Exit Gate Inspection']//container[@name='infoPanel']/?/?/container[@name='oogPanel']/combobox[@name='sealIndicatorComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
+  printer_id: /form[@title='Gate Confirm']//container[@name='guiPanel3']/combobox[@name='printerIdComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+
+qm:
+  fcl_tab: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
+  row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
+  bk_confirm_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='actionPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container/container[2]/container[@name='scrollPane']//button[@text='Mv Bkup Conf']
+  fcl_tractor: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/container[@name='fclTabPane']/text[@name='fclTractorNoTextField']
+  new_search: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='newSearchButton']

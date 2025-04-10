@@ -1,11 +1,13 @@
-import time
-
-from pywinauto.keyboard import send_keys
-from helper.utils import send_keys_tab, next_loc, wait_for_window, get_match_windows
+import sys
+import argparse
+import pandas as pd
 from test_ui.base_flow import BaseFlow
+from pywinauto.keyboard import send_keys
+from helper.utils import send_keys_tab, next_loc, wait_for_window
 
 class ContainerDetails(BaseFlow):
     module = "CD"
+    cntr_list = []
 
     def __init__(self):
         super().__init__()
@@ -23,20 +25,24 @@ class ContainerDetails(BaseFlow):
         self.confirm_yes = self.config["cd"]["confirm_yes_btn"]
         self.ags4999 = self.config["cd"]["ags4999"]
 
-    def create_cntr(self):
+    def create_cntr(self, count):
         if not self.visible(self.cd_cntr_id, 1):
-            self.click(self.title)
             self.module_view(self.module)
-        self.common_details()
+        for i in range(count):
+            self.common_details()
+        self.save_as_excel()
 
     def common_details(self):
+        self.cntr_list.append(self.cntr_id)
         self.click(self.cd_cntr_id)
         send_keys('^a')
         send_keys(self.cntr_id)
         send_keys('{ENTER}')
-        if wait_for_window('Create Container'):
+        if wait_for_window('Create Container', 5):
             self.click(self.create_yes)
             self.click(self.create_confirm)
+        else:
+            sys.exit(1)
         self.click(self.cd_status)
         send_keys(self.status)
         send_keys(self.size)
@@ -50,8 +56,7 @@ class ContainerDetails(BaseFlow):
         self.voyage_details() if self.status == 'if' else None
         send_keys('{ENTER}')
 
-        time.sleep(0.5)
-        if get_match_windows('User Error ags4999'):
+        if wait_for_window('User Error ags4999', 1):
             self.lane = f'{int(self.lane) + 1}'
             self.click(self.ags4999)
             self.click(self.cd_yard)
@@ -64,8 +69,8 @@ class ContainerDetails(BaseFlow):
             d = next_loc(self.cntr_id, self.stack, self.lane, self.get_tier(), self.json_path)
             for k, v in d.items():
                 setattr(self, k, v)
-
-        print('=== Done ===')
+        else:
+            sys.exit(1)
 
     def voyage_details(self):
         self.click(self.cd_voyage)
@@ -83,12 +88,23 @@ class ContainerDetails(BaseFlow):
         self.tier = v.split()[-1].split('/')[-1]
         return self.tier
 
+    def save_as_excel(self):
+        data = pd.DataFrame({"cntr_id": self.cntr_list[::-1]})
+        self.df = pd.concat([data, self.df])
+        self.df.to_excel(self.data_path, index=False)
+
     def test(self):
         pass
 
 if __name__ == '__main__':
     # python -m test_ui.flow.container_details
+    parser = argparse.ArgumentParser(description='Create containers')
+    parser.add_argument("count", type=int, nargs="?", default=None, help="Number of containers to create")
+    parser.add_argument("--test", action="store_true", help="Run test code")
+    args = parser.parse_args()
+
     cd = ContainerDetails()
-    for i in range(1):
-        cd.create_cntr()
-    # cd.test()
+    if args.test:
+        cd.test()
+    elif args.count is not None:
+        cd.create_cntr(args.count)

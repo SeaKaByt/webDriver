@@ -1,3 +1,4 @@
+from helper.utils import wait_for_window
 from main import BaseDriver
 from pywinauto.keyboard import send_keys
 
@@ -14,6 +15,7 @@ class BaseFlow(BaseDriver):
         self.sp_menu = self.config["nGen"]["sp_menu"]
         self.ioc_menu = self.config['nGen']['ioc_menu']
         self.gate_menu = self.config['nGen']['gate_menu']
+        self.mv_menu = self.config['nGen']['mv_menu']
 
         self.cntr_id = self.config_j["cntr_id"]
         self.status = self.config_j["status"]
@@ -53,14 +55,17 @@ class BaseFlow(BaseDriver):
             self.click(self.sp_menu)
             send_keys("{F2}")
 
-        elif module == ["CRO", "BOL"]:
+        elif module == "CRO":
             self.click(self.ioc_menu)
             send_keys('{F1}')
-            send_keys('{F7}' if module == "CRO" else '{F2}')
+            send_keys('{F7}')
+
+        elif module == "BOL":
+            self.click(self.ioc_menu)
+            send_keys('{F1}')
+            send_keys('{F2}')
 
         elif module == "CD":
-            # if get_match_windows('Confirm'):
-            #     self.click(self.confirm_yes)
             self.click(self.inv_menu)
             send_keys("{F2}")
             send_keys("{F1}")
@@ -69,3 +74,10 @@ class BaseFlow(BaseDriver):
             self.click(self.gate_menu)
             send_keys("{F1}")
             send_keys("{F1}")
+            if wait_for_window('Select Working Terminal', 1):
+                send_keys('{ENTER}')
+
+        elif module == "QM":
+            self.click(self.mv_menu)
+            send_keys("{F3}")
+

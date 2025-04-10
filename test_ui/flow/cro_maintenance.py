@@ -1,5 +1,5 @@
 import sys
-import time
+
 from datetime import datetime
 from pywinauto.keyboard import send_keys
 from helper.utils import send_keys_tab, wait_for_window

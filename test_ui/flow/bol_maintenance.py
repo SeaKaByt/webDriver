@@ -1,18 +1,13 @@
 import sys
-import time
-
-from helper.field_utils import send_keys_tab
-from helper.utils import wait_for_window
+from helper.utils import wait_for_window, send_keys_tab
 from test_ui.base_flow import BaseFlow
 from pywinauto.keyboard import send_keys
-
 
 class BolMaintenance(BaseFlow):
     module = "BOL"
 
     def __init__(self):
         super().__init__()
-
         self.bol_line = self.config['bol']['line']
         self.add_cntr_btn = self.config['bol']['add_cntr_btn']
         self.add_next = self.config['bol']['add_next']
@@ -55,8 +50,12 @@ class BolMaintenance(BaseFlow):
                 sys.exit(1)
 
     def add_cntr(self):
+        if not self.visible(self.add_cntr_btn, 1):
+            self.module_view(self.module)
+        self.search_bol()
         self.click(self.add_cntr_btn)
-        wait_for_window('Create Bill of lading container')
+        if not wait_for_window('Create Bill of lading container'):
+            sys.exit(1)
 
         for cntr_id in self.df['cntr_id']:
             self.click(self.create_cntr_id)
@@ -64,18 +63,19 @@ class BolMaintenance(BaseFlow):
             self.click(self.add_next)
             wait_for_window('Confirm')
             self.click(self.confirm_yes)
-            time.sleep(1)
+            if wait_for_window('User Error', 1):
+                sys.exit(1)
 
         self.click(self.create_cancel)
 
     def test(self):
-        pass
+        self.module_view(self.module)
 
 if __name__ == "__main__":
     # python -m test_ui.flow.bol_maintenance
     bol = BolMaintenance()
     # bol.module_view()
     # bol.search_bol()
-    # bol.add_cntr()
-    bol.test()
+    bol.add_cntr()
+    # bol.test()
     # bol.create_bol()

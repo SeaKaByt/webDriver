@@ -1,16 +1,13 @@
 import os
-
 import selenium.webdriver.support.expected_conditions as EC
+from helper.utils import read_yaml, read_json, read_excel
+from helper.logger import logger
 from selenium import webdriver
-from selenium.common import WebDriverException, TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.options import ArgOptions
 from selenium.webdriver.support.wait import WebDriverWait
-
+from selenium.common import WebDriverException, TimeoutException, NoSuchElementException
 from dotenv import load_dotenv
-
-from helper.decorators import debug_out_line
-from helper.utils import read_yaml, read_json, read_excel
 
 load_dotenv()
 
@@ -21,8 +18,9 @@ class BaseDriver:
     yaml_path =  f"config/{env.lower()}/{bu}.yaml"
     json_path = "interface/container_details.json"
     data_path = "data.xlsx"
-    config = read_yaml(f"config/{env.lower()}/{bu}.yaml")
-    config_j = read_json("interface/container_details.json")
+
+    config = read_yaml(yaml_path)
+    config_j = read_json(json_path)
     df = read_excel(data_path)
 
     default_options = {
@@ -54,37 +52,28 @@ class BaseDriver:
             print("Caught KeyboardInterrupt! Entering breakpoint...")
             # breakpoint()
         except (WebDriverException, TimeoutException) as e:
-            print(f"Cannot find element: {xpath} after {timeout} seconds")
+            logger.exception(f"Element not found: {xpath} after {timeout} seconds")
 
-    # def _find(self, xpath,  timeout=10):
-    #     self.wait_for(xpath,  timeout)
-    #     return self.driver.find_element(By.XPATH, xpath)
-
-    # @debug_out_line
     def find(self, xpath,  timeout=10):
         self.wait_for_element(xpath,  timeout)
         element = self.driver.find_element(By.XPATH, xpath)
+        logger.info(f"Found element on xpath: {xpath}")
         return element
 
-    # @debug_out_line
     def click(self, xpath,  timeout=10):
         self.find(xpath,  timeout).click()
+        logger.info(f"Clicked on element: {xpath}")
 
-    # @debug_out_line
-    # def send_keys(self, xpath, keys,  timeout=10):
-    #     self.find(xpath,  timeout).send_keys(keys)
-    #     print("Sent")
-
-    def continue_on_error(self, xpath, timeout=10):
-        try:
-            self.driver.implicitly_wait(timeout)
-            wait = WebDriverWait(self.driver, timeout) # ignored_exceptions=[NoSuchElementException]
-            element = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
-            print(f"Found {element}")
-            element.click()
-        except Exception as e:
-            print(f"Element not found: {xpath}")
-            return False
+    # def continue_on_error(self, xpath, timeout=10):
+    #     try:
+    #         self.driver.implicitly_wait(timeout)
+    #         wait = WebDriverWait(self.driver, timeout) # ignored_exceptions=[NoSuchElementException]
+    #         element = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+    #         print(f"Found {element}")
+    #         element.click()
+    #     except Exception as e:
+    #         print(f"Element not found: {xpath}")
+    #         return False
 
     def visible(self, xpath, timeout=10):
         try:
@@ -92,27 +81,28 @@ class BaseDriver:
             element = self.driver.find_element(By.XPATH, xpath)
             element = element.get_dom_attribute("visible")
             if element == "True":
-                print(f"Element is visible")
+                logger.info("Element is visible")
                 return True
             else:
-                print(f"Element is not visible")
+                logger.info("Element is not visible")
                 return False
         except NoSuchElementException:
-            print(f"Element not found")
+            logger.info("Element not found")
             return False
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logger.exception(f"Error occurred: {e}")
             return False
 
     def editable(self, xpath, timeout=10):
         self.driver.implicitly_wait(timeout)
         element = self.driver.find_element(By.XPATH, xpath)
+        logger.info("Checking if element is editable")
         return element.get_dom_attribute("editable")
 
     def text_value(self, xpath):
         element = self.driver.find_element(By.XPATH, xpath)
+        logger.info("Getting text value of element")
         return element.text
 
 if __name__ == '__main__':
     driver = BaseDriver()
-    # driver.click("/form[@title>'nGen IUT-SAPT - 14.7.0-M8']", timeout=10)

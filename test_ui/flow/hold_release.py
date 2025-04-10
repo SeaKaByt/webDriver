@@ -1,5 +1,4 @@
 from pywinauto.keyboard import send_keys
-
 from helper.utils import send_keys_tab
 from test_ui.base_flow import BaseFlow
 

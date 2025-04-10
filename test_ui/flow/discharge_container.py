@@ -1,9 +1,7 @@
 import sys
-
-from helper.field_utils import send_keys_tab
-from helper.utils import wait_for_window, update_next_stowage, get_match_windows
-from pywinauto.keyboard import send_keys
 from test_ui.base_flow import BaseFlow
+from helper.utils import wait_for_window, update_next_stowage, get_match_windows, send_keys_tab
+from pywinauto.keyboard import send_keys
 
 class DischargeContainer(BaseFlow):
     module = "DC"

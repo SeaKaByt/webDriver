@@ -75,6 +75,5 @@ class ApplicationLauncher(BaseDriver):
         self.login_guider()
 
 if __name__ == '__main__':
-    # python -m test_ui.app
     a = ApplicationLauncher()
     a.full_load()
