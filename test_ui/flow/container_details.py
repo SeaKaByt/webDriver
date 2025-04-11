@@ -2,13 +2,11 @@ import sys
 import argparse
 import pandas as pd
 from test_ui.base_flow import BaseFlow
-from pywinauto.keyboard import send_keys
-from helper.utils import send_keys_tab, next_loc, wait_for_window
+from helper.utils import send_keys_tab, next_loc, wait_for_window, _send_keys
 
 class ContainerDetails(BaseFlow):
     module = "CD"
     cntr_list = []
-
     def __init__(self):
         super().__init__()
         self.cd_cntr_id = self.config["cd"]["cntr_id"]
@@ -18,7 +16,6 @@ class ContainerDetails(BaseFlow):
         self.cd_gross_wt = self.config["cd"]["gross_wt"]
         self.cd_status = self.config["cd"]["status"]
         self.cd_yard = self.config['cd']['yard']
-
         self.create_yes = self.config["cd"]["create_yes_btn"]
         self.create_confirm = self.config["cd"]["create_confirm_btn"]
         self.cancel = self.config["cd"]["cancel_btn"]
@@ -35,35 +32,35 @@ class ContainerDetails(BaseFlow):
     def common_details(self):
         self.cntr_list.append(self.cntr_id)
         self.actions.click(self.cd_cntr_id)
-        send_keys('^a')
-        send_keys(self.cntr_id)
-        send_keys('{ENTER}')
+        _send_keys('^a')
+        _send_keys(self.cntr_id)
+        _send_keys('{ENTER}')
         if wait_for_window('Create Container', 5):
             self.actions.click(self.create_yes)
             self.actions.click(self.create_confirm)
         else:
             sys.exit(1)
         self.actions.click(self.cd_status)
-        send_keys(self.status)
-        send_keys(self.size)
-        send_keys(self.type)
+        _send_keys(self.status)
+        _send_keys(self.size)
+        _send_keys(self.type)
         self.actions.click(self.cd_owner)
         send_keys_tab(self.owner)
-        send_keys('{TAB}')
-        send_keys(self.block)
+        _send_keys('{TAB}')
+        _send_keys(self.block)
         send_keys_tab(self.stack)
-        send_keys(self.lane)
+        _send_keys(self.lane)
         self.voyage_details() if self.status == 'if' else None
-        send_keys('{ENTER}')
+        _send_keys('{ENTER}')
 
         if wait_for_window('User Error ags4999', 1):
             self.lane = f'{int(self.lane) + 1}'
             self.actions.click(self.ags4999)
             self.actions.click(self.cd_yard)
-            send_keys('{TAB}')
-            send_keys('{TAB}')
-            send_keys(self.lane)
-            send_keys('{ENTER}')
+            _send_keys('{TAB}')
+            _send_keys('{TAB}')
+            _send_keys(self.lane)
+            _send_keys('{ENTER}')
 
         if self.properties.editable(self.cd_cntr_id):
             d = next_loc(self.cntr_id, self.stack, self.lane, self.get_tier(), self.json_path)
@@ -74,14 +71,14 @@ class ContainerDetails(BaseFlow):
 
     def voyage_details(self):
         self.actions.click(self.cd_voyage)
-        send_keys('^a')
+        _send_keys('^a')
         send_keys_tab(self.line)
-        send_keys(self.vessel)
-        send_keys(self.voyage)
+        _send_keys(self.vessel)
+        _send_keys(self.voyage)
         self.actions.click(self.cd_pol)
-        send_keys(self.pol)
+        _send_keys(self.pol)
         self.actions.click(self.cd_gross_wt)
-        send_keys(self.gross_wt)
+        _send_keys(self.gross_wt)
 
     def get_tier(self):
         v = self.properties.text_value(self.cd_yard)

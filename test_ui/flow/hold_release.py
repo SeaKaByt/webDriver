@@ -1,13 +1,10 @@
-from pywinauto.keyboard import send_keys
-from helper.utils import send_keys_tab
+from helper.utils import send_keys_tab, _send_keys
 from test_ui.base_flow import BaseFlow
 
 class HoldRelease(BaseFlow):
     module = "HR"
-
     def __init__(self):
         super().__init__()
-
         self.release_tab = self.config["hr"]["release_tab"]
         self.search_hold_condition = self.config["hr"]["search_hold_condition"]
         self.release_hold_condition = self.config["hr"]["release_hold_condition"]
@@ -19,25 +16,25 @@ class HoldRelease(BaseFlow):
 
     def release_hold(self):
         self.search_cntr()
-        self.click(self.release_hold_condition)
-        send_keys('dt')
-        self.click(self.declaration)
+        self.actions.click(self.release_hold_condition)
+        _send_keys('dt')
+        self.actions.click(self.declaration)
         send_keys_tab('automation')
-        send_keys(self.date)
-        self.click(self.select_all)
-        self.click(self.release_batch)
+        _send_keys(self.date)
+        self.actions.click(self.select_all)
+        self.actions.click(self.release_batch)
 
     def search_cntr(self):
-        if not self.visible(self.search_hold_condition, 1):
+        if not self.properties.visible(self.search_hold_condition, 1):
             self.module_view(self.module)
-            self.click(self.release_tab)
-            self.click(self.search_tab)
-        send_keys('%r')
-        self.click(self.search_hold_condition)
-        send_keys('dt')
-        self.click(self.hr_bol)
-        send_keys(self.bol.upper())
-        send_keys('%s')
+            self.actions.click(self.release_tab)
+            self.actions.click(self.search_tab)
+        _send_keys('%r')
+        self.actions.click(self.search_hold_condition)
+        _send_keys('dt')
+        self.actions.click(self.hr_bol)
+        _send_keys(self.bol.upper())
+        _send_keys('%s')
 
 if __name__ == "__main__":
     # python -m test_ui.flow.hold_release

@@ -15,6 +15,7 @@ load_dotenv()
 class BaseDriver:
     def __init__(self):
         self.driver = None
+        self.app = None
         self.bu = os.environ.get("TEST_BU", "AQCT")
         self.env = os.environ.get("TEST_ENV", "FAT")
         self.yaml_path = f"config/{self.env.lower()}/{self.bu}.yaml"
@@ -54,7 +55,7 @@ class BaseDriver:
                 logger.warning(f"Failed to quit driver: {e}")
             self.driver = None
 
-class ElementActions():
+class ElementActions:
     def __init__(self, driver):
         self.driver = driver
 

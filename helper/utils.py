@@ -72,7 +72,7 @@ def wait_for_window(title, timeout=30):
         if window:
             logger.info(f"Found window: {window}")
             return window
-        time.sleep(1)
+        time.sleep(0.5)
     logger.info(f"Window not found: {title} after {timeout} seconds")
 
 def window_exists(title, timeout=10):

@@ -53,7 +53,7 @@ cro:
   cro_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchContanerNoTextField']
   cro_cro_no: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchCROTextField']
   create_cntr_id: /form[@title='Create CRO']//container[@name='guiPanel2']/text[@name='cntrIdText']
-  cro_status: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/combobox[@name='searchStatusComboBox']/text[@accessiblename='CRO Status:']
+  cro_status: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/combobox[@name='searchStatusComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
   row0_pin: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='CROTable']/row[@index='0']/cell[@columnindex='1']
 
 bol:

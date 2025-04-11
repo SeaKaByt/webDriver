@@ -1,39 +1,23 @@
-import os
 from main import BaseDriver
 from helper.logger import logger
 from helper.utils import get_match_windows, wait_for_window, send_keys_tab, window_exists, _send_keys
 from pywinauto import Application
 from dotenv import load_dotenv
+from test_ui.win import WinAppHandler
 
 load_dotenv()
 
-class WinAppHandler:
+class ApplicationLauncher(BaseDriver, WinAppHandler):
     def __init__(self):
-        self.app = Application()
-
-    def launch(self, app_path):
-        try:
-            logger.info(f"Launching {app_path}")
-            self.app.start(app_path, timeout=5, wait_for_idle=False, work_dir=os.path.dirname(app_path))
-        except Exception as e:
-            logger.error(f"Launch failed: {e}")
-            raise
-
-    def send_credentials(self, username, password):
-        send_keys_tab(username)
-        _send_keys(password)
-        _send_keys("{ENTER}")
-
-class ApplicationLauncher(BaseDriver):
-    def __init__(self):
-        super().__init__()
         print("Initializing ApplicationLauncher")
+        super().__init__()
+        self.app = Application(backend="uia")
+        WinAppHandler.__init__(self, app=self.app)
         self.username = self.config["nGen"]["username"]
         self.password = self.config["nGen"]["password"]
         self.app_ngen = self.config["app"]["ngen"]
         self.app_guider = self.config["app"]["guider"]
         self.jal_path = self.config["nGen"]["jal_path"]
-        self.win_app = WinAppHandler()
 
     def _login(self, app_window, login_window, app_xpath):
         """Generic login helper for nGen and Guider"""
@@ -42,7 +26,7 @@ class ApplicationLauncher(BaseDriver):
                 if not get_match_windows(login_window):
                     self.actions.click(app_xpath)
                 wait_for_window(login_window)
-                self.win_app.send_credentials(self.username, self.password)
+                self.send_credentials(self.username, self.password)
         except Exception as e:
             logger.error(f"Failed to login to {app_window}: {e}")
             raise
@@ -50,9 +34,9 @@ class ApplicationLauncher(BaseDriver):
     def login_ngen(self):
         if not get_match_windows("nGen"):
             if not get_match_windows("Application Launcher"):
-                self.win_app.launch(self.jal_path)
+                self.launch(self.jal_path)
                 wait_for_window("Application Launcher")
-            self._login("nGen", "Logon", self.app_ngen)
+            self._login("nGen", "Login", self.app_ngen)
 
     def login_guider(self):
         self._login("Guider", "Guider Logon", self.app_guider)
@@ -63,9 +47,20 @@ class ApplicationLauncher(BaseDriver):
         window_exists("nGen")
         self.login_guider()
         window_exists("Guider")
+        logger.debug(self.app)
         self.cleanup()
+        logger.debug(self.app)
+
+    def cleanup(self):
+        super().cleanup()
+        if self.app:
+            try:
+                self.app.kill()
+                logger.info("Application killed successfully")
+            except Exception as e:
+                logger.warning(f"Failed to kill application: {e}")
+            self.app = None
 
 if __name__ == "__main__":
     app = ApplicationLauncher()
-    print("Starting full load")
     app.full_load()
