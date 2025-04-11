@@ -2,6 +2,7 @@ import yaml
 import time
 import json
 import pywinauto
+from pywinauto.keyboard import send_keys
 import pandas as pd
 from helper.logger import logger
 
@@ -50,7 +51,7 @@ def update_json(path, keys, value):
 
     write_json(path, data)
 
-def send_keys(keys):
+def _send_keys(keys):
     logger.info(f"Sending keys: {keys}")
     send_keys(keys)
 

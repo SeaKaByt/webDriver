@@ -1,7 +1,7 @@
 import os
 from main import BaseDriver
 from helper.logger import logger
-from helper.utils import get_match_windows, wait_for_window, send_keys_tab, window_exists, send_keys
+from helper.utils import get_match_windows, wait_for_window, send_keys_tab, window_exists, _send_keys
 from pywinauto import Application
 from dotenv import load_dotenv
 
@@ -21,8 +21,8 @@ class WinAppHandler:
 
     def send_credentials(self, username, password):
         send_keys_tab(username)
-        send_keys(password)
-        send_keys("{ENTER}")
+        _send_keys(password)
+        _send_keys("{ENTER}")
 
 class ApplicationLauncher(BaseDriver):
     def __init__(self):
