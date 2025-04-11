@@ -27,12 +27,13 @@ class WinAppHandler:
 class ApplicationLauncher(BaseDriver):
     def __init__(self):
         super().__init__()
-        self.win_app = WinAppHandler()
+        print("Initializing ApplicationLauncher")
         self.username = self.config["nGen"]["username"]
         self.password = self.config["nGen"]["password"]
         self.app_ngen = self.config["app"]["ngen"]
         self.app_guider = self.config["app"]["guider"]
         self.jal_path = self.config["nGen"]["jal_path"]
+        self.win_app = WinAppHandler()
 
     def _login(self, app_window, login_window, app_xpath):
         """Generic login helper for nGen and Guider"""
