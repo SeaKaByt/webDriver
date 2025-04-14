@@ -4,11 +4,11 @@ defaults:
 
 nGen:
   jal_path: D:/jal/ngen.bat
-  password: "!auto12345"
   username: oscar
+  password: "!auto12345"
+  ngen_login: /form[@title='Login']/container[@name='mainPanel']/?/?/text[@type='GuiTextField']
   title: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/titlebar[@accessiblerole='TitleBar']
   minimize: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/?/?/button[@accessiblename='Minimize']
-
   home_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/?/?/button[@text='Home']
   inv_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[6]/tag[@tagname='p-implied']
   sp_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[6]/tag[@tagname='p-implied']
@@ -19,6 +19,23 @@ nGen:
 app:
   ngen: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
   guider: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='Guider']
+
+windows:
+  ngen: "nGen"
+  guider: "Guider"
+  launcher: "Application Launcher"
+  ngen_login: "Login"
+  guider_login: "Guider Logon"
+
+stowage_rules:
+  max_row: 12
+  max_tier: 98
+  reset_tier: 82
+
+gat_settings:
+  confirmation_code: "2000"
+  inspection_seal_value: "yfn"
+  printer_dummy: "dummy"
 
 dc:
   voyage: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/element[@name='searchVoyageIdField']/text[@name='guiTextField1']
@@ -47,9 +64,9 @@ cd:
   ags4999: /form[@title='User Error ags4999']/?/?/container[@name='OptionPane.buttonArea']/button[@name='OptionPane.button']
 
 cro:
+  default_status: "active"
   reset: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/button[@name='resetButton']
   create: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='mainPanel']/container[@name='buttonPanel']/?/?/button[@name='createButton']
-
   cro_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchContanerNoTextField']
   cro_cro_no: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchCROTextField']
   create_cntr_id: /form[@title='Create CRO']//container[@name='guiPanel2']/text[@name='cntrIdText']
@@ -57,6 +74,13 @@ cro:
   row0_pin: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='CROTable']/row[@index='0']/cell[@columnindex='1']
 
 bol:
+  line_value: "NVD"
+  bol_value: "BL01"
+  vessel: "tshm04"
+  voyage: "V01"
+  default_field: "automation"
+  test_field: "test"
+
   line: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='panelSearch']/text[@name='txtLineCodeS']
   add_cntr_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='allBtnPanel']/button[@name='btnAddCntr']
   add_next: /form[@title>'Create Bill of lading con']/?/?/container[@name='buttonPanel']/button[@name='btnAddNext']
@@ -66,6 +90,10 @@ bol:
   details_line: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='decPaneMaster']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='txtLineCode']
 
 hr:
+  bol_value: "BL01"
+  hold_condition: "dt"
+  declaration_value: "automation"
+
   release_tab: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabbedPanel']/tabpage[@title='* Release']
   search_hold_condition: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/container[@name='holdConditionSPanel']/text[@name='searchHoldConditionTextField']
   release_hold_condition: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/container[@name='holdConditionRPanel']/text[@name='releaseHoldConditionTextField']

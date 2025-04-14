@@ -1,80 +1,140 @@
 import sys
+from typing import Optional
+from pathlib import Path
 from datetime import datetime
-from helper.decorators import logger
-from helper.utils import send_keys_tab, wait_for_window, _send_keys
+from helper.logger import logger
+from helper.win_utils import wait_for_window, send_keys_with_log
 from test_ui.base_flow import BaseFlow
 
+
 class CROMaintenance(BaseFlow):
+    """Handles CRO module for creating release orders and fetching pins."""
     module = "CRO"
     pin_list = []
+    cro_no_list = []
 
-    def __init__(self):
-        super().__init__()
-        self.reset = self.config['cro']['reset']
-        self.create = self.config['cro']['create']
-        self.cro_cntr_id = self.config['cro']['cro_cntr_id']
-        self.cro_cro_no = self.config['cro']['cro_cro_no']
-        self.create_cntr_id = self.config['cro']['create_cntr_id']
-        self.cro_status = self.config['cro']['cro_status']
-        self.row0_pin = self.config['cro']['row0_pin']
+    def __init__(self, config_path: Optional[Path] = None):
+        """
+        Initialize CROMaintenance with config and UI settings.
 
-    def create_cro(self):
-        if not self.properties.visible(self.cro_cntr_id, 1):
-            self.module_view(self.module)
-        if not self.properties.visible(self.create_cntr_id, 1):
+        Args:
+            config_path: Optional path to YAML config file.
+        """
+        super().__init__(config_path=config_path)
+        try:
+            cro_config = self.config.get("cro", {})
+            self.reset = cro_config.get("reset")
+            self.create = cro_config.get("create")
+            self.cro_cntr_id = cro_config.get("cro_cntr_id")
+            self.cro_cro_no = cro_config.get("cro_cro_no")
+            self.create_cntr_id = cro_config.get("create_cntr_id")
+            self.cro_status = cro_config.get("cro_status")
+            self.row0_pin = cro_config.get("row0_pin")
+            # Validate config
+            # required = [self.reset, self.create, self.cro_cntr_id, self.create_cntr_id]
+            # if any(x is None for x in required):
+            #     logger.error("Missing CRO config keys")
+            #     raise ValueError("Invalid CRO configuration")
+            # Validate DataFrame
+            # if "cntr_id" not in self.df.columns:
+            #     logger.error("data.csv missing 'cntr_id' column")
+            #     raise ValueError("Invalid DataFrame: missing cntr_id")
+        except KeyError as e:
+            logger.error(f"Config missing key: {e}")
+            raise ValueError(f"Invalid config: {e}")
+
+    def create_cro(self) -> None:
+        """Create container release orders for each cntr_id."""
+        try:
+            if not self.properties.visible(self.cro_cntr_id, timeout=1):
+                logger.info("Opening CRO module")
+                self.module_view(self.module)
+            if not self.properties.visible(self.create_cntr_id, timeout=1):
+                logger.info("Resetting CRO form")
+                self.actions.click(self.reset)
+
+            self.cro_no_list = []
+            for cntr_id in self.df["cntr_id"]:
+                logger.info(f"Creating CRO for cntr_id: {cntr_id}")
+                self.actions.click(self.create)
+                self.actions.click(self.create_cntr_id)
+                send_keys_with_log(cntr_id, with_tab=True)
+                send_keys_with_log(self.bol, with_tab=True)
+                self.generate_cro()
+                send_keys_with_log(self.cro_no, with_tab=True)
+                send_keys_with_log(self.owner, with_tab=True)
+                send_keys_with_log(self.date)
+                send_keys_with_log(self.time)
+                send_keys_with_log(self.agent, with_tab=True)
+                send_keys_with_log("{TAB}")
+                send_keys_with_log(self.date)
+                send_keys_with_log("{ENTER}")
+                if wait_for_window("User Error", timeout=1):
+                    logger.error("User Error in CRO creation")
+                    raise RuntimeError("User Error detected")
+                if not wait_for_window("User Information", timeout=5):
+                    logger.error("User Information window not found")
+                    raise RuntimeError("User Information window not found")
+                send_keys_with_log("{ENTER}")
+                self.cro_no_list.append(self.cro_no)
+
+            # Update DataFrame
+            if len(self.cro_no_list) == len(self.df):
+                self.df["cro_no"] = self.cro_no_list
+                logger.info(f"Updated DataFrame: {self.df.to_dict()}")
+                self.df.to_csv(self.data_path, index=False)
+        except Exception as e:
+            logger.error(f"CRO creation failed: {e}")
+            raise
+
+    def generate_cro(self) -> None:
+        """Generate a unique CRO number based on timestamp."""
+        try:
+            now = datetime.now()
+            self.cro_no = now.strftime("%d%m%H%M%S")
+            logger.debug(f"Generated CRO number: {self.cro_no}")
+        except Exception as e:
+            logger.error(f"Failed to generate CRO number: {e}")
+            raise
+
+    def get_pin(self) -> None:
+        """Fetch pins for each cntr_id and update DataFrame."""
+        try:
+            logger.info("Fetching pins for CRO")
             self.actions.click(self.reset)
-        for cntr_id in self.df['cntr_id']:
-            self.actions.click(self.create)
-            self.actions.click(self.create_cntr_id)
-            send_keys_tab(cntr_id)
-            send_keys_tab(self.bol)
-            self.generate_cro()
-            send_keys_tab(self.cro_no)
-            send_keys_tab(self.owner)
-            _send_keys(self.date)
-            _send_keys(self.time)
-            send_keys_tab(self.agent)
-            _send_keys('{TAB}')
-            _send_keys(self.date)
-            _send_keys('{ENTER}')
-            if wait_for_window('User Error', 1):
-                sys.exit(1)
-            wait_for_window('User Information')
-            _send_keys('{ENTER}')
+            self.actions.click(self.cro_status)
+            send_keys_with_log("active")
+            self.pin_list = []
+            for cntr_id in self.df["cntr_id"]:
+                logger.info(f"Fetching pin for cntr_id: {cntr_id}")
+                self.actions.click(self.cro_cntr_id)
+                send_keys_with_log("^a")
+                send_keys_with_log(cntr_id)
+                send_keys_with_log("{ENTER}")
+                pin = self.properties.text_value(self.row0_pin)
+                try:
+                    pin_value = int(pin) if pin else 0
+                except (ValueError, TypeError):
+                    logger.warning(f"Invalid pin for {cntr_id}: {pin}")
+                    pin_value = 0
+                self.pin_list.append(pin_value)
+                if wait_for_window("User Information", timeout=1):
+                    logger.error("User Information window unexpected")
+                    raise RuntimeError("Unexpected User Information window")
 
-        # self.df['cro_no'] = self.cro_no_list
-        # print(self.df)
-        # self.df.to_excel(self.data_path, index=False)
+            self.df["pin"] = self.pin_list
+            logger.info(f"Updated DataFrame: {self.df.to_dict()}")
+            self.df.to_csv(self.data_path, index=False)
+        except Exception as e:
+            logger.error(f"Get pin failed: {e}")
+            raise
 
-    def generate_cro(self):
-        now = datetime.now()
-
-        self.cro_no = now.strftime("%d%m%H%M%S")
-        # self.cro_no_list.append(self.cro_no)
-
-    def get_pin(self):
-        self.actions.click(self.reset)
-        self.actions.click(self.cro_status)
-        _send_keys('active')
-        for cntr_id in self.df['cntr_id']:
-            self.actions.click(self.cro_cntr_id)
-            _send_keys('^a')
-            _send_keys(cntr_id)
-            _send_keys('{ENTER}')
-            pin = self.properties.text_value(self.row0_pin)
-            self.pin_list.append(int(pin))
-            if wait_for_window('User Information', 1):
-                sys.exit(1)
-
-        self.df['pin'] = self.pin_list
-        logger.info(f"Dataframe: {self.df}")
-        self.df.to_excel(self.data_path, index=False)
-
-    def test(self):
-        pass
 
 if __name__ == "__main__":
-    # python -m test_ui.flow.cro_maintenance
-    cro = CROMaintenance()
-    cro.create_cro()
-    cro.get_pin()
+    try:
+        cro = CROMaintenance()
+        cro.create_cro()
+        cro.get_pin()
+    except Exception as e:
+        logger.error(f"CROMaintenance failed: {e}")
+        sys.exit(1)

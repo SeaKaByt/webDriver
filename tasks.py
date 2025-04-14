@@ -1,15 +1,12 @@
 import os
-from helper.logger import logger
-from invoke import task
+from invoke import task, run
 
 @task
 def initiate(c):
     """
     Initialize the environment for the container details task.
     """
-    logger.info("Initializing environment...")
-    os.system("python -m test_ui.app")
-    # c.run("python -m test_ui.app")
+    c.run("python -m test_ui.app")
 
 @task
 def create_cntr(c, count=1):
@@ -27,7 +24,7 @@ def add_bol(c):
     """
     Add Bill of Lading (BOL) for the container.
     """
-    c.run("python -m test_ui.flow.bol_maintenance")
+    c.run("python -m test_ui.flow.bol_maintenance add_cntr")
 
 @task
 def test_code(c):
@@ -48,14 +45,16 @@ def hold_release(c):
     """
     Release hold on the container.
     """
-    c.run("python -m test_ui.flow.hold_release")
+    c.run("python -m test_ui.flow.hold_release release_hold")
 
 @task
 def create_pickup(c):
     """
     Create a pickup task.
     """
-    c.run("python -m test_ui.flow.gate_transaction")
+    c.run("python -m test_ui.flow.gate_transaction create_pickup")
+    c.run("python -m test_ui.flow.queue_monitor")
+    c.run("python -m test_ui.flow.gate_transaction confirm_pickup")
 
 @task
 def pickup_task(c):
@@ -65,7 +64,6 @@ def pickup_task(c):
     # initiate(c)
     create_cntr(c)
     add_bol(c)
-
-@task
-def pickup(c):
-    c.run("python -m test_ui.flow.gate_transaction")
+    createCro(c)
+    hold_release(c)
+    create_pickup(c)

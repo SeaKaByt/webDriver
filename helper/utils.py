@@ -9,6 +9,9 @@ from helper.logger import logger
 def read_excel(path: str):
     return pd.read_excel(path)
 
+def read_csv(path: str):
+    return pd.read_csv(path)
+
 def read_yaml(path: str) -> dict:
     with open(path, "r") as f:
         return yaml.safe_load(f)
@@ -38,7 +41,6 @@ def read_json(path):
 def write_json(path, data):
     with open(path, 'w') as f:
         json.dump(data, f, indent=4)
-
 
 def update_json(path, keys, value):
     with open(path, 'r') as file:

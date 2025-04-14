@@ -1,45 +1,85 @@
 import sys
-import time
+from typing import Optional
+from pathlib import Path
 from test_ui.base_flow import BaseFlow
-from helper.utils import wait_for_window, _send_keys
+from helper.win_utils import wait_for_window, send_keys_with_log
 from helper.logger import logger
 
 class QMon(BaseFlow):
+    """Handles QM module for backup confirmation of tractor transactions."""
     module = "QM"
 
-    def __init__(self):
-        super().__init__()
-        self.fcl_tab = self.config['qm']['fcl_tab']
-        self.row0_cntr_id = self.config['qm']['row0_cntr_id']
-        self.bk_confirm_btn = self.config['qm']['bk_confirm_btn']
-        self.fcl_tractor = self.config['qm']['fcl_tractor']
-        self.new_search = self.config['qm']['new_search']
+    def __init__(self, config_path: Optional[Path] = None):
+        """
+        Initialize QMon with config and UI settings.
 
-    def search_tractor(self):
-        if not self.properties.visible(self.fcl_tab, 1):
-            self.module_view(self.module)
+        Args:
+            config_path: Optional path to YAML config file.
+        """
+        super().__init__(config_path=config_path)
+        try:
+            qm_config = self.config.get("qm", {})
+            self.fcl_tab = qm_config.get("fcl_tab")
+            self.row0_cntr_id = qm_config.get("row0_cntr_id")
+            self.bk_confirm_btn = qm_config.get("bk_confirm_btn")
+            self.fcl_tractor = qm_config.get("fcl_tractor")
+            self.new_search = qm_config.get("new_search")
+            # Validate config
+            # required = [self.fcl_tab, self.row0_cntr_id, self.bk_confirm_btn]
+            # if any(x is None for x in required):
+            #     logger.error("Missing QM config keys: fcl_tab, row0_cntr_id, or bk_confirm_btn")
+            #     raise ValueError("Invalid QM configuration")
+            # Validate DataFrame
+            # if "tractor" not in self.df.columns:
+            #     logger.error("data.csv missing 'tractor' column")
+            #     raise ValueError("Invalid DataFrame: missing tractor column")
+        except KeyError as e:
+            logger.error(f"Config missing key: {e}")
+            raise ValueError(f"Invalid config: {e}")
 
-    def backup_confirm(self):
-        self.search_tractor()
-        self.actions.click(self.fcl_tab)
-        for tractor in self.df['tractor']:
-            self.actions.click(self.fcl_tractor)
-            _send_keys(tractor)
-            _send_keys('{ENTER}')
-            self.actions.click(self.row0_cntr_id)
-            _send_keys('{F2}')
-            self.actions.click(self.bk_confirm_btn)
-            wait_for_window('Backup')
-            _send_keys('{ENTER}')
-            time.sleep(2)
-            self.actions.click(self.new_search)
-            if wait_for_window('User Error', 1):
-                sys.exit(1)
-            if not self.properties.visible(self.fcl_tractor):
-                sys.exit(1)
+    def search_tractor(self) -> None:
+        """Navigate to QM module if FCL tab is not visible."""
+        try:
+            if not self.properties.visible(self.fcl_tab, timeout=1):
+                logger.info("Opening QM module")
+                self.module_view(self.module)
+        except Exception as e:
+            logger.error(f"Failed to search tractor: {e}")
+            raise
 
-    def test(self):
-        self.search_tractor()
-        self.actions.click(self.fcl_tab)
+    def backup_confirm(self) -> None:
+        """Confirm backup for each tractor in DataFrame."""
+        try:
+            self.search_tractor()
+            self.actions.click(self.fcl_tab)
+            for tractor in self.df["tractor"]:
+                logger.info(f"Confirming backup for tractor: {tractor}")
+                self.actions.click(self.fcl_tractor)
+                send_keys_with_log("^a")
+                send_keys_with_log(tractor)
+                send_keys_with_log("{ENTER}")
+                self.actions.click(self.row0_cntr_id)
+                send_keys_with_log("{F2}")
+                self.actions.click(self.bk_confirm_btn)
+                if not wait_for_window("Backup", timeout=5):
+                    logger.error("Backup window not found")
+                    raise RuntimeError("Backup window not found")
+                send_keys_with_log("{ENTER}")
+                self.actions.click(self.new_search)
+                if wait_for_window("User Error", timeout=1):
+                    logger.error("User Error detected")
+                    raise RuntimeError("User Error in backup confirmation")
+                if not self.properties.visible(self.fcl_tractor, timeout=2):
+                    logger.error("FCL tab not found after search")
+                    raise RuntimeError("FCL tab not found")
+        except Exception as e:
+            logger.error(f"Backup confirmation failed: {e}")
+            raise
 
-
+if __name__ == "__main__":
+    try:
+        qmon = QMon()
+        qmon.backup_confirm()
+    except Exception as e:
+        logger.error(f"QMon failed: {e}")
+        sys.exit(1)

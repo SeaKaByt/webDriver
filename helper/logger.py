@@ -12,7 +12,6 @@ BACKUP_COUNT = 2
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 LOG_LEVEL = int(os.environ.get("LOG_LEVEL", "20"))  # 20 = INFO
 
-
 class TopInsertRotatingFileHandler(RotatingFileHandler):
     def emit(self, record: logging.LogRecord) -> None:
         try:
@@ -29,18 +28,14 @@ class TopInsertRotatingFileHandler(RotatingFileHandler):
         except Exception:
             self.handleError(record)
 
-
 class LogColorerFormatter(logging.Formatter):
     def __init__(self, fmt=None, datefmt=None, style="%"):
-        logging.Formatter.__init__(self, fmt, datefmt, style)  # type: ignore
+        super().__init__(fmt, datefmt, style)
 
     def format(self, record):
-        # Still apply the default formatter
-        uncolored = logging.Formatter.format(self, record)
-
+        message = super().format(record)
         reset = "\x1b[0m"
-
-        color = "\x1b[36m"  # Cyan (default, for DEBUG level)
+        color = "\x1b[36m"  # Cyan (default, for DEBUG)
         if record.levelno >= logging.CRITICAL:
             color = "\x1b[41m\x1b[37m"  # Red bg, white text
         elif record.levelno >= logging.ERROR:
@@ -50,10 +45,9 @@ class LogColorerFormatter(logging.Formatter):
         elif record.levelno >= logging.INFO:
             color = "\x1b[37m"  # White text
 
-        # If the logged string is already colored in places, allow that to override this
-        colored = color + uncolored.replace(reset, reset + color) + reset
+        # Apply color, preserving any existing resets
+        colored = color + message.replace(reset, reset + color) + reset
         return colored
-
 
 class LoggerSingleton:
     _instance: Optional[logging.Logger] = None
@@ -68,23 +62,25 @@ class LoggerSingleton:
     def setup_logger() -> logging.Logger:
         logger = logging.getLogger("application_logger")
         logger.setLevel(LOG_LEVEL)
+        logger.handlers.clear()  # Clear any existing handlers to avoid duplicates
+        logger.propagate = False  # Prevent propagation to parent loggers
 
-        handlers = [
-            TopInsertRotatingFileHandler(
-                LOG_FILE, mode="a", maxBytes=MAX_LOG_SIZE, backupCount=BACKUP_COUNT, encoding="utf-8", delay=False
-            ),
-            logging.StreamHandler(),
-        ]
+        # File handler
+        file_handler = TopInsertRotatingFileHandler(
+            LOG_FILE, mode="a", maxBytes=MAX_LOG_SIZE, backupCount=BACKUP_COUNT, encoding="utf-8", delay=False
+        )
+        file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+        file_handler.setLevel(LOG_LEVEL)
 
-        for handler in handlers:
-            handler.setFormatter(logging.Formatter(LOG_FORMAT))
-            # Colorize the console output
-            if handler.__class__.__name__ == "StreamHandler":
-                handler.setFormatter(LogColorerFormatter(LOG_FORMAT))
-            handler.setLevel(LOG_LEVEL)
-            logger.addHandler(handler)
+        # Console handler with color
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(LogColorerFormatter(LOG_FORMAT))
+        console_handler.setLevel(LOG_LEVEL)
+
+        # Add handlers
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
 
         return logger
-
 
 logger = LoggerSingleton.get_logger()
