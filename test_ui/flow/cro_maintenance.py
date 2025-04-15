@@ -31,14 +31,14 @@ class CROMaintenance(BaseFlow):
             self.cro_status = cro_config.get("cro_status")
             self.row0_pin = cro_config.get("row0_pin")
             # Validate config
-            # required = [self.reset, self.create, self.cro_cntr_id, self.create_cntr_id]
-            # if any(x is None for x in required):
-            #     logger.error("Missing CRO config keys")
-            #     raise ValueError("Invalid CRO configuration")
+            required = [self.reset, self.create, self.cro_cntr_id, self.create_cntr_id]
+            if any(x is None for x in required):
+                logger.error("Missing CRO config keys")
+                raise ValueError("Invalid CRO configuration")
             # Validate DataFrame
-            # if "cntr_id" not in self.df.columns:
-            #     logger.error("data.csv missing 'cntr_id' column")
-            #     raise ValueError("Invalid DataFrame: missing cntr_id")
+            if "cntr_id" not in self.df.columns:
+                logger.error("data.csv missing 'cntr_id' column")
+                raise ValueError("Invalid DataFrame: missing cntr_id")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
             raise ValueError(f"Invalid config: {e}")

@@ -6,10 +6,10 @@ def initiate(c):
     """
     Initialize the environment for the container details task.
     """
-    c.run("python -m test_ui.app")
+    c.run("python -m test_ui.app login_ngen")
 
 @task
-def create_cntr(c, count=1):
+def create_cntr(c, count=2):
     """
     Create a specified number of containers using container_details.py.
     Args:
@@ -25,13 +25,6 @@ def add_bol(c):
     Add Bill of Lading (BOL) for the container.
     """
     c.run("python -m test_ui.flow.bol_maintenance add_cntr")
-
-@task
-def test_code(c):
-    """
-    Run the test code for code test.
-    """
-    c.run("python -m test_ui.flow.container_details --test")
 
 @task()
 def createCro(c):
@@ -61,7 +54,7 @@ def pickup_task(c):
     """
     Run the pickup task.
     """
-    # initiate(c)
+    initiate(c)
     create_cntr(c)
     add_bol(c)
     createCro(c)
