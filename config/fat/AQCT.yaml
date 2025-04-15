@@ -8,8 +8,9 @@ nGen:
   password: "!auto12345"
   ngen_login: /form[@title='Login']/container[@name='mainPanel']/?/?/text[@type='GuiTextField']
   title: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/titlebar[@accessiblerole='TitleBar']
-  minimize: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/?/?/button[@accessiblename='Minimize']
   home_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/?/?/button[@text='Home']
+
+  minimize: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/?/?/button[@accessiblename='Minimize']
   inv_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[6]/tag[@tagname='p-implied']
   sp_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[6]/tag[@tagname='p-implied']
   ioc_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[4]/tag[@tagname='p-implied']

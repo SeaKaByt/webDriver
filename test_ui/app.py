@@ -1,3 +1,4 @@
+import argparse
 import sys
 from typing import Optional
 from pathlib import Path
@@ -75,6 +76,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
                     self.launch(self.jal_path)
                     wait_for_window(self.window_titles["launcher"], timeout=10)
                 self._login("ngen", "ngen_login", self.app_ngen, self.ngen_login)
+                window_exists(self.window_titles["ngen"], timeout=15)
         except Exception as e:
             logger.error(f"nGen login failed: {e}")
             raise
@@ -83,6 +85,8 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
         """Log into the Guider application."""
         try:
             self._login("guider", "guider_login", self.app_guider)
+            window_exists(self.window_titles["guider"], timeout=15)
+            self.cleanup()
         except Exception as e:
             logger.error(f"Guider login failed: {e}")
             raise
@@ -92,9 +96,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
         logger.info("Starting full application load")
         try:
             self.login_ngen()
-            window_exists(self.window_titles["ngen"], timeout=15)
             self.login_guider()
-            window_exists(self.window_titles["guider"], timeout=15)
             logger.info("Full load completed successfully")
         except Exception as e:
             logger.error(f"Full load failed: {e}")
@@ -113,6 +115,20 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             logger.error(f"Failed to send credentials: {e}")
             raise
 
+    def run_method(self, method_name: str) -> None:
+        """Execute a specified method by name."""
+        methods = {
+            "login_ngen": self.login_ngen,
+            "login_guider": self.login_guider,
+            "full_load": self.full_load
+        }
+        method = methods.get(method_name)
+        if method is None:
+            logger.error(f"Invalid method: {method_name}")
+            raise ValueError(f"Method {method_name} not found")
+        logger.info(f"Running method: {method_name}")
+        method()
+
     def cleanup(self) -> None:
         """Clean up resources, including Selenium driver and pywinauto app."""
         logger.info("Cleaning up ApplicationLauncher")
@@ -126,9 +142,17 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             self.app = None
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Application Launcher Automation")
+    parser.add_argument(
+        "method",
+        choices=["login_ngen", "login_guider", "full_load"],
+        help="Method to execute"
+    )
+    args = parser.parse_args()
+
     try:
         app = ApplicationLauncher()
-        app.full_load()
+        app.run_method(args.method)
     except Exception as e:
         logger.error(f"Application failed: {e}")
         sys.exit(1)

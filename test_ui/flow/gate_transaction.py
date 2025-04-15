@@ -167,14 +167,11 @@ class GateTransaction(BaseFlow):
         logger.info(f"Running method: {method_name}")
         method()
 
-    def test(self):
-        print(self.df)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Gate Transaction Automation")
     parser.add_argument(
         "method",
-        choices=["create_pickup", "confirm_pickup", "test"],
+        choices=["create_pickup", "confirm_pickup"],
         help="Method to execute (create_pickup or confirm_pickup)"
     )
     args = parser.parse_args()
@@ -182,7 +179,6 @@ if __name__ == "__main__":
     try:
         gt = GateTransaction()
         gt.run_method(args.method)
-        # gt.test()
     except Exception as e:
         logger.error(f"GateTransaction failed: {e}")
         sys.exit(1)

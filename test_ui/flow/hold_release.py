@@ -55,9 +55,6 @@ class HoldRelease(BaseFlow):
             self.actions.click(self.hr_bol)
             send_keys_with_log(self.bol.upper())
             send_keys_with_log("%s")
-            # if not wait_for_window("Search Results", timeout=5):
-            #     logger.error("Search Results window not found")
-            #     raise RuntimeError("Search Results window not found")
         except Exception as e:
             logger.error(f"Search container failed: {e}")
             raise
@@ -74,10 +71,6 @@ class HoldRelease(BaseFlow):
             send_keys_with_log(self.date)
             self.actions.click(self.select_all)
             self.actions.click(self.release_batch)
-            # if not wait_for_window("Release Confirmation", timeout=5):
-            #     logger.error("Release Confirmation window not found")
-            #     raise RuntimeError("Release Confirmation window not found")
-            # send_keys_with_log("{ENTER}")
         except Exception as e:
             logger.error(f"Release hold failed: {e}")
             raise

@@ -25,14 +25,14 @@ class QMon(BaseFlow):
             self.fcl_tractor = qm_config.get("fcl_tractor")
             self.new_search = qm_config.get("new_search")
             # Validate config
-            # required = [self.fcl_tab, self.row0_cntr_id, self.bk_confirm_btn]
-            # if any(x is None for x in required):
-            #     logger.error("Missing QM config keys: fcl_tab, row0_cntr_id, or bk_confirm_btn")
-            #     raise ValueError("Invalid QM configuration")
+            required = [self.fcl_tab, self.row0_cntr_id, self.bk_confirm_btn]
+            if any(x is None for x in required):
+                logger.error("Missing QM config keys: fcl_tab, row0_cntr_id, or bk_confirm_btn")
+                raise ValueError("Invalid QM configuration")
             # Validate DataFrame
-            # if "tractor" not in self.df.columns:
-            #     logger.error("data.csv missing 'tractor' column")
-            #     raise ValueError("Invalid DataFrame: missing tractor column")
+            if "tractor" not in self.df.columns:
+                logger.error("data.csv missing 'tractor' column")
+                raise ValueError("Invalid DataFrame: missing tractor column")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
             raise ValueError(f"Invalid config: {e}")

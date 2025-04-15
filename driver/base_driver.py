@@ -1,9 +1,7 @@
 import os
 from typing import Optional
-from drivers.element_actions import ElementActions
-from drivers.element_properties import ElementProperties
-from helper.paths import ProjectPaths
-# from helper.utils import read_yaml, read_json, read_csv
+from driver.element_actions import ElementActions
+from driver.element_properties import ElementProperties
 from helper.io_utils import read_yaml, read_json, read_csv
 from helper.logger import logger
 from helper.decorators import debug_out_line

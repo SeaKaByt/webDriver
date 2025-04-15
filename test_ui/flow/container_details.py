@@ -50,14 +50,14 @@ class ContainerDetails(BaseFlow):
             # self.size = cd_config.get("size", "40")
             # self.type = cd_config.get("type", "HC")
             # Validate config
-            # required = [self.cd_cntr_id, self.create_yes, self.create_confirm]
-            # if any(x is None for x in required):
-            #     logger.error("Missing CD config keys")
-            #     raise ValueError("Invalid CD configuration")
+            required = [self.cd_cntr_id, self.create_yes, self.create_confirm]
+            if any(x is None for x in required):
+                logger.error("Missing CD config keys")
+                raise ValueError("Invalid CD configuration")
             # Validate DataFrame
-            # if "cntr_id" not in self.df.columns:
-            #     logger.error("data.csv missing 'cntr_id' column")
-            #     raise ValueError("Invalid DataFrame: missing cntr_id")
+            if "cntr_id" not in self.df.columns:
+                logger.error("data.csv missing 'cntr_id' column")
+                raise ValueError("Invalid DataFrame: missing cntr_id")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
             raise ValueError(f"Invalid config: {e}")
