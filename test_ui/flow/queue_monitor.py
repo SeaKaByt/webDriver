@@ -24,6 +24,10 @@ class QMon(BaseFlow):
             self.bk_confirm_btn = qm_config.get("bk_confirm_btn")
             self.fcl_tractor = qm_config.get("fcl_tractor")
             self.new_search = qm_config.get("new_search")
+            self.tab_page_1 = qm_config.get("tab_page_1")
+            self.tab_page_2 = qm_config.get("tab_page_2")
+            self.movement_row_0 = qm_config.get("movement_row_0")
+            self.movement_row_1 = qm_config.get("movement_row_1")
             # Validate config
             required = [self.fcl_tab, self.row0_cntr_id, self.bk_confirm_btn]
             if any(x is None for x in required):
@@ -52,19 +56,24 @@ class QMon(BaseFlow):
         try:
             self.search_tractor()
             self.actions.click(self.fcl_tab)
-            for tractor in self.df["tractor"]:
-                logger.info(f"Confirming backup for tractor: {tractor}")
+
+            for _, row in self.df.interrows():
+                logger.info(f"Confirming backup for tractor: {row["tractor"]}")
                 self.actions.click(self.fcl_tractor)
                 send_keys_with_log("^a")
-                send_keys_with_log(tractor)
+                send_keys_with_log(row["tractor"])
                 send_keys_with_log("{ENTER}")
-                self.actions.click(self.row0_cntr_id)
+
+                self.actions.click(self.movement_row_0)
                 send_keys_with_log("{F2}")
                 self.actions.click(self.bk_confirm_btn)
-                if not wait_for_window("Backup", timeout=5):
+
+                if wait_for_window("Backup Confirm"):
+                    send_keys_with_log("{ENTER}")
+                else:
                     logger.error("Backup window not found")
                     raise RuntimeError("Backup window not found")
-                send_keys_with_log("{ENTER}")
+
                 self.actions.click(self.new_search)
                 if wait_for_window("User Error", timeout=1):
                     logger.error("User Error detected")
@@ -76,10 +85,47 @@ class QMon(BaseFlow):
             logger.error(f"Backup confirmation failed: {e}")
             raise
 
+    def twin_backup_confirm(self) -> None:
+        grouped = self.gate_ground_df.groupby(self.gate_ground_df["tractor"])
+
+        if not self.properties.visible(self.fcl_tractor, timeout=1):
+            self.module_view(self.module)
+
+        self.actions.click(self.fcl_tab)
+        self.actions.click(self.fcl_tractor)
+
+        for tractor, group in grouped:
+            logger.info(f"Processing tractor: {tractor}")
+            send_keys_with_log(tractor)
+            send_keys_with_log("{ENTER}")
+            for idx, row in group.iterrows():
+                logger.info(f"Processing row: {row}")
+
+                if idx % 2 == 0:
+                    self.actions.click(self.movement_row_0, 2)
+                else:
+                    self.actions.click(self.movement_row_1, 2)
+
+                send_keys_with_log("{F2}")
+                self.actions.click(self.bk_confirm_btn)
+
+                if wait_for_window("Backup Confirm"):
+                    send_keys_with_log("{ENTER}")
+                else:
+                    logger.error("Backup window not found")
+                    raise RuntimeError("Backup window not found")
+
+                if not wait_for_window("Backup Confirm"):
+                    continue
+
+            self.actions.click(self.new_search)
+
 if __name__ == "__main__":
+    # python -m test_ui.flow.queue_monitor
     try:
         qmon = QMon()
-        qmon.backup_confirm()
+        # qmon.backup_confirm()
+        qmon.twin_backup_confirm()
     except Exception as e:
         logger.error(f"QMon failed: {e}")
         sys.exit(1)

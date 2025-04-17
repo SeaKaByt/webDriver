@@ -15,7 +15,7 @@ nGen:
   sp_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[6]/tag[@tagname='p-implied']
   ioc_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[4]/tag[@tagname='p-implied']
   gate_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[3]/tag[@tagname='p-implied']
-  mv_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[3]/tag[@tagname='p-implied']
+  mc_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[3]/tag[@tagname='p-implied']
 
 app:
   ngen: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
@@ -113,9 +113,46 @@ gt:
   manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
   printer_id: /form[@title='Gate Confirm']//container[@name='guiPanel3']/combobox[@name='printerIdComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
 
+  ground_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='groundButton']
+  print_cms_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='printCMSButton']
+
+  create_grounding_cntr: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='pinNoPanel']/text[@name='cntrNoTextField']
+  create_grounding_driver: /form[@title>'Create Gate Grounding Mov']//container[@name='detailPanel']/container[@name='topPanel']/text[@name='driverIdTextField']
+  create_grounding_owner: /form[@title>'Create Gate Grounding Mov']/container[@type='AQCTGroundFunctionView']//container[@name='topPanel']/text[@name='ownerTextField']
+  create_grounding_size: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='sizetype']/?/?/combobox[@name='sizeComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  create_grounding_ok_btn: /form[@title>'Create Gate Grounding Mov']//container[@name='buttonPanel']/button[@name='okButton']
+  create_grounding_material: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='regionPanel']/combobox[@name='materialComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  create_grounding_FA: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='regionPanel']/text[@name='faIndTextField']
+  create_grounding_gross_wt: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='grossWtPanel']/text[@name='inputGrossWtTextField']
+
+  gate_inspection_ok_btn: /form[@title='Proceed Gate Inspection']//container[@name='guiPanel1']/button[@name='okStyledButton']
+  gate_transaction_refresh_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='refreshButton']
+
 qm:
   fcl_tab: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
   row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
   bk_confirm_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='actionPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container/container[2]/container[@name='scrollPane']//button[@text='Mv Bkup Conf']
   fcl_tractor: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/container[@name='fclTabPane']/text[@name='fclTractorNoTextField']
   new_search: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='newSearchButton']
+
+  tab_page_1: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[1]
+  tab_page_2: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[2]
+
+  movement_row_0: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
+  movement_row_1: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='1']/cell[@columnindex='7']
+
+bm:
+  booking_no_list: ["BK01", "BK02"]
+
+  principal_line: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/text[@name='cmpCodeTextField']
+  booking_record_0: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='requestDetailPanel']/container/container[1]/table[@name='requestDetailTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
+  booking_request_record_0: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
+  return_cntr_close: /form[@title='Laden Return Container']/container[@type='AQCTBookingReturnContainerDetailView']/?/?/container[@name='buttonPanel']/?/?/button[@name='closeButton']
+  return_details_close: /form[@title='Booking Request Detail']//container[@name='buttonPane']/container[@name='initButtonCard']/button[@name='closeButton']
+  laden_title: /form[@title='Laden Return Container']/titlebar[@accessiblerole='TitleBar']
+  laden_return_warning: /form[@title='Warning']/?/?/container[@name='OptionPane.buttonArea']/button[@name='OptionPane.button']
+  laden_return_cntr_0: /form[@title='Laden Return Container']//container[@name='bkReturnCntrScrollPanel']/container[1]/table[@name='bookingContainerTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
+  laden_save_btn: /form[@title='Laden Return Container']/container[@type='AQCTBookingReturnContainerDetailView']/?/?/container[@name='buttonPanel']/?/?/button[@name='okButton']
+  add_next_btn: /form[@title='Laden Return Container']//container[@name='buttonPanel']/?/?/container[@name='copyButtonPanel']/button[@name='addNextStyledButton']
+  add_next_cancel_btn: /form[@title='Laden Return Container']//container[@name='buttonPanel']/?/?/container[@name='copyButtonPanel']/button[@name='cancelStyledButton']
+  request_record_close_btn: /form[@title='Booking Request Detail']//container[@name='buttonPane']/container[@name='initButtonCard']/button[@name='closeButton']

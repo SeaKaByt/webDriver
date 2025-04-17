@@ -77,6 +77,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
                     wait_for_window(self.window_titles["launcher"], timeout=10)
                 self._login("ngen", "ngen_login", self.app_ngen, self.ngen_login)
                 window_exists(self.window_titles["ngen"], timeout=15)
+                self.cleanup()
         except Exception as e:
             logger.error(f"nGen login failed: {e}")
             raise
@@ -140,6 +141,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             except Exception as e:
                 logger.warning(f"Failed to kill application: {e}")
             self.app = None
+        sys.exit(1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Application Launcher Automation")

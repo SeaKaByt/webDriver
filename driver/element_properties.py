@@ -22,11 +22,24 @@ class ElementProperties():
         try:
             self.driver.implicitly_wait(timeout)
             element = self.driver.find_element(By.XPATH, xpath)
-            is_editable = element.get_dom_attribute("editable")
+            is_editable = element.get_dom_attribute("editable") == "True"
             logger.info(f"Element editability for {xpath}: {is_editable}")
             return is_editable
         except Exception as e:
             logger.error(f"Editability check failed for {xpath}: {e}")
+            return False
+        finally:
+            self.driver.implicitly_wait(10)  # Reset implicit wait to default
+
+    def enabled(self, xpath: str, timeout: int = 10) -> bool:
+        try:
+            self.driver.implicitly_wait(timeout)
+            element = self.driver.find_element(By.XPATH, xpath)
+            is_enabled = element.get_dom_attribute("enabled") == "True"
+            logger.info(f"Element editability for {xpath}: {is_enabled}")
+            return is_enabled
+        except Exception as e:
+            logger.error(f"Enabled check failed for {xpath}: {e}")
             return False
         finally:
             self.driver.implicitly_wait(10)  # Reset implicit wait to default

@@ -1,6 +1,6 @@
 from typing import Dict, Any, Optional
 from pathlib import Path
-from helper.win_utils import wait_for_window
+from helper.win_utils import wait_for_window, send_keys_with_log
 from helper.logger import logger
 from driver.base_driver import BaseDriver
 from pywinauto.keyboard import send_keys
@@ -26,7 +26,7 @@ class BaseFlow(BaseDriver):
             self.sp_menu = ngen_config.get("sp_menu")
             self.ioc_menu = ngen_config.get("ioc_menu")
             self.gate_menu = ngen_config.get("gate_menu")
-            self.mv_menu = ngen_config.get("mv_menu")
+            self.mc_menu = ngen_config.get("mc_menu")
 
             # Load JSON config for container details
             self.cntr_id = self.config_j.get("cntr_id")
@@ -47,7 +47,10 @@ class BaseFlow(BaseDriver):
             self.bay = self.config_j.get("bay")
             self.row = self.config_j.get("row")
             self.tier = self.config_j.get("tier")
-            self.bol = self.config_j.get("cro", {}).get("bol")
+            self.bol = self.config_j.get("bol")
+
+            # For gate grounding
+            self.booking_no = self.config.get("bm", "booking_no")
 
             # Other attributes
             self.cro_no = ""
@@ -78,6 +81,7 @@ class BaseFlow(BaseDriver):
             logger.info(f"Navigating to module: {module or 'default'}")
             self.actions.click(self.title)
             self.actions.click(self.home)
+            # send_keys_with_log("{HOME}")
 
             module_actions = {
                 "HR": [
@@ -111,9 +115,14 @@ class BaseFlow(BaseDriver):
                     (self._handle_gate_terminal, ())
                 ],
                 "QM": [
-                    (self.actions.click, (self.mv_menu,)),
+                    (self.actions.click, (self.mc_menu,)),
                     (send_keys, ("{F3}",))
-                ]
+                ],
+                "BM": [
+                    (self.actions.click, (self.ioc_menu,)),
+                    (send_keys, ("{F1}",)),
+                    (send_keys, ("{F1}",))
+                ],
             }
 
             if module in module_actions:
