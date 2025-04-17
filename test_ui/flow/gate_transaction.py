@@ -1,8 +1,12 @@
 import argparse
+import math
 import sys
 from typing import Optional
 from pathlib import Path
 import time
+
+from typing_extensions import runtime
+
 from helper.logger import logger
 from helper.win_utils import wait_for_window, send_keys_with_log
 from test_ui.base_flow import BaseFlow
@@ -31,10 +35,22 @@ class GateTransaction(BaseFlow):
             self.inspection_seal = gt_config.get("inspection_seal")
             self.manual_confirm_btn = gt_config.get("manual_confirm_btn")
             self.printer_id = gt_config.get("printer_id")
+            self.ground_btn = gt_config.get("ground_btn")
+            self.create_grounding_cntr = gt_config.get("create_grounding_cntr")
+            self.create_grounding_driver = gt_config.get("create_grounding_driver")
+            self.create_grounding_owner = gt_config.get("create_grounding_owner")
+            self.create_grounding_size = gt_config.get("create_grounding_size")
+            self.create_grounding_ok_btn = gt_config.get("create_grounding_ok_btn")
+            self.create_grounding_material = gt_config.get("create_grounding_material")
+            self.create_grounding_FA = gt_config.get("create_grounding_FA")
+            self.create_grounding_gross_wt = gt_config.get("create_grounding_gross_wt")
+            self.gate_inspection_ok_btn = gt_config.get("gate_inspection_ok_btn")
+            self.gate_transaction_refresh_btn = gt_config.get("gate_transaction_refresh_btn")
+            self.print_cms_btn = gt_config.get("print_cms_btn")
             self.gate_settings = self.config.get("gate_settings", {
                 "confirmation_code": "2000",
                 "inspection_seal_value": "yfn",
-                "printer_dummy": "dummy"
+                "printer": "dummy"
             })
             # Validate DataFrame
             required_columns = ["cntr_id", "pin", "tractor"]
@@ -86,6 +102,113 @@ class GateTransaction(BaseFlow):
             logger.error(f"Create pickup failed: {e}")
             raise
 
+    def create_gate_grounding(self) -> None:
+        """Create gate grounding transactions."""
+        try:
+            self._get_tractor()
+            if not self.properties.visible(self.search_tractor):
+                self.module_view(self.module)
+
+            for idx, row in self.gate_ground_df.iterrows():
+                self.actions.click(self.search_tractor)
+                send_keys_with_log(row["tractor"])
+                send_keys_with_log("{ENTER}")
+                send_keys_with_log("%2")
+                wait_for_window("Create")
+                self.actions.click(self.create_grounding_cntr)
+                send_keys_with_log(row["cntr_id"])
+                if idx % 2 == 0:
+                    self.actions.click(self.create_grounding_driver)
+                    send_keys_with_log(row["tractor"])
+                send_keys_with_log("{ENTER}")
+
+                if wait_for_window(".*gatex1536$", 1):
+                    send_keys_with_log("{ENTER}")
+
+                if not self.properties.editable(self.create_grounding_size):
+                    raise
+
+                self.actions.click(self.create_grounding_size)
+                send_keys_with_log(self.size)
+                send_keys_with_log(self.type)
+                self.actions.click(self.create_grounding_ok_btn)
+
+                if wait_for_window(".*Gate Inspection$", 1):
+                    send_keys_with_log("{ENTER}")
+                    self.actions.click(self.gate_inspection_ok_btn)
+                    self.actions.click(self.create_grounding_ok_btn)
+
+                if not self.properties.editable(self.create_grounding_material):
+                    raise
+
+                self.actions.click(self.create_grounding_material)
+                send_keys_with_log(self.material)
+                send_keys_with_log(self.max_gross_wt[:2])
+                send_keys_with_log("y")
+                self.actions.click(self.create_grounding_ok_btn)
+
+                if idx % 2 != 0:
+                    self.actions.click(self.create_grounding_FA)
+                    send_keys_with_log("a")
+
+                self.actions.click(self.create_grounding_gross_wt)
+                send_keys_with_log(self.gross_wt)
+                self.actions.click(self.create_grounding_ok_btn)
+
+                if wait_for_window(".*gatex0792$", 1):
+                    send_keys_with_log(self.username, with_tab=True)
+                    send_keys_with_log(self.password)
+                    send_keys_with_log("{ENTER}")
+
+                if wait_for_window(".*gatex3276$", 1):
+                    send_keys_with_log(self.username, with_tab=True)
+                    send_keys_with_log(self.password)
+                    send_keys_with_log("{ENTER}")
+
+                if not self.properties.editable(self.create_grounding_gross_wt):
+                    self.actions.click(self.create_grounding_ok_btn)
+                else:
+                    raise
+
+                if idx % 2 != 0:
+                    if wait_for_window(".*gatex2153$", 1):
+                        send_keys_with_log("{ENTER}")
+
+                    if wait_for_window(".*gatex1990$", 1):
+                        send_keys_with_log("{ENTER}")
+
+                if wait_for_window(".*gatex1247$", 1):
+                    send_keys_with_log("{ENTER}")
+                else:
+                    raise
+
+                if wait_for_window(".*cbo0644$", 1):
+                    send_keys_with_log("{ENTER}")
+
+                if wait_for_window("Confirm"):
+                    send_keys_with_log("{ENTER}")
+                else:
+                    raise
+
+                if not self.properties.enabled(self.gate_transaction_refresh_btn):
+                    raise
+
+        except Exception as e:
+            logger.error(f"Create gate grounding failed: {e}")
+            raise
+
+    def handle_fa(self) -> None:
+        """Handle FA transactions."""
+        for idx, row in self.gate_ground_df.iterrows():
+            logger.info(f"{row}")
+            if idx % 2 != 0:
+                self.actions.click(self.create_grounding_FA)
+                # send_keys_with_log("a")
+                logger.info("even index")
+            self.actions.click(self.create_grounding_gross_wt)
+            # send_keys_with_log(self.gross_wt)
+            logger.info("odd index")
+
     def get_tractor(self) -> None:
         """Generate tractor IDs and update DataFrame."""
         try:
@@ -103,21 +226,45 @@ class GateTransaction(BaseFlow):
             logger.error(f"Failed to update tractors: {e}")
             raise
 
+    def _get_tractor(self) -> None:
+        try:
+            count = len(self.gate_ground_df)
+            if count == 0:
+                logger.error("DataFrame is empty")
+                raise ValueError("Empty DataFrame")
+
+            num_tractors = math.ceil(count / 2)
+            self.tractor_list = [f"OXT{i:02d}" for i in range(1, num_tractors + 1) for _ in range(2)][:count]
+
+            self.gate_ground_df["tractor"] = self.tractor_list
+            logger.info(f"Updated DataFrame with tractors: {self.df}")
+
+            # Save to CSV, not Excel
+            self.gate_ground_df.to_csv(self.gate_ground_data_path, index=False)
+            logger.debug(f"Saved DataFrame to {self.gate_ground_data_path}")
+        except Exception as e:
+            logger.error(f"Failed to update tractors: {e}")
+            raise
+
     def release_print_cwp(self) -> None:
         """Release and print CWP for a transaction."""
         try:
-            self.actions.click(self.row0_cntr_id)
+            self.actions.click(self.title)
             send_keys_with_log("%3")
-            time.sleep(1)
-            send_keys_with_log("%7")
-            if not wait_for_window("Print", timeout=5):
+            if self.properties.enabled(self.print_cms_btn):
+                send_keys_with_log("%7")
+
+            if wait_for_window("Print CMS"):
+                send_keys_with_log(self.gate_settings["printer"])
+                send_keys_with_log("{ENTER}")
+            else:
                 raise RuntimeError("Print window not found")
-            send_keys_with_log(self.gate_settings["printer_dummy"])
-            send_keys_with_log("{ENTER}")
-            if not wait_for_window("User Information", timeout=5):
-                logger.error("User Information window not found")
+
+            if wait_for_window(".*gatex1305$"):
+                send_keys_with_log("{ENTER}")
+            else:
                 raise RuntimeError("User Information window not found")
-            send_keys_with_log("{ENTER}")
+
         except Exception as e:
             logger.error(f"Release print CWP failed: {e}")
             raise
@@ -158,7 +305,10 @@ class GateTransaction(BaseFlow):
         """Execute a specified method by name."""
         methods = {
             "create_pickup": self.create_pickup,
-            "confirm_pickup": self.confirm_pickup
+            "confirm_pickup": self.confirm_pickup,
+            "handle_fa": self.handle_fa,
+            "create_gate_grounding": self.create_gate_grounding,
+            "release_print_cwp": self.release_print_cwp,
         }
         method = methods.get(method_name)
         if method is None:
@@ -168,10 +318,12 @@ class GateTransaction(BaseFlow):
         method()
 
 if __name__ == "__main__":
+    # python -m test_ui.flow.gate_transaction create_gate_grounding
+    # python -m test_ui.flow.gate_transaction release_print_cwp
     parser = argparse.ArgumentParser(description="Gate Transaction Automation")
     parser.add_argument(
         "method",
-        choices=["create_pickup", "confirm_pickup"],
+        choices=["create_pickup", "confirm_pickup", "handle_fa", "create_gate_grounding", "release_print_cwp"],
         help="Method to execute (create_pickup or confirm_pickup)"
     )
     args = parser.parse_args()

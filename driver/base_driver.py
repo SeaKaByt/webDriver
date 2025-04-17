@@ -20,10 +20,12 @@ class BaseDriver:
         self.yaml_path = config_path or Path(f"config/{self.env}/{self.bu}.yaml")
         self.json_data_path = Path("data/data.json")
         self.data_path = Path("data/data.csv")
+        self.gate_ground_data_path = Path("data/gate_ground_data.csv")
         try:
             self.config = read_yaml(self.yaml_path)
             self.config_j = read_json(self.json_data_path)
             self.df = read_csv(self.data_path)
+            self.gate_ground_df = read_csv(self.gate_ground_data_path)
         except Exception as e:
             logger.error(f"Failed to load configs: {e}")
             raise
