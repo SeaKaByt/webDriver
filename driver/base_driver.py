@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 from driver.element_actions import ElementActions
 from driver.element_properties import ElementProperties
 from helper.io_utils import read_yaml, read_json, read_csv
@@ -13,23 +12,23 @@ from pathlib import Path
 load_dotenv()
 
 class BaseDriver:
-    def __init__(self, config_path: Optional[Path] = None):
+    def __init__(self):
         self.driver = None
         self.bu = os.environ.get("TEST_BU", "AQCT")
         self.env = os.environ.get("TEST_ENV", "FAT")
-        self.yaml_path = config_path or Path(f"config/{self.env}/{self.bu}.yaml")
+        self.yaml_path = Path(f"config/{self.env}/{self.bu}.yaml")
         self.json_data_path = Path("data/data.json")
-        self.data_path = Path("data/data.csv")
+        self.gate_pickup_data_path = Path("data/gate_pickup_data.csv")
         self.gate_ground_data_path = Path("data/gate_ground_data.csv")
         try:
             self.config = read_yaml(self.yaml_path)
             self.config_j = read_json(self.json_data_path)
-            self.df = read_csv(self.data_path)
+            self.gate_pickup_df = read_csv(self.gate_pickup_data_path)
             self.gate_ground_df = read_csv(self.gate_ground_data_path)
         except Exception as e:
             logger.error(f"Failed to load configs: {e}")
             raise
-        self.url = "http://127.0.0.1:7993"
+        self.url = os.environ.get("WEBDRIVER_URL", "http://127.0.0.1:7993")
         self.driver = self._initialize_driver()
         self.actions = ElementActions(self.driver)
         self.properties = ElementProperties(self.driver)
@@ -52,7 +51,7 @@ class BaseDriver:
         return driver
 
     def cleanup(self):
-        if self.driver:
+        if self.driver and hasattr(self.driver, 'quit'):
             try:
                 self.driver.quit()
                 logger.info("Driver quit successfully")

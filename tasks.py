@@ -45,18 +45,37 @@ def create_pickup(c):
     """
     Create a pickup task.
     """
-    c.run("python -m test_ui.flow.gate_transaction create_pickup")
+    # c.run("python -m test_ui.flow.gate_transaction create_pickup")
     c.run("python -m test_ui.flow.queue_monitor")
     c.run("python -m test_ui.flow.gate_transaction confirm_pickup")
 
+def add_return_cntr(c):
+    """
+    Add return container.
+    """
+    c.run("python -m test_ui.flow.booking_maintenance")
+
+def create_gate_ground(c):
+    c.run("python -m test_ui.flow.gate_transaction create_gate_ground")
+    c.run("python -m test_ui.flow.queue_monitor")
+    c.run("python -m test_ui.flow.gate_transaction confirm_ground")
+
 @task
-def pickup_task(c):
+def gate_pickup_task(c):
     """
     Run the pickup task.
     """
-    initiate(c)
-    create_cntr(c)
-    add_bol(c)
-    createCro(c)
-    hold_release(c)
+    # initiate(c)
+    # create_cntr(c)
+    # add_bol(c)
+    # createCro(c)
+    # hold_release(c)
     create_pickup(c)
+
+@task
+def gate_ground_task(c):
+    # initiate(c)
+    add_return_cntr(c)
+    create_gate_ground(c)
+    # c.run("python -m test_ui.flow.gate_transaction confirm_ground")
+

@@ -30,14 +30,9 @@ class CROMaintenance(BaseFlow):
             self.create_cntr_id = cro_config.get("create_cntr_id")
             self.cro_status = cro_config.get("cro_status")
             self.row0_pin = cro_config.get("row0_pin")
-            # Validate config
-            required = [self.reset, self.create, self.cro_cntr_id, self.create_cntr_id]
-            if any(x is None for x in required):
-                logger.error("Missing CRO config keys")
-                raise ValueError("Invalid CRO configuration")
             # Validate DataFrame
-            if "cntr_id" not in self.df.columns:
-                logger.error("data.csv missing 'cntr_id' column")
+            if "cntr_id" not in self.gate_pickup_df.columns:
+                logger.error("gate_pickup_data.csv missing 'cntr_id' column")
                 raise ValueError("Invalid DataFrame: missing cntr_id")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
@@ -54,7 +49,7 @@ class CROMaintenance(BaseFlow):
                 self.actions.click(self.reset)
 
             self.cro_no_list = []
-            for cntr_id in self.df["cntr_id"]:
+            for cntr_id in self.gate_pickup_df["cntr_id"]:
                 logger.info(f"Creating CRO for cntr_id: {cntr_id}")
                 self.actions.click(self.create)
                 self.actions.click(self.create_cntr_id)
@@ -79,10 +74,10 @@ class CROMaintenance(BaseFlow):
                 self.cro_no_list.append(self.cro_no)
 
             # Update DataFrame
-            if len(self.cro_no_list) == len(self.df):
-                self.df["cro_no"] = self.cro_no_list
-                logger.info(f"Updated DataFrame: {self.df.to_dict()}")
-                self.df.to_csv(self.data_path, index=False)
+            if len(self.cro_no_list) == len(self.gate_pickup_df):
+                self.gate_pickup_df["cro_no"] = self.cro_no_list
+                logger.info(f"Updated DataFrame: {self.gate_pickup_df.to_dict()}")
+                self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
         except Exception as e:
             logger.error(f"CRO creation failed: {e}")
             raise
@@ -105,7 +100,7 @@ class CROMaintenance(BaseFlow):
             self.actions.click(self.cro_status)
             send_keys_with_log("active")
             self.pin_list = []
-            for cntr_id in self.df["cntr_id"]:
+            for cntr_id in self.gate_pickup_df["cntr_id"]:
                 logger.info(f"Fetching pin for cntr_id: {cntr_id}")
                 self.actions.click(self.cro_cntr_id)
                 send_keys_with_log("^a")
@@ -122,13 +117,12 @@ class CROMaintenance(BaseFlow):
                     logger.error("User Information window unexpected")
                     raise RuntimeError("Unexpected User Information window")
 
-            self.df["pin"] = self.pin_list
-            logger.info(f"Updated DataFrame: {self.df.to_dict()}")
-            self.df.to_csv(self.data_path, index=False)
+            self.gate_pickup_df["pin"] = self.pin_list
+            logger.info(f"Updated DataFrame: {self.gate_pickup_df.to_dict()}")
+            self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
         except Exception as e:
             logger.error(f"Get pin failed: {e}")
             raise
-
 
 if __name__ == "__main__":
     try:

@@ -15,6 +15,6 @@ class ProjectPaths:
         return ProjectPaths.DATA / "data.json"
 
     @staticmethod
-    def get_excel_data_path(file_name: str = "data.csv") -> Path:
+    def get_excel_data_path(file_name: str = "gate_pickup_data.csv") -> Path:
         return ProjectPaths.DATA / file_name
 

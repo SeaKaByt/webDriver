@@ -41,8 +41,8 @@ class BolMaintenance(BaseFlow):
                 logger.error("Missing BOL config keys")
                 raise ValueError("Invalid BOL configuration")
             # Validate DataFrame
-            if "cntr_id" not in self.df.columns:
-                logger.error("data.csv missing 'cntr_id' column")
+            if "cntr_id" not in self.gate_pickup_df.columns:
+                logger.error("gate_pickup_data.csv missing 'cntr_id' column")
                 raise ValueError("Invalid DataFrame: missing cntr_id")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
@@ -103,7 +103,7 @@ class BolMaintenance(BaseFlow):
                 logger.error("Create Bill of lading container window not found")
                 raise RuntimeError("Create Bill of lading container window not found")
 
-            for cntr_id in self.df["cntr_id"]:
+            for cntr_id in self.gate_pickup_df["cntr_id"]:
                 logger.info(f"Adding container: {cntr_id}")
                 self.actions.click(self.create_cntr_id)
                 send_keys_with_log(cntr_id)
