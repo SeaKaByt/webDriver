@@ -55,7 +55,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
                 if not wait_for_window(self.window_titles[login_window], timeout=1):
                     logger.info(f"Launching {app_name} via {app_xpath}")
                     self.actions.click(app_xpath)
-                if not wait_for_window(self.window_titles[login_window], timeout=10):
+                if not wait_for_window(self.window_titles[login_window], timeout=15):
                     logger.error(f"Login window {login_window} not found")
                     raise RuntimeError(f"Failed to open {login_window}")
                 if login_field:
@@ -99,11 +99,10 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             self.login_ngen()
             self.login_guider()
             logger.info("Full load completed successfully")
+            self.cleanup()
         except Exception as e:
             logger.error(f"Full load failed: {e}")
             raise
-        finally:
-            self.cleanup()
 
     def send_credentials(self, username: str, password: str) -> None:
         """Send username and password to login window."""
@@ -130,18 +129,18 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
         logger.info(f"Running method: {method_name}")
         method()
 
-    def cleanup(self) -> None:
-        """Clean up resources, including Selenium driver and pywinauto app."""
-        logger.info("Cleaning up ApplicationLauncher")
-        super().cleanup()  # Call BaseFlow cleanup
-        if hasattr(self, "app") and self.app:
-            try:
-                self.app.kill()
-                logger.info("Application killed successfully")
-            except Exception as e:
-                logger.warning(f"Failed to kill application: {e}")
-            self.app = None
-        sys.exit(1)
+    # def cleanup(self) -> None:
+    #     """Clean up resources, including Selenium driver and pywinauto app."""
+    #     logger.info("Cleaning up ApplicationLauncher")
+    #     super().cleanup()  # Call BaseFlow cleanup
+    #     if hasattr(self, "app") and self.app:
+    #         try:
+    #             self.app.kill()
+    #             logger.info("Application killed successfully")
+    #         except Exception as e:
+    #             logger.warning(f"Failed to kill application: {e}")
+    #         self.app = None
+    #     sys.exit(1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Application Launcher Automation")

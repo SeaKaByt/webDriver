@@ -10,7 +10,7 @@ class ElementActions:
     def __init__(self, driver):
         self.driver = driver
 
-    def find(self, xpath,  option=None, timeout=10):
+    def find(self, xpath, timeout=10):
         try:
             wait = WebDriverWait(self.driver, timeout)
             wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
@@ -21,8 +21,8 @@ class ElementActions:
             logger.error(f"Element not found: {xpath} after {timeout} seconds")
             raise
 
-    def click(self, xpath,  option=None, timeout=10):
-        element = self.find(xpath, option, timeout)
+    def click(self, xpath, timeout=10):
+        element = self.find(xpath, timeout)
         try:
             element.click()
             logger.info(f"Clicked on element: {xpath}")

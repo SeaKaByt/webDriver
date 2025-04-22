@@ -7,15 +7,15 @@ nGen:
   username: oscar
   password: "!auto12345"
   ngen_login: /form[@title='Login']/container[@name='mainPanel']/?/?/text[@type='GuiTextField']
-  title: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/titlebar[@accessiblerole='TitleBar']
-  home_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/?/?/button[@text='Home']
+  title: /form[@title>'nGen FAT-AQCT-DC']/titlebar[@accessiblerole='TitleBar']
+  home_btn: /form[@title>'nGen FAT-AQCT-DC']/?/?/button[@text='Home']
 
-  minimize: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/?/?/button[@accessiblename='Minimize']
-  inv_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[6]/tag[@tagname='p-implied']
-  sp_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[6]/tag[@tagname='p-implied']
-  ioc_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[4]/tag[@tagname='p-implied']
-  gate_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[3]/tag[@tagname='p-implied']
-  mc_menu: /form[@title>'nGen FAT-AQCT-DC - 14.6.0']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[3]/tag[@tagname='p-implied']
+  minimize: /form[@title>'nGen FAT-AQCT-DC']/?/?/button[@accessiblename='Minimize']
+  inv_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[6]/tag[@tagname='p-implied']
+  sp_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[6]/tag[@tagname='p-implied']
+  ioc_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[4]/tag[@tagname='p-implied']
+  gate_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[3]/tag[@tagname='p-implied']
+  mc_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[3]/tag[@tagname='p-implied']
 
 app:
   ngen: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
@@ -39,40 +39,40 @@ gat_settings:
   printer_dummy: "dummy"
 
 dc:
-  voyage: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/element[@name='searchVoyageIdField']/text[@name='guiTextField1']
-  search_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='guiPanel2']/container[@name='searchButtonPanel']/button[@name='searchButton']
-  cntr_panel: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='detailPanel']/?/?/container[@name='null.layeredPane']
-  bay: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/?/?/container[@name='recordPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container[@name='guiPanel18']//container[@name='loadingPanel']/combobox[@name='dischargeBayComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
-  create_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='firstCarrierPane']/button[@name='firstCreateButton']
-  cntr_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='allPanel']/button[@name='dischargeContainerButton']
-  add_next_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='freezePanel']/button[@name='freezeAddNextButton']
+  voyage: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/element[@name='searchVoyageIdField']/text[@name='guiTextField1']
+  search_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='guiPanel2']/container[@name='searchButtonPanel']/button[@name='searchButton']
+  cntr_panel: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='detailPanel']/?/?/container[@name='null.layeredPane']
+  bay: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/?/?/container[@name='recordPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container[@name='guiPanel18']//container[@name='loadingPanel']/combobox[@name='dischargeBayComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  create_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='firstCarrierPane']/button[@name='firstCreateButton']
+  cntr_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='allPanel']/button[@name='dischargeContainerButton']
+  add_next_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='freezePanel']/button[@name='freezeAddNextButton']
   warning_ok_btn: /form[@title='Warning']//container[@name='OptionPane.buttonArea']/button[@name='initialValue']
-  pol: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/?/?/container[@name='recordPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container[@name='guiPanel18']//container[@name='dischargePanel']/container[@name='portPanel']/text[@name='dischargePolTextField']
+  pol: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/?/?/container[@name='recordPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container[@name='guiPanel18']//container[@name='dischargePanel']/container[@name='portPanel']/text[@name='dischargePolTextField']
 
 cd:
-  cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='cntrNoComboBox']/text[@name='cntrNoEditField']
-  owner: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//container[@name='ownerPanel']/text[@name='ownerTextField']
-  voyage: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='topPanel']/container[@name='voyagePanel']/text[@name='voyageIdTextField']
-  pol: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='portPanel']/text[@name='polTextField']
-  gross_wt: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='gwPanel']/text[@name='grWtTextField']
-  status: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='statusComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
-  yard: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//element[@name='cntrLocationComboBox']/combobox[@name='guiComboBox1']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='cntrNoComboBox']/text[@name='cntrNoEditField']
+  owner: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//container[@name='ownerPanel']/text[@name='ownerTextField']
+  voyage: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='topPanel']/container[@name='voyagePanel']/text[@name='voyageIdTextField']
+  pol: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='portPanel']/text[@name='polTextField']
+  gross_wt: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='gwPanel']/text[@name='grWtTextField']
+  status: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='statusComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  yard: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//element[@name='cntrLocationComboBox']/combobox[@name='guiComboBox1']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
 
   create_yes_btn: /form[@title='Create Container']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
   create_confirm_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
-  cancel_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='headButtonPanel']/container[@name='headOkCancelButtonPanel']/button[@name='amendCancelButton']
+  cancel_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='headButtonPanel']/container[@name='headOkCancelButtonPanel']/button[@name='amendCancelButton']
   confirm_yes_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
   ags4999: /form[@title='User Error ags4999']/?/?/container[@name='OptionPane.buttonArea']/button[@name='OptionPane.button']
 
 cro:
   default_status: "active"
-  reset: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/button[@name='resetButton']
-  create: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='mainPanel']/container[@name='buttonPanel']/?/?/button[@name='createButton']
-  cro_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchContanerNoTextField']
-  cro_cro_no: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchCROTextField']
+  reset: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/button[@name='resetButton']
+  create: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='mainPanel']/container[@name='buttonPanel']/?/?/button[@name='createButton']
+  cro_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchContanerNoTextField']
+  cro_cro_no: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchCROTextField']
   create_cntr_id: /form[@title='Create CRO']//container[@name='guiPanel2']/text[@name='cntrIdText']
-  cro_status: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/combobox[@name='searchStatusComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
-  row0_pin: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='CROTable']/row[@index='0']/cell[@columnindex='1']
+  cro_status: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/combobox[@name='searchStatusComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  row0_pin: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='CROTable']/row[@index='0']/cell[@columnindex='1']
 
 bol:
   line_value: "NVD"
@@ -82,39 +82,39 @@ bol:
   default_field: "automation"
   test_field: "test"
 
-  line: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='panelSearch']/text[@name='txtLineCodeS']
-  add_cntr_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='allBtnPanel']/button[@name='btnAddCntr']
+  line: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='panelSearch']/text[@name='txtLineCodeS']
+  add_cntr_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='allBtnPanel']/button[@name='btnAddCntr']
   add_next: /form[@title>'Create Bill of lading con']/?/?/container[@name='buttonPanel']/button[@name='btnAddNext']
   confirm_yes: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
   create_cntr_id: /form[@title>'Create Bill of lading con']//element[@name='txtCntrId']/text[@name='guiTextField1']
   create_cancel: /form[@title>'Create Bill of lading con']/?/?/container[@name='buttonPanel']/button[@name='btnCancel']
-  details_line: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='decPaneMaster']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='txtLineCode']
+  details_line: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='decPaneMaster']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='txtLineCode']
 
 hr:
   bol_value: "BL01"
   hold_condition: "dt"
   declaration_value: "automation"
 
-  release_tab: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabbedPanel']/tabpage[@title='* Release']
-  search_hold_condition: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/container[@name='holdConditionSPanel']/text[@name='searchHoldConditionTextField']
-  release_hold_condition: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/container[@name='holdConditionRPanel']/text[@name='releaseHoldConditionTextField']
-  search_tab: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='tabbedPanel']/container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/tabpage[@title='Search']
-  declaration: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/text[@name='declarationNoTextField']
-  bol: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/text[@name='billLadingNoTextField']
-  select_all: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='selectAllButton']
-  release_batch: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='releaseBatchButton']
+  release_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabbedPanel']/tabpage[@title='* Release']
+  search_hold_condition: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/container[@name='holdConditionSPanel']/text[@name='searchHoldConditionTextField']
+  release_hold_condition: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/container[@name='holdConditionRPanel']/text[@name='releaseHoldConditionTextField']
+  search_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='tabbedPanel']/container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/tabpage[@title='Search']
+  declaration: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/text[@name='declarationNoTextField']
+  bol: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/text[@name='billLadingNoTextField']
+  select_all: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='selectAllButton']
+  release_batch: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='releaseBatchButton']
 
 gt:
-  search_tractor: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='detailPanel']/container[@name='guiPanel2']/text[@name='tractorNoTextField']
+  search_tractor: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='detailPanel']/container[@name='guiPanel2']/text[@name='tractorNoTextField']
   create_pin: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='pinNoPanel']/text[@name='pinNoTextField']
   create_driver: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='sealPanel']/text[@name='driverIdTextField']
-  row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='resultTable']/row[@index='0']/cell[@columnindex='2']
+  row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='resultTable']/row[@index='0']/cell[@columnindex='2']
   inspection_seal: /form[@title='Exit Gate Inspection']//container[@name='infoPanel']/?/?/container[@name='oogPanel']/combobox[@name='sealIndicatorComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
   manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
   printer_id: /form[@title='Gate Confirm']//container[@name='guiPanel3']/combobox[@name='printerIdComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
 
-  ground_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='groundButton']
-  print_cms_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='printCMSButton']
+  ground_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='groundButton']
+  print_cms_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='printCMSButton']
 
   create_grounding_cntr: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='pinNoPanel']/text[@name='cntrNoTextField']
   create_grounding_driver: /form[@title>'Create Gate Grounding Mov']//container[@name='detailPanel']/container[@name='topPanel']/text[@name='driverIdTextField']
@@ -126,26 +126,28 @@ gt:
   create_grounding_gross_wt: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='grossWtPanel']/text[@name='inputGrossWtTextField']
 
   gate_inspection_ok_btn: /form[@title='Proceed Gate Inspection']//container[@name='guiPanel1']/button[@name='okStyledButton']
-  gate_transaction_refresh_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='refreshButton']
+  gate_transaction_refresh_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='refreshButton']
+
+  gate_confirm_manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
 
 qm:
-  fcl_tab: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
-  row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
-  bk_confirm_btn: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='actionPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container/container[2]/container[@name='scrollPane']//button[@text='Mv Bkup Conf']
-  fcl_tractor: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/container[@name='fclTabPane']/text[@name='fclTractorNoTextField']
-  new_search: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='newSearchButton']
+  fcl_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
+  row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
+  bk_confirm_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='actionPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container/container[2]/container[@name='scrollPane']//button[@text='Mv Bkup Conf']
+  fcl_tractor: /form[@title>'nGen FAT-AQCT-DC']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/container[@name='fclTabPane']/text[@name='fclTractorNoTextField']
+  new_search: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='newSearchButton']
 
-  tab_page_1: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[1]
-  tab_page_2: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[2]
+  tab_page_1: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[1]
+  tab_page_2: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[2]
 
-  movement_row_0: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
-  movement_row_1: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='1']/cell[@columnindex='7']
+  movement_row_0: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
+  movement_row_1: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='1']/cell[@columnindex='7']
 
 bm:
   booking_no_list: ["BK01", "BK02"]
 
-  principal_line: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/text[@name='cmpCodeTextField']
-  booking_record_0: /form[@title>'nGen FAT-AQCT-DC - 14.6.0-1.2']/container[@type='GuiPanel']//container[@name='requestDetailPanel']/container/container[1]/table[@name='requestDetailTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
+  principal_line: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/text[@name='cmpCodeTextField']
+  booking_record_0: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='requestDetailPanel']/container/container[1]/table[@name='requestDetailTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
   booking_request_record_0: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
   return_cntr_close: /form[@title='Laden Return Container']/container[@type='AQCTBookingReturnContainerDetailView']/?/?/container[@name='buttonPanel']/?/?/button[@name='closeButton']
   return_details_close: /form[@title='Booking Request Detail']//container[@name='buttonPane']/container[@name='initButtonCard']/button[@name='closeButton']

@@ -34,8 +34,8 @@ class QMon(BaseFlow):
                 logger.error("Missing QM config keys: fcl_tab, row0_cntr_id, or bk_confirm_btn")
                 raise ValueError("Invalid QM configuration")
             # Validate DataFrame
-            if "tractor" not in self.df.columns:
-                logger.error("data.csv missing 'tractor' column")
+            if "tractor" not in self.gate_pickup_df.columns:
+                logger.error("gate_pickup_data.csv missing 'tractor' column")
                 raise ValueError("Invalid DataFrame: missing tractor column")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
@@ -57,7 +57,7 @@ class QMon(BaseFlow):
             self.search_tractor()
             self.actions.click(self.fcl_tab)
 
-            for _, row in self.df.interrows():
+            for _, row in self.gate_pickup_df.iterrows():
                 logger.info(f"Confirming backup for tractor: {row["tractor"]}")
                 self.actions.click(self.fcl_tractor)
                 send_keys_with_log("^a")
@@ -124,8 +124,8 @@ if __name__ == "__main__":
     # python -m test_ui.flow.queue_monitor
     try:
         qmon = QMon()
-        # qmon.backup_confirm()
-        qmon.twin_backup_confirm()
+        qmon.backup_confirm()
+        # qmon.twin_backup_confirm()
     except Exception as e:
         logger.error(f"QMon failed: {e}")
         sys.exit(1)

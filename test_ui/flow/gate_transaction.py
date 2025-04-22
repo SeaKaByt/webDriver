@@ -4,9 +4,6 @@ import sys
 from typing import Optional
 from pathlib import Path
 import time
-
-from typing_extensions import runtime
-
 from helper.logger import logger
 from helper.win_utils import wait_for_window, send_keys_with_log
 from test_ui.base_flow import BaseFlow
@@ -46,6 +43,7 @@ class GateTransaction(BaseFlow):
             self.create_grounding_gross_wt = gt_config.get("create_grounding_gross_wt")
             self.gate_inspection_ok_btn = gt_config.get("gate_inspection_ok_btn")
             self.gate_transaction_refresh_btn = gt_config.get("gate_transaction_refresh_btn")
+            self.gate_confirm_manual_confirm_btn = gt_config.get("gate_confirm_manual_confirm_btn")
             self.print_cms_btn = gt_config.get("print_cms_btn")
             self.gate_settings = self.config.get("gate_settings", {
                 "confirmation_code": "2000",
@@ -54,7 +52,7 @@ class GateTransaction(BaseFlow):
             })
             # Validate DataFrame
             required_columns = ["cntr_id", "pin", "tractor"]
-            if not all(col in self.df.columns for col in required_columns):
+            if not all(col in self.gate_pickup_df.columns for col in required_columns):
                 logger.error(f"data.csv missing columns: {required_columns}")
                 raise ValueError(f"Invalid CSV: missing {required_columns}")
         except KeyError as e:
@@ -68,10 +66,10 @@ class GateTransaction(BaseFlow):
             if not self.properties.visible(self.search_tractor, timeout=1):
                 self.module_view(self.module)
 
-            for i in range(len(self.df)):
-                cntr_id = self.df["cntr_id"][i]
-                tractor = self.df["tractor"][i]
-                pin= self.df["pin"][i]
+            for i in range(len(self.gate_pickup_df)):
+                cntr_id = self.gate_pickup_df["cntr_id"][i]
+                tractor = self.gate_pickup_df["tractor"][i]
+                pin= self.gate_pickup_df["pin"][i]
 
                 logger.info(f"Processing pickup for cntr_id: {cntr_id}, tractor: {tractor}, pin: {pin}")
                 self.actions.click(self.search_tractor)
@@ -102,7 +100,7 @@ class GateTransaction(BaseFlow):
             logger.error(f"Create pickup failed: {e}")
             raise
 
-    def create_gate_grounding(self) -> None:
+    def create_gate_ground(self) -> None:
         """Create gate grounding transactions."""
         try:
             self._get_tractor()
@@ -110,11 +108,12 @@ class GateTransaction(BaseFlow):
                 self.module_view(self.module)
 
             for idx, row in self.gate_ground_df.iterrows():
-                self.actions.click(self.search_tractor)
-                send_keys_with_log(row["tractor"])
-                send_keys_with_log("{ENTER}")
+                if idx % 2 == 0:
+                    self.actions.click(self.search_tractor)
+                    send_keys_with_log(row["tractor"])
+                    send_keys_with_log("{ENTER}")
                 send_keys_with_log("%2")
-                wait_for_window("Create")
+                wait_for_window("Create Gate Grounding")
                 self.actions.click(self.create_grounding_cntr)
                 send_keys_with_log(row["cntr_id"])
                 if idx % 2 == 0:
@@ -177,6 +176,9 @@ class GateTransaction(BaseFlow):
                     if wait_for_window(".*gatex1990$", 1):
                         send_keys_with_log("{ENTER}")
 
+                if wait_for_window(".*gatex1990$", 1):
+                    send_keys_with_log("{ENTER}")
+
                 if wait_for_window(".*gatex1247$", 1):
                     send_keys_with_log("{ENTER}")
                 else:
@@ -193,35 +195,24 @@ class GateTransaction(BaseFlow):
                 if not self.properties.enabled(self.gate_transaction_refresh_btn):
                     raise
 
+            self.release_print_cwp()
         except Exception as e:
             logger.error(f"Create gate grounding failed: {e}")
             raise
 
-    def handle_fa(self) -> None:
-        """Handle FA transactions."""
-        for idx, row in self.gate_ground_df.iterrows():
-            logger.info(f"{row}")
-            if idx % 2 != 0:
-                self.actions.click(self.create_grounding_FA)
-                # send_keys_with_log("a")
-                logger.info("even index")
-            self.actions.click(self.create_grounding_gross_wt)
-            # send_keys_with_log(self.gross_wt)
-            logger.info("odd index")
-
     def get_tractor(self) -> None:
         """Generate tractor IDs and update DataFrame."""
         try:
-            count = len(self.df)
+            count = len(self.gate_pickup_df)
             if count == 0:
                 logger.error("DataFrame is empty")
                 raise ValueError("Empty DataFrame")
             self.tractor_list = [f"OXT{i:02d}" for i in range(1, count + 1)]
-            self.df["tractor"] = self.tractor_list
-            logger.info(f"Updated DataFrame with tractors: {self.df}")
+            self.gate_pickup_df["tractor"] = self.tractor_list
+            logger.info(f"Updated DataFrame with tractors: {self.gate_pickup_df}")
             # Save to CSV, not Excel
-            self.df.to_csv(self.data_path, index=False)
-            logger.debug(f"Saved DataFrame to {self.data_path}")
+            self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
+            logger.debug(f"Saved DataFrame to {self.gate_pickup_data_path}")
         except Exception as e:
             logger.error(f"Failed to update tractors: {e}")
             raise
@@ -237,7 +228,7 @@ class GateTransaction(BaseFlow):
             self.tractor_list = [f"OXT{i:02d}" for i in range(1, num_tractors + 1) for _ in range(2)][:count]
 
             self.gate_ground_df["tractor"] = self.tractor_list
-            logger.info(f"Updated DataFrame with tractors: {self.df}")
+            logger.info(f"Updated DataFrame with tractors: {self.gate_pickup_df}")
 
             # Save to CSV, not Excel
             self.gate_ground_df.to_csv(self.gate_ground_data_path, index=False)
@@ -275,7 +266,7 @@ class GateTransaction(BaseFlow):
             if not self.properties.visible(self.search_tractor, timeout=1):
                 self.module_view(self.module)
 
-            for tractor in self.df["tractor"]:
+            for tractor in self.gate_pickup_df["tractor"]:
                 logger.info(f"Confirming pickup for tractor: {tractor}")
                 self.actions.click(self.search_tractor)
                 send_keys_with_log(tractor)
@@ -301,13 +292,39 @@ class GateTransaction(BaseFlow):
             logger.error(f"Confirm pickup failed: {e}")
             raise
 
+    def confirm_ground(self) -> None:
+        try:
+            if not self.properties.visible(self.search_tractor, timeout=1):
+                self.module_view(self.module)
+
+            self.actions.click(self.gate_transaction_refresh_btn)
+
+            for idx, row in self.gate_ground_df.iterrows():
+                if idx % 2 != 0:
+                    self.actions.click(self.search_tractor)
+                    send_keys_with_log(row["tractor"])
+                send_keys_with_log("%4")
+                if wait_for_window("Gate Confirm Information", timeout=5):
+                    self.actions.click(self.gate_confirm_manual_confirm_btn)
+                else:
+                    raise RuntimeError("Gate Confirm window not found")
+
+                if wait_for_window("Gate Confirm", timeout=5):
+                    send_keys_with_log("{ENTER}")
+                else:
+                    raise RuntimeError("Gate Confirm window not found")
+
+        except Exception as e:
+            logger.error(f"Confirm ground failed: {e}")
+            raise
+
     def run_method(self, method_name: str) -> None:
         """Execute a specified method by name."""
         methods = {
             "create_pickup": self.create_pickup,
             "confirm_pickup": self.confirm_pickup,
-            "handle_fa": self.handle_fa,
-            "create_gate_grounding": self.create_gate_grounding,
+            "create_gate_ground": self.create_gate_ground,
+            "confirm_ground": self.confirm_ground,
             "release_print_cwp": self.release_print_cwp,
         }
         method = methods.get(method_name)
@@ -318,12 +335,12 @@ class GateTransaction(BaseFlow):
         method()
 
 if __name__ == "__main__":
-    # python -m test_ui.flow.gate_transaction create_gate_grounding
+    # python -m test_ui.flow.gate_transaction create_gate_ground
     # python -m test_ui.flow.gate_transaction release_print_cwp
     parser = argparse.ArgumentParser(description="Gate Transaction Automation")
     parser.add_argument(
         "method",
-        choices=["create_pickup", "confirm_pickup", "handle_fa", "create_gate_grounding", "release_print_cwp"],
+        choices=["create_pickup", "confirm_pickup", "create_gate_ground", "release_print_cwp", "confirm_ground"],
         help="Method to execute (create_pickup or confirm_pickup)"
     )
     args = parser.parse_args()

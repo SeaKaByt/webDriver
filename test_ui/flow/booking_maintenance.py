@@ -1,10 +1,7 @@
 import sys
-import time
 from pathlib import Path
-from sys import set_int_max_str_digits
 from typing import Optional
 from helper.decorators import logger
-from helper.io_utils import read_csv
 from helper.win_utils import send_keys_with_log, wait_for_window
 from test_ui.base_flow import BaseFlow
 
@@ -32,7 +29,7 @@ class BookingMaintenance(BaseFlow):
             logger.error(f"Config missing key: {e}")
             raise ValueError(f"Invalid config: missing {e}")
 
-    def add_return_cntr(self, status: str = "None", count: int = "None") -> None:
+    def add_return_cntr(self) -> None:
         if not self.properties.visible(self.principal_line, timeout=1):
             self.module_view(self.module)
 
@@ -51,7 +48,6 @@ class BookingMaintenance(BaseFlow):
             if wait_for_window("User Error", timeout=1):
                 logger.error("User Error encountered")
                 sys.exit(1)
-            # self.actions.click(self.booking_record_0)
             send_keys_with_log("%b")
             if not wait_for_window("Booking Request", timeout=5):
                 logger.error("Booking Request window not found")
@@ -79,7 +75,6 @@ class BookingMaintenance(BaseFlow):
                 sys.exit(1)
             self.actions.click(self.return_cntr_close)
             self.actions.click(self.request_record_close_btn)
-
 
 if __name__ ==  "__main__":
     # python -m test_ui.flow.booking_maintenance

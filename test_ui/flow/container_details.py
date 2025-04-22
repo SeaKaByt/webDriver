@@ -49,14 +49,9 @@ class ContainerDetails(BaseFlow):
             # self.status = cd_config.get("status_value", "if")
             # self.size = cd_config.get("size", "40")
             # self.type = cd_config.get("type", "HC")
-            # Validate config
-            required = [self.cd_cntr_id, self.create_yes, self.create_confirm]
-            if any(x is None for x in required):
-                logger.error("Missing CD config keys")
-                raise ValueError("Invalid CD configuration")
             # Validate DataFrame
             if "cntr_id" not in self.df.columns:
-                logger.error("data.csv missing 'cntr_id' column")
+                logger.error("gate_pickup_data.csv missing 'cntr_id' column")
                 raise ValueError("Invalid DataFrame: missing cntr_id")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
@@ -162,10 +157,10 @@ class ContainerDetails(BaseFlow):
         """Save container IDs to CSV, merging with existing DataFrame."""
         try:
             new_data = pd.DataFrame({"cntr_id": self.cntr_list})
-            self.df = pd.concat([new_data, self.df]).drop_duplicates(subset=["cntr_id"]).reset_index(drop=True)
+            self.df = pd.concat([new_data, self.gate_pickup_df]).drop_duplicates(subset=["cntr_id"]).reset_index(drop=True)
             logger.info(f"Updated DataFrame: {self.df.to_dict()}")
-            self.df.to_csv(self.data_path, index=False)
-            logger.debug(f"Saved DataFrame to {self.data_path}")
+            self.df.to_csv(self.gate_pickup_data_path, index=False)
+            logger.debug(f"Saved DataFrame to {self.gate_pickup_data_path}")
         except Exception as e:
             logger.error(f"Save CSV failed: {e}")
             raise

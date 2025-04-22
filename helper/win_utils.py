@@ -18,7 +18,7 @@ def send_keys_with_log(keys: str, with_tab: bool = False) -> None:
         logger.error(f"Failed to send keys {keys}: {e}")
         raise
 
-def wait_for_window(title: str, timeout: int = 30) -> Optional[List[int]]:
+def wait_for_window(title: str, timeout: int = 10) -> Optional[List[int]]:
     """Wait for a window with the given title to appear."""
     import time
     try:
