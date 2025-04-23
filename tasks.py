@@ -41,23 +41,25 @@ def hold_release(c):
     c.run("python -m test_ui.flow.hold_release release_hold")
 
 @task
-def create_pickup(c):
-    """
-    Create a pickup task.
-    """
-    # c.run("python -m test_ui.flow.gate_transaction create_pickup")
-    c.run("python -m test_ui.flow.queue_monitor")
-    c.run("python -m test_ui.flow.gate_transaction confirm_pickup")
-
 def add_return_cntr(c):
     """
     Add return container.
     """
     c.run("python -m test_ui.flow.booking_maintenance")
 
+@task
+def create_gate_pickup(c):
+    """
+    Create a pickup task.
+    """
+    # c.run("python -m test_ui.flow.gate_transaction create_pickup")
+    # c.run("python -m test_ui.flow.gate_transaction release_print_cwp")
+    # c.run("python -m test_ui.flow.queue_monitor --pickup")
+    c.run("python -m test_ui.flow.gate_transaction confirm_pickup")
+
 def create_gate_ground(c):
     c.run("python -m test_ui.flow.gate_transaction create_gate_ground")
-    c.run("python -m test_ui.flow.queue_monitor")
+    c.run("python -m test_ui.flow.queue_monitor --ground")
     c.run("python -m test_ui.flow.gate_transaction confirm_ground")
 
 @task
@@ -70,12 +72,10 @@ def gate_pickup_task(c):
     # add_bol(c)
     # createCro(c)
     # hold_release(c)
-    create_pickup(c)
+    create_gate_pickup(c)
 
 @task
 def gate_ground_task(c):
     # initiate(c)
     add_return_cntr(c)
     create_gate_ground(c)
-    # c.run("python -m test_ui.flow.gate_transaction confirm_ground")
-

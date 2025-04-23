@@ -1,6 +1,10 @@
+import argparse
 import sys
 from typing import Optional
 from pathlib import Path
+
+import pandas as pd
+
 from test_ui.base_flow import BaseFlow
 from helper.win_utils import wait_for_window, send_keys_with_log
 from helper.logger import logger
@@ -28,15 +32,6 @@ class QMon(BaseFlow):
             self.tab_page_2 = qm_config.get("tab_page_2")
             self.movement_row_0 = qm_config.get("movement_row_0")
             self.movement_row_1 = qm_config.get("movement_row_1")
-            # Validate config
-            required = [self.fcl_tab, self.row0_cntr_id, self.bk_confirm_btn]
-            if any(x is None for x in required):
-                logger.error("Missing QM config keys: fcl_tab, row0_cntr_id, or bk_confirm_btn")
-                raise ValueError("Invalid QM configuration")
-            # Validate DataFrame
-            if "tractor" not in self.gate_pickup_df.columns:
-                logger.error("gate_pickup_data.csv missing 'tractor' column")
-                raise ValueError("Invalid DataFrame: missing tractor column")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
             raise ValueError(f"Invalid config: {e}")
@@ -51,81 +46,83 @@ class QMon(BaseFlow):
             logger.error(f"Failed to search tractor: {e}")
             raise
 
-    def backup_confirm(self) -> None:
+    def backup_confirm(self, df: pd.DataFrame) -> None:
         """Confirm backup for each tractor in DataFrame."""
-        try:
-            self.search_tractor()
-            self.actions.click(self.fcl_tab)
+        # Validate DataFrame
+        if "tractor" not in df.columns:
+            logger.error("gate_pickup_data.csv missing 'tractor' column")
+            raise ValueError("Invalid DataFrame: missing tractor column")
 
-            for _, row in self.gate_pickup_df.iterrows():
-                logger.info(f"Confirming backup for tractor: {row["tractor"]}")
+        try:
+            # Ensure FCL tab is visible
+            if not self.properties.visible(self.fcl_tractor, timeout=1):
+                self.module_view(self.module)
+
+            # Group DataFrame by tractor
+            grouped = df.groupby(df["tractor"])
+            for tractor, group in grouped:
+                logger.info(f"Processing tractor: {tractor}")
+                # Search for tractor
+                self.actions.click(self.fcl_tab)
+                if not self.properties.visible(self.fcl_tractor, timeout=1):
+                    logger.error("FCL tab not found after search")
+                    raise RuntimeError("FCL tab not found")
                 self.actions.click(self.fcl_tractor)
                 send_keys_with_log("^a")
-                send_keys_with_log(row["tractor"])
+                send_keys_with_log(str(tractor))
                 send_keys_with_log("{ENTER}")
 
-                self.actions.click(self.movement_row_0)
-                send_keys_with_log("{F2}")
-                self.actions.click(self.bk_confirm_btn)
+                # Process each row in the group based on group size
+                group_size = len(group)
+                for idx, row in enumerate(group.itertuples(), start=0):
+                    if group_size == 1:
+                        # Single scenario: click movement_row_0 once
+                        self.actions.click(self.movement_row_0)
+                    elif group_size == 2:
+                        # Twin scenario: click movement rows
+                        if idx == 0:
+                            self.actions.click(self.movement_row_0)
+                        elif idx == 1:
+                            self.actions.click(self.movement_row_1)
+                        else:
+                            logger.error(f"Unexpected group size {group_size} for tractor {tractor}")
+                            raise ValueError("Group size should be 1 or 2")
 
-                if wait_for_window("Backup Confirm"):
-                    send_keys_with_log("{ENTER}")
-                else:
-                    logger.error("Backup window not found")
-                    raise RuntimeError("Backup window not found")
+                    # Perform confirmation steps
+                    send_keys_with_log("{F2}")
+                    self.actions.click(self.bk_confirm_btn)
 
+                    # Handle a Backup Confirm window
+                    if wait_for_window("Backup Confirm"):
+                        send_keys_with_log("{ENTER}")
+                    else:
+                        logger.error("Backup window not found")
+                        raise RuntimeError("Backup window not found")
+
+                # Reset search after processing the group
                 self.actions.click(self.new_search)
                 if wait_for_window("User Error", timeout=1):
                     logger.error("User Error detected")
                     raise RuntimeError("User Error in backup confirmation")
-                if not self.properties.visible(self.fcl_tractor, timeout=2):
-                    logger.error("FCL tab not found after search")
-                    raise RuntimeError("FCL tab not found")
+
         except Exception as e:
             logger.error(f"Backup confirmation failed: {e}")
             raise
 
-    def twin_backup_confirm(self) -> None:
-        grouped = self.gate_ground_df.groupby(self.gate_ground_df["tractor"])
-
-        if not self.properties.visible(self.fcl_tractor, timeout=1):
-            self.module_view(self.module)
-
-        self.actions.click(self.fcl_tab)
-        self.actions.click(self.fcl_tractor)
-
-        for tractor, group in grouped:
-            logger.info(f"Processing tractor: {tractor}")
-            send_keys_with_log(tractor)
-            send_keys_with_log("{ENTER}")
-            for idx, row in group.iterrows():
-                logger.info(f"Processing row: {row}")
-
-                if idx % 2 == 0:
-                    self.actions.click(self.movement_row_0, 2)
-                else:
-                    self.actions.click(self.movement_row_1, 2)
-
-                send_keys_with_log("{F2}")
-                self.actions.click(self.bk_confirm_btn)
-
-                if wait_for_window("Backup Confirm"):
-                    send_keys_with_log("{ENTER}")
-                else:
-                    logger.error("Backup window not found")
-                    raise RuntimeError("Backup window not found")
-
-                if not wait_for_window("Backup Confirm"):
-                    continue
-
-            self.actions.click(self.new_search)
-
 if __name__ == "__main__":
-    # python -m test_ui.flow.queue_monitor
+    parser = argparse.ArgumentParser(description="Run QMon with pickup or ground mode.")
+    parser.add_argument("--pickup", action="store_true", help="Run in pickup mode")
+    parser.add_argument("--ground", action="store_true", help="Run in ground mode")
+    args = parser.parse_args()
+
     try:
         qmon = QMon()
-        qmon.backup_confirm()
-        # qmon.twin_backup_confirm()
+        if args.pickup:
+            logger.info("Running QMon in pickup mode")
+            qmon.backup_confirm(df=qmon.gate_pickup_df)
+        elif args.ground:
+            logger.info("Running QMon in ground mode")
+            qmon.backup_confirm(df=qmon.gate_ground_df)
     except Exception as e:
         logger.error(f"QMon failed: {e}")
         sys.exit(1)
