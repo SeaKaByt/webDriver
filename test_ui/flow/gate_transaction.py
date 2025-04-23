@@ -4,6 +4,9 @@ import sys
 from typing import Optional
 from pathlib import Path
 import time
+
+import pandas as pd
+
 from helper.logger import logger
 from helper.win_utils import wait_for_window, send_keys_with_log
 from test_ui.base_flow import BaseFlow
@@ -28,11 +31,12 @@ class GateTransaction(BaseFlow):
             self.search_tractor = gt_config.get("search_tractor")
             self.create_pin = gt_config.get("create_pin")
             self.create_driver = gt_config.get("create_driver")
-            self.row0_cntr_id = gt_config.get("row0_cntr_id")
             self.inspection_seal = gt_config.get("inspection_seal")
             self.manual_confirm_btn = gt_config.get("manual_confirm_btn")
             self.printer_id = gt_config.get("printer_id")
+            self.pickup_btn = gt_config.get("pickup_btn")
             self.ground_btn = gt_config.get("ground_btn")
+            self.confirm_btn = gt_config.get("confirm_btn")
             self.create_grounding_cntr = gt_config.get("create_grounding_cntr")
             self.create_grounding_driver = gt_config.get("create_grounding_driver")
             self.create_grounding_owner = gt_config.get("create_grounding_owner")
@@ -41,13 +45,19 @@ class GateTransaction(BaseFlow):
             self.create_grounding_material = gt_config.get("create_grounding_material")
             self.create_grounding_FA = gt_config.get("create_grounding_FA")
             self.create_grounding_gross_wt = gt_config.get("create_grounding_gross_wt")
+            self.create_pickup_ok_btn = gt_config.get("create_pickup_ok_btn")
             self.gate_inspection_ok_btn = gt_config.get("gate_inspection_ok_btn")
             self.gate_transaction_refresh_btn = gt_config.get("gate_transaction_refresh_btn")
             self.gate_confirm_manual_confirm_btn = gt_config.get("gate_confirm_manual_confirm_btn")
+            self.exit_gate_inspection_size = gt_config.get("exit_gate_inspection_size")
+            self.release_btn = gt_config.get("release_btn")
             self.print_cms_btn = gt_config.get("print_cms_btn")
+            self.confirm_yes_btn = gt_config.get("confirm_yes_btn")
             self.gate_settings = self.config.get("gate_settings", {
-                "confirmation_code": "2000",
-                "inspection_seal_value": "yfn",
+                "size_type": "2000",
+                "seal_ind": "y",
+                "F/E": "f",
+                "OOG_ind": "n",
                 "printer": "dummy"
             })
             # Validate DataFrame
@@ -62,40 +72,73 @@ class GateTransaction(BaseFlow):
     def create_pickup(self) -> None:
         """Create pickup transactions for containers."""
         try:
-            self.get_tractor()
+            # Assign tractors based on twin_ind
+            self._get_tractor(self.gate_pickup_df, self.gate_pickup_data_path)
+
+            # Ensure the module is visible
             if not self.properties.visible(self.search_tractor, timeout=1):
                 self.module_view(self.module)
 
-            for i in range(len(self.gate_pickup_df)):
-                cntr_id = self.gate_pickup_df["cntr_id"][i]
-                tractor = self.gate_pickup_df["tractor"][i]
-                pin= self.gate_pickup_df["pin"][i]
+            # Group DataFrame by tractor
+            grouped = self.gate_pickup_df.groupby("tractor")
+            for tractor, group in grouped:
+                logger.info(f"Processing tractor group: {tractor}, size: {len(group)}")
 
-                logger.info(f"Processing pickup for cntr_id: {cntr_id}, tractor: {tractor}, pin: {pin}")
                 self.actions.click(self.search_tractor)
-                send_keys_with_log(str(tractor))
+                send_keys_with_log(tractor)
                 send_keys_with_log("{ENTER}")
-                send_keys_with_log("%1")
-                if not wait_for_window("Create", timeout=5):
-                    raise RuntimeError("Create window not found")
-                self.actions.click(self.create_pin)
-                send_keys_with_log(str(pin))
-                self.actions.click(self.create_driver)
-                send_keys_with_log(str(tractor))
-                send_keys_with_log("{ENTER}")
-                if not wait_for_window("Confirmation", timeout=5):
-                    raise RuntimeError("Confirmation window not found")
-                send_keys_with_log("{ENTER}")
-                if wait_for_window("Insufficient", timeout=2):
-                    send_keys_with_log(self.username, with_tab=True)
-                    send_keys_with_log(self.password)
-                    send_keys_with_log("{ENTER}")
-                    time.sleep(1)
-                    send_keys_with_log("{ENTER}")
-                if wait_for_window("Confirmation", timeout=2):
-                    send_keys_with_log("{ENTER}")
-                    time.sleep(1)
-                self.release_print_cwp()
+
+                for idx, row in self.gate_pickup_df.iterrows():
+                    logger.info(f"Processing pickup for cntr_id: {row["cntr_id"]}, tractor: {row["tractor"]}, pin: {row["pin"]}")
+
+                    # Initiate pickup
+                    if self.properties.enabled(self.pickup_btn):
+                        send_keys_with_log("%1")
+                    else:
+                        logger.error("Pickup button not enabled")
+                        raise RuntimeError("Pickup button not enabled")
+
+                    # Enter PIN and driver ID
+                    if wait_for_window("Create Pickup"):
+                        self.actions.click(self.create_pin)
+                        send_keys_with_log(str(row["pin"]))
+                        self.actions.click(self.create_driver)
+                        send_keys_with_log(row["tractor"])
+                        send_keys_with_log("{ENTER}")
+                    else:
+                        logger.error("Create Pickup window not found")
+                        raise RuntimeError("Create Pickup window not found")
+
+                    # Handle gatex0225 window
+                    if wait_for_window(".*gatex0225$", 1):
+                        send_keys_with_log("{ENTER}")
+                    else:
+                        logger.error("gatex0225 window not found")
+                        raise RuntimeError("gatex0225 window not found")
+
+                    # Handle gatex3276 window (authentication)
+                    if wait_for_window(".*gatex3276$", 1):
+                        send_keys_with_log(self.username, with_tab=True)
+                        send_keys_with_log(self.password)
+                        send_keys_with_log("{ENTER}")
+                        self.actions.click(self.create_pickup_ok_btn)
+                    else:
+                        logger.error("gatex3276 window not found")
+                        raise RuntimeError("gatex3276 window not found")
+
+                    # Handle Confirmation window
+                    if wait_for_window("Confirmation"):
+                        send_keys_with_log("{ENTER}")
+                    else:
+                        logger.error("Confirmation window not found")
+                        raise RuntimeError("Confirmation window not found")
+
+                # Refresh after processing the group
+                self.actions.click(self.gate_transaction_refresh_btn)
+
+            # Finalize with print release
+            self.release_print_cwp()
+
         except Exception as e:
             logger.error(f"Create pickup failed: {e}")
             raise
@@ -103,7 +146,7 @@ class GateTransaction(BaseFlow):
     def create_gate_ground(self) -> None:
         """Create gate grounding transactions."""
         try:
-            self._get_tractor()
+            self._get_tractor(self.gate_ground_df, self.gate_ground_data_path)
             if not self.properties.visible(self.search_tractor):
                 self.module_view(self.module)
 
@@ -200,39 +243,62 @@ class GateTransaction(BaseFlow):
             logger.error(f"Create gate grounding failed: {e}")
             raise
 
-    def get_tractor(self) -> None:
-        """Generate tractor IDs and update DataFrame."""
+    # def get_tractor(self) -> None:
+    #     """Generate tractor IDs and update DataFrame."""
+    #     try:
+    #         count = len(self.gate_pickup_df)
+    #         if count == 0:
+    #             logger.error("DataFrame is empty")
+    #             raise ValueError("Empty DataFrame")
+    #         self.tractor_list = [f"OXT{i:02d}" for i in range(1, count + 1)]
+    #         self.gate_pickup_df["tractor"] = self.tractor_list
+    #         logger.info(f"Updated DataFrame with tractors: {self.gate_pickup_df}")
+    #         # Save to CSV, not Excel
+    #         self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
+    #         logger.debug(f"Saved DataFrame to {self.gate_pickup_data_path}")
+    #     except Exception as e:
+    #         logger.error(f"Failed to update tractors: {e}")
+    #         raise
+
+    def _get_tractor(self, df, path) -> None:
         try:
-            count = len(self.gate_pickup_df)
+            count = len(df)
             if count == 0:
                 logger.error("DataFrame is empty")
                 raise ValueError("Empty DataFrame")
-            self.tractor_list = [f"OXT{i:02d}" for i in range(1, count + 1)]
-            self.gate_pickup_df["tractor"] = self.tractor_list
-            logger.info(f"Updated DataFrame with tractors: {self.gate_pickup_df}")
-            # Save to CSV, not Excel
-            self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
-            logger.debug(f"Saved DataFrame to {self.gate_pickup_data_path}")
-        except Exception as e:
-            logger.error(f"Failed to update tractors: {e}")
-            raise
 
-    def _get_tractor(self) -> None:
-        try:
-            count = len(self.gate_ground_df)
-            if count == 0:
-                logger.error("DataFrame is empty")
-                raise ValueError("Empty DataFrame")
+            # Initialize tractor counter
+            tractor_counter = 1
+            tractor_list = [None] * len(df)
 
-            num_tractors = math.ceil(count / 2)
-            self.tractor_list = [f"OXT{i:02d}" for i in range(1, num_tractors + 1) for _ in range(2)][:count]
+            # Separate 'T' and 'S' rows while keeping track of original indices
+            twin_rows = df[df["twin_ind"] == "T"].index.tolist()
+            single_rows = df[df["twin_ind"] == "S"].index.tolist()
 
-            self.gate_ground_df["tractor"] = self.tractor_list
-            logger.info(f"Updated DataFrame with tractors: {self.gate_pickup_df}")
+            # Pair 'T' rows and assign shared tractor IDs
+            for i in range(0, len(twin_rows), 2):
+                tractor = f"XT{str(tractor_counter).zfill(3)}"
+                if i + 1 < len(twin_rows):
+                    # Pair the two 'T' rows
+                    tractor_list[twin_rows[i]] = tractor
+                    tractor_list[twin_rows[i + 1]] = tractor
+                    tractor_counter += 1
+                else:
+                    # Odd number of 'T' rows, treat the last one as a single
+                    tractor_list[twin_rows[i]] = tractor
 
-            # Save to CSV, not Excel
-            self.gate_ground_df.to_csv(self.gate_ground_data_path, index=False)
-            logger.debug(f"Saved DataFrame to {self.gate_ground_data_path}")
+            # Assign unique tractor IDs to 'S' rows
+            for idx in single_rows:
+                tractor = f"XT{str(tractor_counter).zfill(3)}"
+                tractor_list[idx] = tractor
+                tractor_counter += 1
+
+            # Update DataFrame with tractor assignments
+            df["tractor"] = tractor_list
+            logger.info(f"Updated DataFrame with tractors: {df}")
+
+            # Save to CSV
+            df.to_csv(path, index=False)
         except Exception as e:
             logger.error(f"Failed to update tractors: {e}")
             raise
@@ -240,13 +306,20 @@ class GateTransaction(BaseFlow):
     def release_print_cwp(self) -> None:
         """Release and print CWP for a transaction."""
         try:
-            self.actions.click(self.title)
-            send_keys_with_log("%3")
+            self.actions.click(self.gate_transaction_refresh_btn)
+
+            if self.properties.enabled(self.release_btn):
+                send_keys_with_log("%3")
+            else:
+                raise
+
             if self.properties.enabled(self.print_cms_btn):
                 send_keys_with_log("%7")
+            else:
+                raise
 
             if wait_for_window("Print CMS"):
-                send_keys_with_log(self.gate_settings["printer"])
+                # send_keys_with_log(self.gate_settings["printer"])
                 send_keys_with_log("{ENTER}")
             else:
                 raise RuntimeError("Print window not found")
@@ -266,28 +339,83 @@ class GateTransaction(BaseFlow):
             if not self.properties.visible(self.search_tractor, timeout=1):
                 self.module_view(self.module)
 
-            for tractor in self.gate_pickup_df["tractor"]:
-                logger.info(f"Confirming pickup for tractor: {tractor}")
+            # Group DataFrame by tractor
+            grouped = self.gate_pickup_df.groupby("tractor")
+            for tractor , group in grouped:
+                # Refresh and search for the tractor
+                self.actions.click(self.gate_transaction_refresh_btn)
                 self.actions.click(self.search_tractor)
                 send_keys_with_log(tractor)
-                send_keys_with_log("{ENTER}")
-                send_keys_with_log("%4")
-                if wait_for_window("Confirm", timeout=5):
-                    send_keys_with_log("{TAB}")
-                    send_keys_with_log("{ENTER}")
-                    if not wait_for_window("Exit Gate", timeout=5):
-                        raise RuntimeError("Exit Gate window not found")
-                    send_keys_with_log(self.gate_settings["confirmation_code"])
-                    self.actions.click(self.inspection_seal)
-                    send_keys_with_log(self.gate_settings["inspection_seal_value"])
-                    send_keys_with_log("{ENTER}")
-                elif not wait_for_window("Gate Confirm", timeout=1):
-                    raise RuntimeError("Gate Confirm window not found")
-                self.actions.click(self.manual_confirm_btn)
-                if not wait_for_window("Gate Confirm", timeout=5):
-                    raise RuntimeError("Gate Confirm window not found")
-                send_keys_with_log("{ENTER}")
-                time.sleep(1)
+                send_keys_with_log("%s")
+
+                if self.properties.enabled(self.confirm_btn):
+                    send_keys_with_log("%4")
+                else:
+                    raise
+
+                # Get the twin indicator
+                twin_ind = group["twin_ind"].iloc[0]
+
+                if twin_ind == "T":
+                    # Handle twin containers
+                    if wait_for_window("Confirm"):
+                        self.actions.click(self.confirm_yes_btn)
+                    else:
+                        raise
+
+                    # Process each row in the group (Exit Gate Inspection)
+                    for _, row in group.iterrows():
+                        if wait_for_window("Exit Gate Inspection"):
+                            self.actions.click(self.exit_gate_inspection_size)
+                            send_keys_with_log(self.gate_settings["size_type"])
+                            self.actions.click(self.inspection_seal)
+                            send_keys_with_log(self.gate_settings["seal_ind"])
+                            send_keys_with_log(self.gate_settings["F/E"])
+                            send_keys_with_log(self.gate_settings["OOG_ind"])
+                            send_keys_with_log("{ENTER}")
+
+                    # Process each row in the group (Gate Confirm Information)
+                    for idx, row in group.iterrows():
+                        if wait_for_window("Gate Confirm Information"):
+                            self.actions.click(self.gate_confirm_manual_confirm_btn)
+                        else:
+                            raise
+
+                        # Only process the first row for Gate Confirm
+                        if idx == 0:
+                            if wait_for_window("Gate Confirm"):
+                                send_keys_with_log("{ENTER}")
+                            else:
+                                raise
+
+                elif twin_ind == "S":
+                    # Handle single container
+                    if wait_for_window("Confirm"):
+                        self.actions.click(self.confirm_yes_btn)
+                    else:
+                        raise
+
+                    # Process Exit Gate Inspection
+                    if wait_for_window("Exit Gate Inspection", timeout=1):
+                        send_keys_with_log(self.gate_settings["size_type"])
+                        self.actions.click(self.inspection_seal)
+                        send_keys_with_log(self.gate_settings["seal_ind"])
+                        send_keys_with_log(self.gate_settings["F/E"])
+                        send_keys_with_log(self.gate_settings["OOG_ind"])
+                        send_keys_with_log("{ENTER}")
+
+                    # Process Gate Confirm Information
+                    if wait_for_window("Gate Confirm Information"):
+                        self.actions.click(self.gate_confirm_manual_confirm_btn)
+                    else:
+                        raise
+
+                    # Process Gate Confirm
+                    if wait_for_window("Gate Confirm"):
+                        send_keys_with_log("{ENTER}")
+                    else:
+                        raise
+
         except Exception as e:
             logger.error(f"Confirm pickup failed: {e}")
             raise
@@ -297,14 +425,14 @@ class GateTransaction(BaseFlow):
             if not self.properties.visible(self.search_tractor, timeout=1):
                 self.module_view(self.module)
 
-            self.actions.click(self.gate_transaction_refresh_btn)
-
             for idx, row in self.gate_ground_df.iterrows():
-                if idx % 2 != 0:
+                self.actions.click(self.gate_transaction_refresh_btn)
+                if idx % 2 == 0:
                     self.actions.click(self.search_tractor)
                     send_keys_with_log(row["tractor"])
+                    send_keys_with_log("%s")
                 send_keys_with_log("%4")
-                if wait_for_window("Gate Confirm Information", timeout=5):
+                if wait_for_window("Gate Confirm Information"):
                     self.actions.click(self.gate_confirm_manual_confirm_btn)
                 else:
                     raise RuntimeError("Gate Confirm window not found")

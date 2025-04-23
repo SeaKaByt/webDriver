@@ -108,12 +108,14 @@ gt:
   search_tractor: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='detailPanel']/container[@name='guiPanel2']/text[@name='tractorNoTextField']
   create_pin: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='pinNoPanel']/text[@name='pinNoTextField']
   create_driver: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='sealPanel']/text[@name='driverIdTextField']
-  row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='resultTable']/row[@index='0']/cell[@columnindex='2']
   inspection_seal: /form[@title='Exit Gate Inspection']//container[@name='infoPanel']/?/?/container[@name='oogPanel']/combobox[@name='sealIndicatorComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
   manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
   printer_id: /form[@title='Gate Confirm']//container[@name='guiPanel3']/combobox[@name='printerIdComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
 
+  pickup_btn: /form[@title>'nGen FAT-AQCT-DC - 14.7.0-1.0']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='generalPickupButton']
   ground_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='groundButton']
+  confirm_btn: /form[@title>'nGen FAT-AQCT-DC - 14.7.0-1.0']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='confirmButton']
+  release_btn: /form[@title>'nGen FAT-AQCT-DC - 14.7.0-1.0']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='releaseButton']
   print_cms_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='printCMSButton']
 
   create_grounding_cntr: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='pinNoPanel']/text[@name='cntrNoTextField']
@@ -125,11 +127,14 @@ gt:
   create_grounding_FA: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='regionPanel']/text[@name='faIndTextField']
   create_grounding_gross_wt: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='grossWtPanel']/text[@name='inputGrossWtTextField']
 
+  create_pickup_ok_btn: /form[@title='Create Pickup Movement']//container[@name='buttonPanel']/container[@name='createCard']/button[@name='createOkButton']
+
+  exit_gate_inspection_size: /form[@title='Exit Gate Inspection']//container[@name='infoPanel']/?/?/container[@name='sizeTypePanel']/text[@name='sizeTextField']
   gate_inspection_ok_btn: /form[@title='Proceed Gate Inspection']//container[@name='guiPanel1']/button[@name='okStyledButton']
   gate_transaction_refresh_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='refreshButton']
 
   gate_confirm_manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
-
+  confirm_yes_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
 qm:
   fcl_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
   row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
