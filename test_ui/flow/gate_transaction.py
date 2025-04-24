@@ -1,12 +1,7 @@
 import argparse
-import math
 import sys
 from typing import Optional
 from pathlib import Path
-import time
-
-import pandas as pd
-
 from helper.logger import logger
 from helper.win_utils import wait_for_window, send_keys_with_log
 from test_ui.base_flow import BaseFlow
@@ -33,7 +28,6 @@ class GateTransaction(BaseFlow):
             self.create_driver = gt_config.get("create_driver")
             self.inspection_seal = gt_config.get("inspection_seal")
             self.manual_confirm_btn = gt_config.get("manual_confirm_btn")
-            self.printer_id = gt_config.get("printer_id")
             self.pickup_btn = gt_config.get("pickup_btn")
             self.ground_btn = gt_config.get("ground_btn")
             self.confirm_btn = gt_config.get("confirm_btn")
@@ -52,19 +46,14 @@ class GateTransaction(BaseFlow):
             self.exit_gate_inspection_size = gt_config.get("exit_gate_inspection_size")
             self.release_btn = gt_config.get("release_btn")
             self.print_cms_btn = gt_config.get("print_cms_btn")
+            self.gate_confirm_ok_btn = gt_config.get("gate_confirm_ok_btn")
             self.confirm_yes_btn = gt_config.get("confirm_yes_btn")
             self.gate_settings = self.config.get("gate_settings", {
                 "size_type": "2000",
                 "seal_ind": "y",
                 "F/E": "f",
                 "OOG_ind": "n",
-                "printer": "dummy"
             })
-            # Validate DataFrame
-            required_columns = ["cntr_id", "pin", "tractor"]
-            if not all(col in self.gate_pickup_df.columns for col in required_columns):
-                logger.error(f"data.csv missing columns: {required_columns}")
-                raise ValueError(f"Invalid CSV: missing {required_columns}")
         except KeyError as e:
             logger.error(f"Config missing key: {e}")
             raise ValueError(f"Invalid config: {e}")
@@ -75,6 +64,12 @@ class GateTransaction(BaseFlow):
             # Assign tractors based on twin_ind
             self._get_tractor(self.gate_pickup_df, self.gate_pickup_data_path)
 
+            # Validate DataFrame
+            required_columns = ["cntr_id", "pin", "tractor"]
+            if not all(col in self.gate_pickup_df.columns for col in required_columns):
+                logger.error(f"data.csv missing columns: {required_columns}")
+                raise ValueError(f"Invalid CSV: missing {required_columns}")
+
             # Ensure the module is visible
             if not self.properties.visible(self.search_tractor, timeout=1):
                 self.module_view(self.module)
@@ -84,11 +79,15 @@ class GateTransaction(BaseFlow):
             for tractor, group in grouped:
                 logger.info(f"Processing tractor group: {tractor}, size: {len(group)}")
 
-                self.actions.click(self.search_tractor)
-                send_keys_with_log(tractor)
-                send_keys_with_log("{ENTER}")
+                if self.properties.editable(self.search_tractor):
+                    self.actions.click(self.search_tractor)
+                    send_keys_with_log(tractor)
+                    send_keys_with_log("{ENTER}")
+                else:
+                    logger.error("Search tractor field not editable")
+                    raise RuntimeError("Search tractor field not editable")
 
-                for idx, row in self.gate_pickup_df.iterrows():
+                for _, row in group.iterrows():
                     logger.info(f"Processing pickup for cntr_id: {row["cntr_id"]}, tractor: {row["tractor"]}, pin: {row["pin"]}")
 
                     # Initiate pickup
@@ -136,8 +135,8 @@ class GateTransaction(BaseFlow):
                 # Refresh after processing the group
                 self.actions.click(self.gate_transaction_refresh_btn)
 
-            # Finalize with print release
-            self.release_print_cwp()
+                # Finalize with print release
+                self.release_print_cwp()
 
         except Exception as e:
             logger.error(f"Create pickup failed: {e}")
@@ -147,118 +146,126 @@ class GateTransaction(BaseFlow):
         """Create gate grounding transactions."""
         try:
             self._get_tractor(self.gate_ground_df, self.gate_ground_data_path)
+
+            # Validate DataFrame
+            required_columns = ["cntr_id", "tractor"]
+            if not all(col in self.gate_pickup_df.columns for col in required_columns):
+                logger.error(f"data.csv missing columns: {required_columns}")
+                raise ValueError(f"Invalid CSV: missing {required_columns}")
+
+            # Ensure the module is visible
             if not self.properties.visible(self.search_tractor):
                 self.module_view(self.module)
 
-            for idx, row in self.gate_ground_df.iterrows():
-                if idx % 2 == 0:
+            # Group DataFrame by tractor
+            grouped = self.gate_ground_df.groupby("tractor")
+            for tractor, group in grouped:
+                logger.info(f"Processing tractor group: {tractor}, cntr_id: {group['cntr_id'].tolist()}")
+
+                if self.properties.editable(self.search_tractor):
                     self.actions.click(self.search_tractor)
-                    send_keys_with_log(row["tractor"])
+                    send_keys_with_log(tractor)
                     send_keys_with_log("{ENTER}")
-                send_keys_with_log("%2")
-                wait_for_window("Create Gate Grounding")
-                self.actions.click(self.create_grounding_cntr)
-                send_keys_with_log(row["cntr_id"])
-                if idx % 2 == 0:
-                    self.actions.click(self.create_grounding_driver)
-                    send_keys_with_log(row["tractor"])
-                send_keys_with_log("{ENTER}")
-
-                if wait_for_window(".*gatex1536$", 1):
-                    send_keys_with_log("{ENTER}")
-
-                if not self.properties.editable(self.create_grounding_size):
-                    raise
-
-                self.actions.click(self.create_grounding_size)
-                send_keys_with_log(self.size)
-                send_keys_with_log(self.type)
-                self.actions.click(self.create_grounding_ok_btn)
-
-                if wait_for_window(".*Gate Inspection$", 1):
-                    send_keys_with_log("{ENTER}")
-                    self.actions.click(self.gate_inspection_ok_btn)
-                    self.actions.click(self.create_grounding_ok_btn)
-
-                if not self.properties.editable(self.create_grounding_material):
-                    raise
-
-                self.actions.click(self.create_grounding_material)
-                send_keys_with_log(self.material)
-                send_keys_with_log(self.max_gross_wt[:2])
-                send_keys_with_log("y")
-                self.actions.click(self.create_grounding_ok_btn)
-
-                if idx % 2 != 0:
-                    self.actions.click(self.create_grounding_FA)
-                    send_keys_with_log("a")
-
-                self.actions.click(self.create_grounding_gross_wt)
-                send_keys_with_log(self.gross_wt)
-                self.actions.click(self.create_grounding_ok_btn)
-
-                if wait_for_window(".*gatex0792$", 1):
-                    send_keys_with_log(self.username, with_tab=True)
-                    send_keys_with_log(self.password)
-                    send_keys_with_log("{ENTER}")
-
-                if wait_for_window(".*gatex3276$", 1):
-                    send_keys_with_log(self.username, with_tab=True)
-                    send_keys_with_log(self.password)
-                    send_keys_with_log("{ENTER}")
-
-                if not self.properties.editable(self.create_grounding_gross_wt):
-                    self.actions.click(self.create_grounding_ok_btn)
                 else:
-                    raise
+                    logger.error("Search tractor field not editable")
+                    raise RuntimeError("Search tractor field not editable")
 
-                if idx % 2 != 0:
-                    if wait_for_window(".*gatex2153$", 1):
+                for i, (idx, row) in enumerate(group.iterrows()):
+                    logger.info(f"Processing ground for idx: {i}, cntr_id: {row["cntr_id"]}, tractor: {row["tractor"]}")
+                    logger.info(f"Processing ground for idx: {idx}, cntr_id: {row["cntr_id"]}, tractor: {row["tractor"]}")
+
+                    # Initiate grounding
+                    if self.properties.enabled(self.ground_btn):
+                        send_keys_with_log("%2")
+                    else:
+                        logger.error("Ground button not enabled")
+                        raise RuntimeError("Ground button not enabled")
+
+                    # Enter container ID and driver ID
+                    if wait_for_window("Create Gate Grounding"):
+                        self.actions.click(self.create_grounding_cntr)
+                        send_keys_with_log(row["cntr_id"])
+                        if i == 0:
+                            self.actions.click(self.create_grounding_driver)
+                            send_keys_with_log(row["tractor"])
                         send_keys_with_log("{ENTER}")
+
+                    if wait_for_window(".*gatex1536$", 1):
+                        send_keys_with_log("{ENTER}")
+
+                    if self.properties.editable(self.create_grounding_size):
+                        self.actions.click(self.create_grounding_size)
+                        send_keys_with_log(str(row["size"]))
+                        send_keys_with_log(self.type)
+                        self.actions.click(self.create_grounding_ok_btn)
+                    else:
+                        self.actions.click(self.create_grounding_ok_btn)
+
+                    # Handle Gate Inspection window
+                    if wait_for_window(".*Gate Inspection$", 1):
+                        send_keys_with_log("%c")
+                        self.actions.click(self.gate_inspection_ok_btn)
+                        self.actions.click(self.create_grounding_ok_btn)
+                    else:
+                        self.actions.click(self.create_grounding_ok_btn)
+
+                    if self.properties.editable(self.create_grounding_material):
+                        self.actions.click(self.create_grounding_material)
+                        send_keys_with_log(self.material)
+                        send_keys_with_log(self.max_gross_wt[:2])
+                        send_keys_with_log("y")
+                        self.actions.click(self.create_grounding_ok_btn)
+                        if i == 1:
+                            self.actions.click(self.create_grounding_FA)
+                            send_keys_with_log("a")
+                        self.actions.click(self.create_grounding_gross_wt)
+                        send_keys_with_log(self.gross_wt)
+                        self.actions.click(self.create_grounding_ok_btn)
+
+                    if wait_for_window(".*gatex0792$", 1):
+                        send_keys_with_log(self.username, with_tab=True)
+                        send_keys_with_log(self.password)
+                        send_keys_with_log("{ENTER}")
+
+                    if wait_for_window(".*gatex3276$", 2):
+                        send_keys_with_log(self.username, with_tab=True)
+                        send_keys_with_log(self.password)
+                        send_keys_with_log("{ENTER}")
+
+                    if not self.properties.editable(self.create_grounding_gross_wt, timeout=1):
+                        self.actions.click(self.create_grounding_ok_btn)
+                    else:
+                        logger.error("Create Grounding Gross Weight field should not editable")
+                        raise RuntimeError("Create Grounding Gross Weight field should not editable")
+
+                    if i == 1:
+                        if wait_for_window(".*gatex2153$", 1):
+                            send_keys_with_log("{ENTER}")
 
                     if wait_for_window(".*gatex1990$", 1):
                         send_keys_with_log("{ENTER}")
 
-                if wait_for_window(".*gatex1990$", 1):
-                    send_keys_with_log("{ENTER}")
+                    if wait_for_window(".*gatex1247$", 1):
+                        send_keys_with_log("{ENTER}")
+                    else:
+                        logger.error("gatex1247 window not found")
+                        raise
 
-                if wait_for_window(".*gatex1247$", 1):
-                    send_keys_with_log("{ENTER}")
-                else:
-                    raise
+                    if wait_for_window(".*cbo0644$", 1):
+                        send_keys_with_log("{ENTER}")
 
-                if wait_for_window(".*cbo0644$", 1):
-                    send_keys_with_log("{ENTER}")
+                    if wait_for_window("Confirm"):
+                        send_keys_with_log("{ENTER}")
+                    else:
+                        logger.error("Confirm window not found")
+                        raise
 
-                if wait_for_window("Confirm"):
-                    send_keys_with_log("{ENTER}")
-                else:
-                    raise
+                    self.actions.click(self.gate_transaction_refresh_btn)
 
-                if not self.properties.enabled(self.gate_transaction_refresh_btn):
-                    raise
-
-            self.release_print_cwp()
+                self.release_print_cwp()
         except Exception as e:
             logger.error(f"Create gate grounding failed: {e}")
             raise
-
-    # def get_tractor(self) -> None:
-    #     """Generate tractor IDs and update DataFrame."""
-    #     try:
-    #         count = len(self.gate_pickup_df)
-    #         if count == 0:
-    #             logger.error("DataFrame is empty")
-    #             raise ValueError("Empty DataFrame")
-    #         self.tractor_list = [f"OXT{i:02d}" for i in range(1, count + 1)]
-    #         self.gate_pickup_df["tractor"] = self.tractor_list
-    #         logger.info(f"Updated DataFrame with tractors: {self.gate_pickup_df}")
-    #         # Save to CSV, not Excel
-    #         self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
-    #         logger.debug(f"Saved DataFrame to {self.gate_pickup_data_path}")
-    #     except Exception as e:
-    #         logger.error(f"Failed to update tractors: {e}")
-    #         raise
 
     def _get_tractor(self, df, path) -> None:
         try:
@@ -319,7 +326,6 @@ class GateTransaction(BaseFlow):
                 raise
 
             if wait_for_window("Print CMS"):
-                # send_keys_with_log(self.gate_settings["printer"])
                 send_keys_with_log("{ENTER}")
             else:
                 raise RuntimeError("Print window not found")
@@ -384,7 +390,7 @@ class GateTransaction(BaseFlow):
                         # Only process the first row for Gate Confirm
                         if idx == 0:
                             if wait_for_window("Gate Confirm"):
-                                send_keys_with_log("{ENTER}")
+                                send_keys_with_log(self.gate_confirm_ok_btn)
                             else:
                                 raise
 
