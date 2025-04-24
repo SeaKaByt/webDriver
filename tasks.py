@@ -59,8 +59,8 @@ def create_gate_pickup(c):
 
 def create_gate_ground(c):
     c.run("python -m test_ui.flow.gate_transaction create_gate_ground")
-    c.run("python -m test_ui.flow.queue_monitor --ground")
-    c.run("python -m test_ui.flow.gate_transaction confirm_ground")
+    # c.run("python -m test_ui.flow.queue_monitor --ground")
+    # c.run("python -m test_ui.flow.gate_transaction confirm_ground")
 
 @task
 def gate_pickup_task(c):
@@ -77,5 +77,5 @@ def gate_pickup_task(c):
 @task
 def gate_ground_task(c):
     # initiate(c)
-    add_return_cntr(c)
+    # add_return_cntr(c)
     create_gate_ground(c)
