@@ -59,6 +59,7 @@ def create_gate_pickup(c):
 
 def create_gate_ground(c):
     c.run("python -m test_ui.flow.gate_transaction create_gate_ground")
+    # c.run("python -m test_ui.flow.gate_transaction release_print_cwp")
     # c.run("python -m test_ui.flow.queue_monitor --ground")
     # c.run("python -m test_ui.flow.gate_transaction confirm_ground")
 
