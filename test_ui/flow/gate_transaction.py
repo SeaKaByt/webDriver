@@ -200,8 +200,6 @@ class GateTransaction(BaseFlow):
                     else:
                         self.actions.click(self.create_grounding_ok_btn)
 
-                    # if wait_for_window(".*gatex0730$"):
-
                     # Handle Gate Inspection window
                     if wait_for_window(".*Gate Inspection$", 1):
                         send_keys_with_log("%c")
@@ -263,7 +261,7 @@ class GateTransaction(BaseFlow):
 
                     self.actions.click(self.gate_transaction_refresh_btn)
 
-                # self.release_print_cwp()
+                self.release_print_cwp()
         except Exception as e:
             logger.error(f"Create gate grounding failed: {e}")
             raise
