@@ -110,7 +110,6 @@ gt:
   create_driver: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='sealPanel']/text[@name='driverIdTextField']
   inspection_seal: /form[@title='Exit Gate Inspection']//container[@name='infoPanel']/?/?/container[@name='oogPanel']/combobox[@name='sealIndicatorComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
   manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
-  printer_id: /form[@title='Gate Confirm']//container[@name='guiPanel3']/combobox[@name='printerIdComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
 
   pickup_btn: /form[@title>'nGen FAT-AQCT-DC - 14.7.0-1.0']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='generalPickupButton']
   ground_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='groundButton']
@@ -134,6 +133,7 @@ gt:
   gate_transaction_refresh_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='refreshButton']
 
   gate_confirm_manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
+  gate_confirm_ok_btn: /form[@title='Gate Confirm']//container[@name='buttonPanel']/button[@name='okButton']
   confirm_yes_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
 qm:
   fcl_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
@@ -163,3 +163,7 @@ bm:
   add_next_btn: /form[@title='Laden Return Container']//container[@name='buttonPanel']/?/?/container[@name='copyButtonPanel']/button[@name='addNextStyledButton']
   add_next_cancel_btn: /form[@title='Laden Return Container']//container[@name='buttonPanel']/?/?/container[@name='copyButtonPanel']/button[@name='cancelStyledButton']
   request_record_close_btn: /form[@title='Booking Request Detail']//container[@name='buttonPane']/container[@name='initButtonCard']/button[@name='closeButton']
+  request_sequence_2862: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2862']
+  request_sequence_2822: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2822']
+  request_sequence_2843: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2843']
+  request_sequence_2882: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2882']
