@@ -75,6 +75,7 @@ class QMon(BaseFlow):
                 # Process each row in the group based on group size
                 group_size = len(group)
                 for idx, row in enumerate(group.itertuples(), start=0):
+                    logger.info(f"Processing row {idx} for tractor {tractor}")
                     if group_size == 1:
                         # Single scenario: click movement_row_0 once
                         self.actions.click(self.movement_row_0)
@@ -125,4 +126,4 @@ if __name__ == "__main__":
             qmon.backup_confirm(df=qmon.gate_ground_df)
     except Exception as e:
         logger.error(f"QMon failed: {e}")
-        sys.exit(1)
+        raise

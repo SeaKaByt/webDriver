@@ -3,43 +3,27 @@ from typing import Optional
 from pathlib import Path
 from datetime import datetime
 from helper.logger import logger
+from helper.sys_utils import raise_with_log
 from helper.win_utils import wait_for_window, send_keys_with_log
 from test_ui.base_flow import BaseFlow
 
-
 class CROMaintenance(BaseFlow):
-    """Handles CRO module for creating release orders and fetching pins."""
     module = "CRO"
     pin_list = []
     cro_no_list = []
 
-    def __init__(self, config_path: Optional[Path] = None):
-        """
-        Initialize CROMaintenance with config and UI settings.
-
-        Args:
-            config_path: Optional path to YAML config file.
-        """
-        super().__init__(config_path=config_path)
-        try:
-            cro_config = self.config.get("cro", {})
-            self.reset = cro_config.get("reset")
-            self.create = cro_config.get("create")
-            self.cro_cntr_id = cro_config.get("cro_cntr_id")
-            self.cro_cro_no = cro_config.get("cro_cro_no")
-            self.create_cntr_id = cro_config.get("create_cntr_id")
-            self.cro_status = cro_config.get("cro_status")
-            self.row0_pin = cro_config.get("row0_pin")
-            # Validate DataFrame
-            if "cntr_id" not in self.gate_pickup_df.columns:
-                logger.error("gate_pickup_data.csv missing 'cntr_id' column")
-                raise ValueError("Invalid DataFrame: missing cntr_id")
-        except KeyError as e:
-            logger.error(f"Config missing key: {e}")
-            raise ValueError(f"Invalid config: {e}")
+    def __init__(self):
+        super().__init__()
+        cro_config = self.config.get("cro", {})
+        self.reset = cro_config.get("reset")
+        self.create = cro_config.get("create")
+        self.cro_cntr_id = cro_config.get("cro_cntr_id")
+        self.cro_cro_no = cro_config.get("cro_cro_no")
+        self.create_cntr_id = cro_config.get("create_cntr_id")
+        self.cro_status = cro_config.get("cro_status")
+        self.row0_pin = cro_config.get("row0_pin")
 
     def create_cro(self) -> None:
-        """Create container release orders for each cntr_id."""
         try:
             if not self.properties.visible(self.cro_cntr_id, timeout=1):
                 logger.info("Opening CRO module")
@@ -73,7 +57,6 @@ class CROMaintenance(BaseFlow):
                 send_keys_with_log("{ENTER}")
                 self.cro_no_list.append(self.cro_no)
 
-            # Update DataFrame
             if len(self.cro_no_list) == len(self.gate_pickup_df):
                 self.gate_pickup_df["cro_no"] = self.cro_no_list
                 logger.info(f"Updated DataFrame: {self.gate_pickup_df.to_dict()}")
@@ -83,17 +66,14 @@ class CROMaintenance(BaseFlow):
             raise
 
     def generate_cro(self) -> None:
-        """Generate a unique CRO number based on timestamp."""
         try:
             now = datetime.now()
             self.cro_no = now.strftime("%d%m%H%M%S")
             logger.debug(f"Generated CRO number: {self.cro_no}")
         except Exception as e:
-            logger.error(f"Failed to generate CRO number: {e}")
-            raise
+            raise_with_log(f"Failed to generate CRO number: {e}")
 
     def get_pin(self) -> None:
-        """Fetch pins for each cntr_id and update DataFrame."""
         try:
             logger.info("Fetching pins for CRO")
             self.actions.click(self.reset)
@@ -121,8 +101,7 @@ class CROMaintenance(BaseFlow):
             logger.info(f"Updated DataFrame: {self.gate_pickup_df.to_dict()}")
             self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
         except Exception as e:
-            logger.error(f"Get pin failed: {e}")
-            raise
+            raise_with_log(f"Get pin failed: {e}")
 
 if __name__ == "__main__":
     try:
@@ -130,5 +109,4 @@ if __name__ == "__main__":
         cro.create_cro()
         cro.get_pin()
     except Exception as e:
-        logger.error(f"CROMaintenance failed: {e}")
-        sys.exit(1)
+        raise_with_log(f"CROMaintenance failed: {e}")

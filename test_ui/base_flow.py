@@ -10,12 +10,6 @@ class BaseFlow(BaseDriver):
     """Base class for UI automation flows, extending BaseDriver."""
 
     def __init__(self, config_path: Optional[Path] = None):
-        """
-        Initialize BaseFlow with optional config path.
-
-        Args:
-            config_path: Optional path to YAML config file.
-        """
         super().__init__()  # Initialize BaseDriver
         try:
             # Load nGen config
@@ -57,6 +51,8 @@ class BaseFlow(BaseDriver):
             self.date = self.config_j.get("date", "01012026")  # From config or default
             self.time = self.config_j.get("time", "0000")
             self.agent = self.config_j.get("agent", "TEST")
+            self.seal_ind = "y"
+            self.oog_ind = "n"
 
             # Validate required configs
             required = [self.title, self.home, self.cntr_id]
@@ -71,17 +67,10 @@ class BaseFlow(BaseDriver):
             raise
 
     def module_view(self, module: Optional[str] = None) -> None:
-        """
-        Navigate to a specific UI module.
-
-        Args:
-            module: Module identifier (e.g., 'HR', 'DC', 'CRO').
-        """
         try:
             logger.info(f"Navigating to module: {module or 'default'}")
             self.actions.click(self.title)
             self.actions.click(self.home)
-            # send_keys_with_log("{HOME}")
 
             module_actions = {
                 "HR": [

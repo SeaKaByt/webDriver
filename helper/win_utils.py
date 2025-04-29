@@ -43,3 +43,4 @@ def window_exists(title: str, timeout: int = 10) -> bool:
         return True
     logger.error(f"Window not found: {title}")
     raise WindowNotFoundError(f"Window not found: {title}")
+
