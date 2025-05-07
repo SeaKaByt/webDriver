@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pywinauto import Application
 from helper.logger import logger
+from helper.sys_utils import raise_with_log
 from helper.win_utils import send_keys_with_log, wait_for_window, window_exists
 from test_ui.base_flow import BaseFlow
 from test_ui.win import WinAppHandler
@@ -41,15 +42,6 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             raise ValueError(f"Invalid config: missing {e}")
 
     def _login(self, app_name: str, login_window: str, app_xpath: str, login_field: Optional[str] = None) -> None:
-        """
-        Generic login helper for applications.
-
-        Args:
-            app_name: Name of the main application window.
-            login_window: Name of the login window.
-            app_xpath: XPath to launch the application.
-            login_field: Optional XPath for the login field.
-        """
         try:
             if not wait_for_window(self.window_titles[app_name], timeout=1):
                 if not wait_for_window(self.window_titles[login_window], timeout=1):
@@ -77,7 +69,6 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
                     wait_for_window(self.window_titles["launcher"], timeout=10)
                 self._login("ngen", "ngen_login", self.app_ngen, self.ngen_login)
                 window_exists(self.window_titles["ngen"], timeout=15)
-                self.cleanup()
         except Exception as e:
             logger.error(f"nGen login failed: {e}")
             raise
@@ -85,9 +76,11 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
     def login_guider(self) -> None:
         """Log into the Guider application."""
         try:
+            if not wait_for_window(self.window_titles["launcher"], timeout=1):
+                logger.info(f"Launching Application Launcher: {self.jal_path}")
+                self.launch(self.jal_path)
             self._login("guider", "guider_login", self.app_guider)
             window_exists(self.window_titles["guider"], timeout=15)
-            self.cleanup()
         except Exception as e:
             logger.error(f"Guider login failed: {e}")
             raise
@@ -99,7 +92,6 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             self.login_ngen()
             self.login_guider()
             logger.info("Full load completed successfully")
-            self.cleanup()
         except Exception as e:
             logger.error(f"Full load failed: {e}")
             raise
@@ -129,19 +121,6 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
         logger.info(f"Running method: {method_name}")
         method()
 
-    # def cleanup(self) -> None:
-    #     """Clean up resources, including Selenium driver and pywinauto app."""
-    #     logger.info("Cleaning up ApplicationLauncher")
-    #     super().cleanup()  # Call BaseFlow cleanup
-    #     if hasattr(self, "app") and self.app:
-    #         try:
-    #             self.app.kill()
-    #             logger.info("Application killed successfully")
-    #         except Exception as e:
-    #             logger.warning(f"Failed to kill application: {e}")
-    #         self.app = None
-    #     sys.exit(1)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Application Launcher Automation")
     parser.add_argument(
@@ -155,5 +134,4 @@ if __name__ == "__main__":
         app = ApplicationLauncher()
         app.run_method(args.method)
     except Exception as e:
-        logger.error(f"Application failed: {e}")
-        sys.exit(1)
+        raise_with_log(f"Application failed: {e}")

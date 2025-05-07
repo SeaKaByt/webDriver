@@ -1,22 +1,15 @@
 import argparse
-import sys
 from typing import Optional
 from pathlib import Path
+from helper.sys_utils import raise_with_log
 from test_ui.base_flow import BaseFlow
-from helper.win_utils import wait_for_window, send_keys_with_log
+from helper.win_utils import send_keys_with_log
 from helper.logger import logger
 
 class HoldRelease(BaseFlow):
-    """Handles HR module for releasing container holds."""
     module = "HR"
 
     def __init__(self, config_path: Optional[Path] = None):
-        """
-        Initialize HoldRelease with config and UI settings.
-
-        Args:
-            config_path: Optional path to YAML config file.
-        """
         super().__init__(config_path=config_path)
         try:
             hr_config = self.config.get("hr", {})
@@ -42,7 +35,6 @@ class HoldRelease(BaseFlow):
             raise ValueError(f"Invalid config: {e}")
 
     def search_cntr(self) -> None:
-        """Search for containers in hold condition."""
         try:
             if not self.properties.visible(self.search_hold_condition, timeout=1):
                 logger.info("Opening HR module")
@@ -60,7 +52,6 @@ class HoldRelease(BaseFlow):
             raise
 
     def release_hold(self) -> None:
-        """Release holds for searched containers."""
         try:
             logger.info(f"Releasing hold for BOL: {self.bol}")
             self.search_cntr()
@@ -72,8 +63,7 @@ class HoldRelease(BaseFlow):
             self.actions.click(self.select_all)
             self.actions.click(self.release_batch)
         except Exception as e:
-            logger.error(f"Release hold failed: {e}")
-            raise
+            raise_with_log(f"Release hold failed: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Hold Release Automation")
@@ -85,5 +75,4 @@ if __name__ == "__main__":
         if args.method == "release_hold":
             hr.release_hold()
     except Exception as e:
-        logger.error(f"HoldRelease failed: {e}")
-        sys.exit(1)
+        raise_with_log(f"Error in HoldRelease: {e}")

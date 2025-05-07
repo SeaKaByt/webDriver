@@ -42,6 +42,7 @@ class BaseFlow(BaseDriver):
             self.row = self.config_j.get("row")
             self.tier = self.config_j.get("tier")
             self.bol = self.config_j.get("bol")
+            self.blk = self.config_j.get("blk")
 
             # For gate grounding
             self.booking_no = self.config.get("bm", "booking_no")
@@ -53,6 +54,8 @@ class BaseFlow(BaseDriver):
             self.agent = self.config_j.get("agent", "TEST")
             self.seal_ind = "y"
             self.oog_ind = "n"
+            self.full_voyage = "NVD-TSHM04-V01"
+            self.qc = "OQ1"
 
             # Validate required configs
             required = [self.title, self.home, self.cntr_id]

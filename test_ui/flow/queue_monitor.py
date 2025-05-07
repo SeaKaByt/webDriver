@@ -14,12 +14,6 @@ class QMon(BaseFlow):
     module = "QM"
 
     def __init__(self, config_path: Optional[Path] = None):
-        """
-        Initialize QMon with config and UI settings.
-
-        Args:
-            config_path: Optional path to YAML config file.
-        """
         super().__init__(config_path=config_path)
         try:
             qm_config = self.config.get("qm", {})

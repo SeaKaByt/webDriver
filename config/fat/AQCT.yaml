@@ -57,6 +57,9 @@ cd:
   gross_wt: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='dischargePanel']/container[@name='dischargeScrollPane']//container[@name='gwPanel']/text[@name='grWtTextField']
   status: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='statusComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
   yard: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//element[@name='cntrLocationComboBox']/combobox[@name='guiComboBox1']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+  loading_blk: /form[@title>'nGen FAT-AQCT-DC - 14.7.0-1.0']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='loadingPanel']/container[@name='loadingScrollPane']//container[@name='portPanel']/text[@name='BLKIVTextField']
+  loading_shipper: /form[@title>'nGen FAT-AQCT-DC - 14.7.0-1.0']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='loadingPanel']/container[@name='loadingScrollPane']/container[@type='JViewport']//container[@name='shipperTextAreaPanel']/?/?/text[@name='shipperTextArea']
+  loading_gross_wt: /form[@title>'nGen FAT-AQCT-DC - 14.7.0-1.0']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabContainerPanel']/container[@name='tabbedPanel']/container[@name='loadingPanel']/container[@name='loadingScrollPane']//container[@name='gwPanel']/text[@name='grWtTextField']
 
   create_yes_btn: /form[@title='Create Container']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
   create_confirm_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
@@ -167,3 +170,36 @@ bm:
   request_sequence_2822: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2822']
   request_sequence_2843: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2843']
   request_sequence_2882: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2882']
+
+voyage:
+  voyage_tree_qc: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/?/?/container[@name='leftComponent' and @type='JSplitPane']//container[@name='viewport']/tree[@name='tree']/?/?/treeitem[@text>'OQ1']
+  plan_section: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/?/?/container[@name='leftComponent' and @type='JSplitPane']//container[@name='jPanel3']/?/?/container[@name='viewport']/element[@name='planSectionContainer']
+  filter: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/tabpage[@title='Filter']
+  filter_cntr_id: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/container[@name='filterTabPanel']/?/?/container[@name='viewport']//container[@name='cntrIDPanel']/text[@name='cntrIDText']
+  search_list_btn: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='buttonPanel1']/button[@name='searchButton']
+  search_list_row_0: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='tabbedPane']/container[@name='containerListTabPanel']//container[@name='viewport']/table[@name='containerManagerTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
+  voyage_qc: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='leftComponent']//container[@name='controlPanel']/container[@name='controlPanel2']/container[@name='qcInOutPanel']/combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
+  work_plan_add_btn: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/toolbar[@type='JToolBar']/?/?/toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[7]
+  voyage_bay: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='leftComponent']//container[@name='controlPanel']/container[@name='controlPanel2']/container[@name='byBayPanel']/combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
+  list_row_cntr: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='viewport']/table[@name='containerManagerTable']/row/cell
+  list_row: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='tabbedPane']/container[@name='containerListTabPanel']//container[@name='viewport']/table[@name='containerManagerTable']/row/cell[@columnindex='0']
+  list_row_planned: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='tabbedPane']/container[@name='containerListTabPanel']//container[@name='viewport']/table[@name='containerManagerTable']/row
+  option_list: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='tabbedPane']/container[@name='filterTabPanel']/?/?/container[@name='viewport']//container[@name='optionPanel']/container[@name='jScrollPane1']/container[@name='viewport']/list[@name='multiInputList']
+
+  mask_view: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='rightComponent']/container[@name='viewport']/element[@name='maskSettingView']
+  minimize_mask_view: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//button[@accessiblename='' and @type='BasicSplitPaneDivider$2']
+
+guider:
+  title: /form[@title='Guider']/titlebar[@accessiblerole='TitleBar']
+  window_1: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/titlebar[@accessiblerole='TitleBar' and @text<'1']
+  window_2: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/titlebar[@accessiblerole='TitleBar' and @text<'2']
+  window_2_penal: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/container[@name='filterTabPanel']/?/?/container[@name='viewport']/?/?/container[@name='jPanel26']
+  voyage_plan_btn: /form[@title='Guider']/toolbar[@name='bigToolBar']/toolbar[@type='GuiderToolBarManager$OpenToolBar']/button[1]
+  cwp_plan_btn: /form[@title='Guider']/toolbar[@name='bigToolBar']/toolbar[@type='GuiderToolBarManager$OpenToolBar']/button[4]
+  voyage_plan_voyage: /form[@title='Open Voyage Plan']//container[@name='textPanel']/text[@name='voyageIdField']
+  cwp_voyage: /form[@title='Open CWP']//container[@name='textPanel']/text[@name='voyageIdField']
+  open_module_btn: /form[@title>'Open']//container[@name='inputPanel']/button[@name='btnOpen']
+
+cwp:
+  cwp_view: /form[@title>'CWP - NVD-TSHM04-V01 (Con']/?/?/container[@name='cwpSplitPane']/container[@name='rightComponent']/element[@name='textView']/?/?/container[@name='jTabbedPane1']//container[@name='tablePanel']/?/?/container[@name='viewport']
+  control_menu: /form[@title>'CWP - NVD-TSHM04-V01 (Con']/?/?/menuitem[@name='jMenu2']

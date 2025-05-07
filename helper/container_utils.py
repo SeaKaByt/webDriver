@@ -69,12 +69,13 @@ def update_next_stowage(
         raise ContainerError(f"Failed to update stowage") from e
 
 def next_loc(
-    cntr_id: str, stack: str, lane: str, tier: str, path: Union[str, Path]
+    cntr_id: str, size: str, stack: str, lane: str, tier: str, path: Union[str, Path]
 ) -> Dict[str, str]:
     """Update location data and save to JSON."""
     path = Path(path)
     logger.info("Generating next container location")
     try:
+        size_num = int(size)
         stack_num = int(stack)
         lane_num = int(lane)
         tier_num = int(tier)
@@ -84,7 +85,10 @@ def next_loc(
 
         # Update stack and lane
         new_stack = stack_num + 2 if lane_num == 99 and tier_num == 5 else stack_num
-        new_lane = lane_num + 1 if tier_num == 5 else lane_num
+        if size_num == 20:
+            new_lane = lane_num + 1 if tier_num == 5 else lane_num
+        elif size_num == 40:
+            new_lane = lane_num + 2 if tier_num == 5 else lane_num
 
         update_data = {
             "cntr_id": new_cntr_id,
