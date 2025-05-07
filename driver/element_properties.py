@@ -1,5 +1,7 @@
 from selenium.webdriver.common.by import By
 from helper.logger import logger
+from helper.sys_utils import raise_with_log
+
 
 class ElementProperties():
     def __init__(self, driver):
@@ -44,12 +46,17 @@ class ElementProperties():
         finally:
             self.driver.implicitly_wait(10)  # Reset implicit wait to default
 
-    def text_value(self, xpath: str) -> str:
+    def get_row_index(self, xpath: str, timeout: int = 10) -> int | None:
         try:
+            self.driver.implicitly_wait(timeout)
             element = self.driver.find_element(By.XPATH, xpath)
-            text = element.text
-            logger.info(f"Text value for {xpath}: {text}")
-            return text
+            row_index = element.get_dom_attribute("rowIndex")
+            return row_index
         except Exception as e:
-            logger.error(f"Failed to get text value for {xpath}: {e}")
-            return ""
+            return None
+
+    def text_value(self, xpath: str) -> str:
+        element = self.driver.find_element(By.XPATH, xpath)
+        text = element.text
+        logger.info(f"Text value for {xpath}: {text}")
+        return text

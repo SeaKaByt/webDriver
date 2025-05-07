@@ -1,5 +1,5 @@
+import pyautogui
 from pywinauto import mouse
-from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -55,3 +55,24 @@ class ElementActions:
             logger.info(f"Context clicked on element: {xpath}")
         except Exception as e:
             raise_with_log(f"Failed to right-click on element: {xpath} - {e}")
+
+    def drag_release(self, xpath, offset_x, offset_y, target_x, target_y, timeout=10):
+        element = self.find(xpath, timeout)
+        try:
+            location = element.location
+
+            x = location['x']
+            y = location['y']
+
+            screen_x =  int(x + offset_x)
+            screen_y = int(y + offset_y)
+
+            pyautogui.moveTo(screen_x, screen_y)
+            pyautogui.mouseDown()
+            pyautogui.moveTo(screen_x + target_x, screen_y + target_y, duration=1)
+            pyautogui.mouseUp()
+
+            logger.info(f"Dragged element: {xpath}")
+        except Exception as e:
+            logger.error(f"Failed to drag element: {xpath} - {e}")
+            raise

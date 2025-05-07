@@ -5,6 +5,10 @@ def initiate(c):
     c.run("python -m test_ui.app full_load")
 
 @task
+def initiate_guider(c):
+    c.run("python -m test_ui.app login_guider")
+
+@task
 def create_cntr(c, count=1):
     cmd = f"python -m test_ui.flow.container_details {count}"
     c.run(cmd)
@@ -31,10 +35,19 @@ def create_gate_pickup_movement(c):
     # c.run("python -m test_ui.flow.queue_monitor --pickup")
     # c.run("python -m test_ui.flow.gate_transaction confirm_pickup")
 
+@task
 def create_gate_ground_movement(c):
     c.run("python -m test_ui.flow.gate_transaction --methods create_gate_ground")
     # c.run("python -m test_ui.flow.queue_monitor --ground")
     # c.run("python -m test_ui.flow.gate_transaction confirm_ground")
+
+@task
+def voyage_plan(c):
+    c.run("python -m test_ui.flow.voyage_plan")
+
+@task
+def cwp_plan(c):
+    c.run("python -m test_ui.flow.cwp_plan")
 
 @task
 def gate_pickup_task(c):
