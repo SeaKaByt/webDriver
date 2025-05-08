@@ -14,14 +14,17 @@ class ElementActions:
 
     def find(self, xpath, timeout=10):
         try:
+            self.driver.implicitly_wait(timeout)
             wait = WebDriverWait(self.driver, timeout)
             wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
             element = self.driver.find_element(By.XPATH, xpath)
             logger.info(f"Element found: {xpath}")
             return element
         except (WebDriverException, TimeoutException) as e:
-            logger.error(f"Element not found: {xpath} after {timeout} seconds")
-            raise
+            logger.warning(f"Element not found: {xpath} after {timeout} seconds")
+            return None
+        finally:
+            self.driver.implicitly_wait(10)  # Reset implicit wait to default
 
     def click(self, xpath, timeout=10):
         element = self.find(xpath, timeout)

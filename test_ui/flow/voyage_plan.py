@@ -29,7 +29,6 @@ class Voyage(BaseFlow):
         self.filter = voyage_config["filter"]
         self.filter_cntr_id = voyage_config["filter_cntr_id"]
         self.search_list_btn = voyage_config["search_list_btn"]
-        self.search_list_row_0 = voyage_config["search_list_row_0"]
         self.work_plan_add_btn = voyage_config["work_plan_add_btn"]
         self.voyage_qc = voyage_config["voyage_qc"]
         self.mask_view = voyage_config["mask_view"]
@@ -69,50 +68,8 @@ class Voyage(BaseFlow):
         else:
             raise_with_log("Open Voyage Plan window not found")
 
-    def add_cntr(self):
-        df = self.vessel_loading_df
-        df_path = self.vessel_loading_data_path
-
-        if not wait_for_window("Voyage", 1):
-            self.open_voyage_plan()
-            time.sleep(10)
-        self.set_display_scale()
-
-        grouped = df.groupby("bay")
-        for bay, group in grouped:
-            logger.info(f"Processing bay: {bay}")
-            self.setup_voyage(bay)
-            self.check_mask_view()
-            self.actions.click(self.option_list)
-
-            for _, row in group.iterrows():
-                self.actions.click(self.search_list_btn)
-
-                cntr_id_xpath = self.list_row_cntr.rsplit("cell", 1)[0] + f"cell[@text='{row["cntr_id"]}']"
-                self.actions.click(cntr_id_xpath)
-
-                if wait_for_window(".*(gdr2303|gdr1239)$", 1):
-                    send_keys_with_log("{ENTER}")
-
-                row_index = self.properties.get_row_index(cntr_id_xpath, 1)
-                # logger.info(f"Row index: {row_index}, xpath: {xpath}")
-
-                if row_index != None:
-                    xpath = self.list_row_planned.rsplit("row", 1)[0] + f"row[@index='{row_index}']/cell[@columnindex='0']"
-                    # logger.info(f"Planned value: {self.properties.text_value(xpath)}")
-
-                    if self.properties.text_value(xpath) == "No":
-                        new_bay = self.next_bay(int(row["size"]), row["bay"])
-                        self.update_bay(df_path, row["cntr_id"], new_bay)
-                        self.setup_bay(new_bay)
-                        self.drag_release()
-                        self.actions.click(cntr_id_xpath)
-                        if wait_for_window(".*gdr2303$", 1):
-                            send_keys_with_log("{ENTER}")
-                        if  self.actions.find(cntr_id_xpath):
-                            raise_with_log(f"No space available for cntr_id: {row["cntr_id"]}")
-
-    def next_bay(self, size: int, bay: str) -> str:
+    @staticmethod
+    def next_bay(size: int, bay: str) -> str | None:
         logger.info(f"size: {size}, bay: {bay}")
         bay_number = int(bay[:2])
         bay_suffix = bay[2]
@@ -135,19 +92,25 @@ class Voyage(BaseFlow):
             raise_with_log(f"Invalid size: {size}")
 
         if bay_number > 78:
-            raise_with_log(f"Bay number exceeds limit: {bay_number}")
+            return None
 
         new_bay = f"{bay_number:02d}{bay_suffix}"
         logger.info(f"New bay: {new_bay}")
         return new_bay
 
-    def update_bay(self, path, cntr_id, new_bay):
-        df = read_csv(path)
-
+    @staticmethod
+    def update_bay(df, cntr_id, new_bay):
         mask = df["cntr_id"] == cntr_id
         if mask.any():
             df.loc[mask, "bay"] = new_bay
-            df.to_csv(path, index=False)
+        else:
+            raise_with_log(f"Container ID {cntr_id} not found in DataFrame")
+
+    @staticmethod
+    def update_planned(df, cntr_id):
+        mask = df["cntr_id"] == cntr_id
+        if mask.any():
+            df.loc[mask, "planned"] = "Yes"
         else:
             raise_with_log(f"Container ID {cntr_id} not found in DataFrame")
 
@@ -172,9 +135,63 @@ class Voyage(BaseFlow):
             self.actions.click(self.minimize_mask_view)
             logger.info("Mask view minimized")
 
+    def _add_cntr(self):
+        path = Path("data/vessel_loading_data.csv")
+        df = read_csv(self.vessel_loading_data_path)
+
+        if not wait_for_window("Voyage", timeout=1):
+            self.open_voyage_plan()
+            time.sleep(10)
+        self.set_display_scale()
+        self.check_mask_view()
+        self.actions.click(self.search_list_btn)
+
+        grouped = df.groupby("bay")
+
+        for bay, group in grouped:
+            logger.info(f"Processing bay: {bay}")
+            self.setup_bay(bay)
+            self.drag_release()
+
+            cntr_ids = group["cntr_id"].tolist()
+            self.place_cntr_in_bay(df, bay, cntr_ids)
+
+        df.to_csv(path, index=False)
+
+    def place_cntr_in_bay(self, df, bay, cntr_ids):
+        for cntr_id in cntr_ids:
+            cntr_id_xpath = self.list_row_cntr.rsplit("cell", 1)[0] + f"cell[@text='{cntr_id}']"
+
+            if not self.actions.find(cntr_id_xpath):
+                self.update_planned(df, cntr_id)
+                continue
+
+            self.actions.click(cntr_id_xpath)
+            if wait_for_window(".*(gdr2303|gdr1239)$", 1):
+                send_keys_with_log("{ENTER}")
+
+            if not self.actions.find(cntr_id_xpath, timeout=1):
+                self.update_planned(df, cntr_id)
+            else:
+                size = df[df["cntr_id"] == cntr_id]["size"].iloc[0]
+                new_bay = self.next_bay(int(size), bay)
+                if new_bay is None:
+                    raise_with_log(f"No space available for cntr_id: {cntr_id}")
+                self.update_bay(df, cntr_id, new_bay)
+                logger.info(f"Moved {cntr_id} to bay {new_bay}")
+                self.setup_bay(new_bay)
+                self.drag_release()
+
+            self.actions.click(cntr_id_xpath)
+            if wait_for_window(".*(gdr2303|gdr1239)$", 1):
+                send_keys_with_log("{ENTER}")
+
+            if self.actions.find(cntr_id_xpath, 1):
+                raise_with_log(f"Container {cntr_id} still in table after second attempt")
+            else:
+                self.update_planned(df, cntr_id)
+
 if __name__ == "__main__":
     v = Voyage()
-    v.add_cntr()
+    v._add_cntr()
     # v.order_out_all()
-
-    # v.drag_release()
