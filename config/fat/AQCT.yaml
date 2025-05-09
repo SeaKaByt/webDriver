@@ -48,7 +48,10 @@ dc:
   add_next_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='freezePanel']/button[@name='freezeAddNextButton']
   warning_ok_btn: /form[@title='Warning']//container[@name='OptionPane.buttonArea']/button[@name='initialValue']
   pol: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/?/?/container[@name='recordPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container[@name='guiPanel18']//container[@name='dischargePanel']/container[@name='portPanel']/text[@name='dischargePolTextField']
+  data_confirmed_btn: /form[@title>'nGen']///button[@name='dataConfirmButton']
+  confirm_ok_btn: /form[@title='confirm']//container[@name='OptionPane.buttonArea']/button[@name='initialValue']
 
+  mono_plan_add: /from[@title>'Voyage']//toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[9]
 cd:
   cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='cntrNoComboBox']/text[@name='cntrNoEditField']
   owner: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//container[@name='ownerPanel']/text[@name='ownerTextField']
@@ -138,6 +141,7 @@ gt:
   gate_confirm_manual_confirm_btn: /form[@title='Gate Confirm Information']//container[@name='buttonPanel']/button[@name='manualConfirmButton']
   gate_confirm_ok_btn: /form[@title='Gate Confirm']//container[@name='buttonPanel']/button[@name='okButton']
   confirm_yes_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
+
 qm:
   fcl_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
   row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
@@ -177,7 +181,6 @@ voyage:
   filter: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/tabpage[@title='Filter']
   filter_cntr_id: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/container[@name='filterTabPanel']/?/?/container[@name='viewport']//container[@name='cntrIDPanel']/text[@name='cntrIDText']
   search_list_btn: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='buttonPanel1']/button[@name='searchButton']
-  search_list_row_0: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='tabbedPane']/container[@name='containerListTabPanel']//container[@name='viewport']/table[@name='containerManagerTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
   voyage_qc: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='leftComponent']//container[@name='controlPanel']/container[@name='controlPanel2']/container[@name='qcInOutPanel']/combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
   work_plan_add_btn: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/toolbar[@type='JToolBar']/?/?/toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[7]
   voyage_bay: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='leftComponent']//container[@name='controlPanel']/container[@name='controlPanel2']/container[@name='byBayPanel']/combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']

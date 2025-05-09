@@ -1,14 +1,27 @@
-# import sys
-# from test_ui.base_flow import BaseFlow
-# from pywinauto.keyboard import send_keys
-#
-# class DischargeContainer(BaseFlow):
-#     module = "DC"
-#
-#     def __init__(self):
-#         super().__init__()
-#         self.dc_voyage = self.config["dc"]["voyage"]
-#         self.search_btn = self.config["dc"]["search_btn"]
+import csv
+import sys
+from pathlib import Path
+
+from helper.io_utils import read_csv
+from helper.sys_utils import raise_with_log
+from helper.win_utils import send_keys_with_log, wait_for_window
+from test_ui.base_flow import BaseFlow
+from pywinauto.keyboard import send_keys
+
+from test_ui.flow.voyage_plan import Voyage
+
+
+class DischargeContainer(Voyage):
+    module = "DC"
+
+    def __init__(self):
+        super().__init__()
+        dc_config = self.config["dc"]
+        self.dc_voyage = dc_config["voyage"]
+        self.search_btn = dc_config["search_btn"]
+        self.data_confirmed_btn = dc_config["data_confirmed_btn"]
+        self.confirm_ok_btn = dc_config["confirm_ok_btn"]
+        self.mono_plan_add = dc_config["mono_plan_add"]
 #         self.cntr_btn = self.config['dc']['cntr_btn']
 #         self.cntr_panel = self.config['dc']['cntr_panel']
 #         self.create_btn = self.config['dc']['create_btn']
@@ -17,20 +30,38 @@
 #         self.warning_ok = self.config['dc']['warning_ok_btn']
 #         self.dc_pol = self.config['dc']['pol']
 #
-#     def search_voyage(self):
-#         if not self.visible(self.dc_voyage, 1):
-#             self.module_view(self.module)
-#         self.click(self.dc_voyage)
-#         send_keys("^a")
-#         send_keys_tab(self.line)
-#         send_keys(self.vessel)
-#         send_keys(self.voyage)
-#         self.click(self.search_btn)
-#         if wait_for_window('User Information', 1.5):
-#             send_keys("{ENTER}")
-#         self.click(self.cntr_btn)
-#         # send_keys('%a')
-#
+    def search_voyage(self):
+        if not self.properties.visible(self.dc_voyage, 1):
+            self.module_view(self.module)
+
+        self.actions.click(self.dc_voyage)
+        send_keys("^a")
+        send_keys_with_log(self.line, True)
+        send_keys_with_log(self.vessel)
+        send_keys_with_log(self.voyage)
+        self.actions.click(self.search_btn)
+
+    def data_confirmed(self):
+        if self.properties.enabled(self.data_confirmed_btn):
+            self.actions.click(self.data_confirmed_btn)
+            wait_for_window("confirm")
+            self.actions.click(self.confirm_ok_btn)
+        else:
+            raise_with_log("Data Confirmed button is not enabled.")
+
+    def drag_release(self):
+        self.actions.click(self.mono_plan_add)
+        self.actions.drag_release(self.plan_section, 50, 50, 680, 370)
+
+    def mono_add(self) -> None:
+        path =  Path("data/dc_data.csv")
+        with open(path, 'r') as file:
+            reader = csv.reader(file)
+            header = next(reader)
+            for row_num, row in enumerate(reader, start=1):
+                if row['ContainerNum']:
+                    print(f"Row {row_num}: {row["ContainerNum"]}")
+
 #     def create_cntr(self):
 #         if not self.visible(self.cntr_panel, 1):
 #             self.click(self.title)
@@ -78,9 +109,9 @@
 #     def test(self):
 #         pass
 #
-# if __name__ == '__main__':
-#     # python -m test_ui.flow.discharge_container
-#     dc = DischargeContainer()
-#     dc.search_voyage()
-#     # for _ in range(3):
-#     #     dc.create_cntr()
+if __name__ == '__main__':
+    # python -m test_ui.flow.discharge_container
+    dc = DischargeContainer()
+    # dc.search_voyage()
+    # dc.data_confirmed()
+    dc.mono_add()

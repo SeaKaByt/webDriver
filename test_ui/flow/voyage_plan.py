@@ -10,9 +10,6 @@ from test_ui.base_flow import BaseFlow
 class Voyage(BaseFlow):
     def __init__(self):
         super().__init__()
-        self.vessel_loading_data_path = Path("data/vessel_loading_data.csv")
-        self.vessel_loading_df = read_csv(self.vessel_loading_data_path)
-
         guider_config = self.config["guider"]
         self.title = guider_config["title"]
         self.window_1 = guider_config["window_1"]
@@ -137,7 +134,7 @@ class Voyage(BaseFlow):
 
     def _add_cntr(self):
         path = Path("data/vessel_loading_data.csv")
-        df = read_csv(self.vessel_loading_data_path)
+        df = read_csv(path)
 
         if not wait_for_window("Voyage", timeout=1):
             self.open_voyage_plan()
@@ -194,4 +191,4 @@ class Voyage(BaseFlow):
 if __name__ == "__main__":
     v = Voyage()
     v._add_cntr()
-    # v.order_out_all()
+    v.order_out_all()
