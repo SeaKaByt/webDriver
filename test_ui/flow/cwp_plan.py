@@ -2,7 +2,6 @@ from helper.sys_utils import raise_with_log
 from helper.win_utils import wait_for_window, send_keys_with_log
 from test_ui.base_flow import BaseFlow
 
-
 class CWP(BaseFlow):
     def __init__(self):
         super().__init__()
