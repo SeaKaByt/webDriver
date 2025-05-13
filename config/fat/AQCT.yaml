@@ -18,8 +18,9 @@ nGen:
   mc_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[3]/tag[@tagname='p-implied']
 
 app:
-  ngen: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
-  guider: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='Guider']
+  ngen: /form[@title>'Application Launcher']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
+#  ngen: /form[@title>'Application Launcher']//body/div/section[3]//h4[@innertext='nGen']
+  guider: /form[@title>'Application Launcher']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='Guider']
 
 windows:
   ngen: "nGen"
@@ -52,6 +53,10 @@ dc:
   confirm_ok_btn: /form[@title='confirm']//container[@name='OptionPane.buttonArea']/button[@name='initialValue']
 
   mono_plan_add: /from[@title>'Voyage']//toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[9]
+  edit_plan_add: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/toolbar[@type='JToolBar']/?/?/toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[11]
+  dc_voyage: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/element[@name='searchVoyageIdField']/text[@name='guiTextField1']
+  result_table: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']//container[@name='null.layeredPane']//container[@name='searchTabbedPane']/container[@name='searchResultPane']/container[@name='guiScrollPane8']/container[1]/table[@name='searchResultTable']
+
 cd:
   cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='cntrNoComboBox']/text[@name='cntrNoEditField']
   owner: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//container[@name='ownerPanel']/text[@name='ownerTextField']
@@ -109,6 +114,8 @@ hr:
   bol: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/text[@name='billLadingNoTextField']
   select_all: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='selectAllButton']
   release_batch: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='releaseBatchButton']
+  result_table: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='searchResultTablePanel']/container[1]
+  hr_voyage: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/container[@name='voyageIdPanel']/text[@name='voyageIdTextField']
 
 gt:
   search_tractor: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='detailPanel']/container[@name='guiPanel2']/text[@name='tractorNoTextField']
@@ -191,6 +198,8 @@ voyage:
 
   mask_view: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='rightComponent']/container[@name='viewport']/element[@name='maskSettingView']
   minimize_mask_view: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//button[@accessiblename='' and @type='BasicSplitPaneDivider$2']
+  qc_methods: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='leftComponent']//container[@name='controlPanel']/container[@name='controlPanel2']/container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
+  refresh_btn: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//toolbar[@name='optOthersToolBar']/button[4]
 
 guider:
   title: /form[@title='Guider']/titlebar[@accessiblerole='TitleBar']
@@ -206,3 +215,7 @@ guider:
 cwp:
   cwp_view: /form[@title>'CWP - NVD-TSHM04-V01 (Con']/?/?/container[@name='cwpSplitPane']/container[@name='rightComponent']/element[@name='textView']/?/?/container[@name='jTabbedPane1']//container[@name='tablePanel']/?/?/container[@name='viewport']
   control_menu: /form[@title>'CWP - NVD-TSHM04-V01 (Con']/?/?/menuitem[@name='jMenu2']
+
+bay_plan:
+  bp_voyage: /form[@title>'nGen FAT-AQCT-DC']//element[@name='voyageIdField']/text[@name='guiTextField1']
+  bp_table_row_0: /form[@title='Inbound Bay Plan']//table[@name='resultTable']/row[@index='0']

@@ -33,6 +33,8 @@ class Voyage(BaseFlow):
         self.list_row_cntr = voyage_config["list_row_cntr"]
         self.list_row_planned = voyage_config["list_row_planned"]
         self.option_list = voyage_config["option_list"]
+        self.qc_methods = voyage_config["qc_methods"]
+        self.refresh_btn = voyage_config["refresh_btn"]
 
     def order_out_all(self):
         self.actions.right_click(self.voyage_tree_qc)
@@ -50,7 +52,7 @@ class Voyage(BaseFlow):
         send_keys_with_log("65")
         send_keys_with_log("{ENTER}")
 
-    def drag_release(self):
+    def work_plan_drag_release(self):
         self.actions.click(self.work_plan_add_btn)
         self.actions.drag_release(self.plan_section, 50, 50, 680, 370)
 
@@ -117,7 +119,7 @@ class Voyage(BaseFlow):
         send_keys_with_log("^a")
         send_keys_with_log(self.qc)
         send_keys_with_log("{ENTER}")
-        self.drag_release()
+        self.work_plan_drag_release()
 
     def setup_bay(self, bay):
         self.actions.click(self.voyage_bay)
@@ -132,15 +134,15 @@ class Voyage(BaseFlow):
             self.actions.click(self.minimize_mask_view)
             logger.info("Mask view minimized")
 
-    def _add_cntr(self):
+    def _add_cntr(self) -> None:
         path = Path("data/vessel_loading_data.csv")
         df = read_csv(path)
 
         if not wait_for_window("Voyage", timeout=1):
             self.open_voyage_plan()
             time.sleep(10)
-        self.set_display_scale()
-        self.check_mask_view()
+            self.set_display_scale()
+            self.check_mask_view()
         self.actions.click(self.search_list_btn)
 
         grouped = df.groupby("bay")
@@ -148,7 +150,7 @@ class Voyage(BaseFlow):
         for bay, group in grouped:
             logger.info(f"Processing bay: {bay}")
             self.setup_bay(bay)
-            self.drag_release()
+            self.work_plan_drag_release()
 
             cntr_ids = group["cntr_id"].tolist()
             self.place_cntr_in_bay(df, bay, cntr_ids)
@@ -177,7 +179,7 @@ class Voyage(BaseFlow):
                 self.update_bay(df, cntr_id, new_bay)
                 logger.info(f"Moved {cntr_id} to bay {new_bay}")
                 self.setup_bay(new_bay)
-                self.drag_release()
+                self.work_plan_drag_release()
 
             self.actions.click(cntr_id_xpath)
             if wait_for_window(".*(gdr2303|gdr1239)$", 1):

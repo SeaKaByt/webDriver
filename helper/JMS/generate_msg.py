@@ -1,7 +1,6 @@
 import csv
 import xml.etree.ElementTree as ET
 
-
 def generate_message(csv_file):
     # Read the CSV file
     with open(csv_file, 'r', encoding='utf-8-sig') as f:
