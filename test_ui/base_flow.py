@@ -115,6 +115,10 @@ class BaseFlow(BaseDriver):
                     (send_keys, ("{F1}",)),
                     (send_keys, ("{F1}",))
                 ],
+                "BP": [
+                    (self.actions.click, (self.sp_menu,)),
+                    (send_keys, ("{F3}",))
+                ]
             }
 
             if module in module_actions:

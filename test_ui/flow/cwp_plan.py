@@ -28,6 +28,8 @@ class CWP(BaseFlow):
         self.actions.click(self.open_module_btn)
 
     def release_cwp(self):
+        if not wait_for_window("CWP", timeout=1):
+            self.open_cwp_plan()
         self.actions.drag_release(self.cwp_view, 0, 0, 580, 420)
         self.actions.click(self.control_menu)
         for _ in range(2):
@@ -43,5 +45,4 @@ class CWP(BaseFlow):
 
 if __name__ == "__main__":
     cwp = CWP()
-    cwp.open_cwp_plan()
     cwp.release_cwp()

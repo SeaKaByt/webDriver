@@ -43,8 +43,6 @@ class ElementProperties():
         except Exception as e:
             logger.error(f"Enabled check failed for {xpath}: {e}")
             return False
-        finally:
-            self.driver.implicitly_wait(10)  # Reset implicit wait to default
 
     def get_row_index(self, xpath: str, timeout: int = 10) -> int | None:
         try:
@@ -54,6 +52,12 @@ class ElementProperties():
             return row_index
         except Exception as e:
             return None
+
+    def item_text(self, xpath: str, timeout: int = 10) -> str:
+        self.driver.implicitly_wait(timeout)
+        element = self.driver.find_element(By.XPATH, xpath)
+        text = element.get_dom_attribute("selectedItemText")
+        return text
 
     def text_value(self, xpath: str) -> str:
         element = self.driver.find_element(By.XPATH, xpath)

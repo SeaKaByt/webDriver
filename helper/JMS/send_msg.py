@@ -1,25 +1,24 @@
 import os
 import time
-import jpype
-import jpype.imports
-from jpype.types import *
-from bs4 import BeautifulSoup
+from pathlib import Path
 
-from generate_msg import generate_message
+import jpype.imports
+
+from helper.JMS.generate_msg import generate_message
 
 # Set up JVM and classpath
 cur_dir = os.path.dirname(__file__)
 weblogic_jar = os.path.join(cur_dir, "weblogic-wlthint3client-12.2.1.4.jar")
-jms_api_jar = os.path.join(cur_dir, "javax.jms-api-2.0.1.jar")  # Optional, add if needed
+# jms_api_jar = os.path.join(cur_dir, "javax.jms-api-2.0.1.jar")  # Optional, add if needed
 
 classpath = [weblogic_jar]
-if os.path.exists(jms_api_jar):
-    classpath.append(jms_api_jar)
+# if os.path.exists(jms_api_jar):
+#     classpath.append(jms_api_jar)
 
 # Verify JARs exist
-for jar in classpath:
-    if not os.path.exists(jar):
-        raise FileNotFoundError(f"JAR file not found: {jar}")
+# for jar in classpath:
+#     if not os.path.exists(jar):
+#         raise FileNotFoundError(f"JAR file not found: {jar}")
 
 # Set JAVA_HOME
 if not os.environ.get("JAVA_HOME", ""):
@@ -116,10 +115,12 @@ if __name__ == "__main__":
         )
         cur_path = os.path.dirname(os.path.abspath(__file__))
         cur_dir = os.path.dirname(cur_path)
-        jms_path = os.path.join(cur_dir, "webDriver", "baplie_sample.xml")
+        # jms_path = os.path.join(cur_dir, "webDriver", "baplie_sample.xml")
         # with open(jms_path, "r", encoding="UTF-8") as file:
         #     msg = file.read()
-        msg = generate_message("../../data/dc_data.csv")
+        data_path = Path("data/vessel_discharge_data.csv")
+        msg = generate_message(data_path)
+        # print(msg)
         producer.send_message(msg)
         print(f"{producer.queue} sent")
         # print(f"{msg}")
