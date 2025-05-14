@@ -57,8 +57,8 @@ def vessel_loading_plan(c):
 
 @task
 def vessel_discharge_plan(c):
-    # c.run("python -m helper.JMS.send_msg")
-    # c.run("python -m test_ui.flow.bay_plan")
+    c.run("python -m helper.JMS.send_msg")
+    c.run("python -m test_ui.flow.bay_plan")
     hold_release(c, "cc", "hp")
     c.run("python -m test_ui.flow.discharge_container")
     cwp_plan(c)

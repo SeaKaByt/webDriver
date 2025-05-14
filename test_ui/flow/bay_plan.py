@@ -17,7 +17,7 @@ class BayPlan(BaseFlow):
             self.module_view("BP")
         send_keys_with_log("%r")
         send_keys_with_log("%i")
-        if wait_for_window("Inbound Bay Plan"):
+        if wait_for_window("Inbound Bay Plan", 30):
             self.actions.click(self.bp_table_row_0)
             send_keys_with_log("{ENTER}")
             send_keys_with_log("%u")
