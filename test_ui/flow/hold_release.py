@@ -1,7 +1,7 @@
 import argparse
 from helper.sys_utils import raise_with_log
 from test_ui.base_flow import BaseFlow
-from helper.win_utils import send_keys_with_log
+from helper.win_utils import send_keys_with_log, wait_for_window
 from helper.logger import logger
 
 class HoldRelease(BaseFlow):
@@ -41,19 +41,27 @@ class HoldRelease(BaseFlow):
         send_keys_with_log(self.voyage)
         send_keys_with_log("%s")
 
-    def release_hold(self, hold_condition, hold_condition2) -> None:
+    def release_hold(self, hold_condition: str, hold_condition2: str) -> None:
         logger.info(f"Releasing hold for BOL: {self.bol}")
         self.search_cntr(hold_condition)
+        if wait_for_window(".*inv0693$", 1):
+            logger.warning("inv0693 window found, no record found!")
+            return
         self.actions.click(self.release_hold_condition)
         send_keys_with_log(hold_condition)
-        if hold_condition2 is not None:
+        if hold_condition2 != "None":
             send_keys_with_log(",")
             send_keys_with_log(hold_condition2)
         self.actions.click(self.declaration)
         send_keys_with_log(self.declaration_value, with_tab=True)
         send_keys_with_log(self.date)
         self.actions.click(self.select_all)
-        self.actions.click(self.release_batch)
+        if not wait_for_window(".*inv0799$", 1):
+            # self.actions.click(self.release_batch)
+            send_keys_with_log("%b")
+        else:
+            raise_with_log("User error: inv0799 window found")
+        self.driver.quit()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Hold Release Automation")

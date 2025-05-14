@@ -141,8 +141,24 @@ class Voyage(BaseFlow):
         if not wait_for_window("Voyage", timeout=1):
             self.open_voyage_plan()
             time.sleep(10)
-            self.set_display_scale()
-            self.check_mask_view()
+
+        self.actions.click(self.option_list)
+        self.set_display_scale()
+        self.check_mask_view()
+
+        self.actions.click(self.refresh_btn)
+        self.actions.click(self.voyage_qc)
+        send_keys_with_log("^a")
+        send_keys_with_log(self.qc)
+        send_keys_with_log("{ENTER}")
+        self.set_display_scale()
+
+        if self.properties.item_text(self.qc_methods) == "Disc":
+            self.actions.click(self.qc_methods)
+
+        if self.properties.item_text(self.qc_methods) != "Load":
+            raise_with_log("QC method is not Load")
+
         self.actions.click(self.search_list_btn)
 
         grouped = df.groupby("bay")
@@ -169,6 +185,9 @@ class Voyage(BaseFlow):
             if wait_for_window(".*(gdr2303|gdr1239)$", 1):
                 send_keys_with_log("{ENTER}")
 
+            if wait_for_window("Host Error", 1):
+                raise_with_log("Host Error window appeared")
+
             if not self.actions.find(cntr_id_xpath, timeout=1):
                 self.update_planned(df, cntr_id)
             else:
@@ -181,14 +200,14 @@ class Voyage(BaseFlow):
                 self.setup_bay(new_bay)
                 self.work_plan_drag_release()
 
-            self.actions.click(cntr_id_xpath)
-            if wait_for_window(".*(gdr2303|gdr1239)$", 1):
-                send_keys_with_log("{ENTER}")
+                self.actions.click(cntr_id_xpath)
+                if wait_for_window(".*(gdr2303|gdr1239)$", 1):
+                    send_keys_with_log("{ENTER}")
 
-            if self.actions.find(cntr_id_xpath, 1):
-                raise_with_log(f"Container {cntr_id} still in table after second attempt")
-            else:
-                self.update_planned(df, cntr_id)
+                if self.actions.find(cntr_id_xpath, 1):
+                    raise_with_log(f"Container {cntr_id} still in table after second attempt")
+                else:
+                    self.update_planned(df, cntr_id)
 
 if __name__ == "__main__":
     v = Voyage()
