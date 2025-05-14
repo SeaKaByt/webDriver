@@ -85,10 +85,10 @@ def next_loc(
 
         # Update stack and lane
         new_stack = stack_num + 2 if lane_num == 99 and tier_num == 5 else stack_num
-        if size_num == 20:
-            new_lane = lane_num + 1 if tier_num == 5 else lane_num
-        elif size_num == 40:
-            new_lane = lane_num + 2 if tier_num == 5 else lane_num
+        # if size_num == 20:
+        new_lane = lane_num + 1 if tier_num == 5 else lane_num
+        # elif size_num == 40:
+        #     new_lane = lane_num + 2 if tier_num == 5 else lane_num
 
         update_data = {
             "cntr_id": new_cntr_id,

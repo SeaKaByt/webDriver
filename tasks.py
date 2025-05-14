@@ -51,9 +51,9 @@ def cwp_plan(c):
 
 @task
 def vessel_loading_plan(c):
-    hold_release(c, "vm")
-    # voyage_plan(c)
-    # cwp_plan(c)
+    # hold_release(c, "vm")
+    voyage_plan(c)
+    cwp_plan(c)
 
 @task
 def vessel_discharge_plan(c):

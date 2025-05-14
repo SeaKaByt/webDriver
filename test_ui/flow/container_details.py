@@ -43,13 +43,18 @@ class ContainerDetails(BaseFlow):
             for i in range(count):
                 logger.info(f"Creating container {i+1}/{count}")
                 self.common_details()
-            self.save_as_csv()
+            self.save_as_csv(self.cntr_list, self.gate_pickup_df, self.gate_pickup_data_path)
         except Exception as e:
             logger.error(f"Container creation failed: {e}")
             raise
 
     def common_details(self) -> None:
-        self.cntr_list.append(self.cntr_id)
+        self.cntr_list.append({
+            "cntr_id": self.cntr_id,
+            "status": self.status,
+            "size": self.size,
+            "twin": "N"
+        })
         self.actions.click(self.cd_cntr_id)
         send_keys_with_log("^a")
         send_keys_with_log(self.cntr_id)
@@ -136,16 +141,16 @@ class ContainerDetails(BaseFlow):
             logger.error(f"Get tier failed: {e}")
             raise
 
-    def save_as_csv(self) -> None:
+    @staticmethod
+    def save_as_csv(cntr_list, df, path) -> None:
         try:
-            new_data = pd.DataFrame({"cntr_id": self.cntr_list})
-            self.df = pd.concat([new_data, self.gate_pickup_df]).drop_duplicates(subset=["cntr_id"]).reset_index(drop=True)
-            logger.info(f"Updated DataFrame: {self.df.to_dict()}")
-            self.df.to_csv(self.gate_pickup_data_path, index=False)
-            logger.debug(f"Saved DataFrame to {self.gate_pickup_data_path}")
+            new_data = pd.DataFrame(cntr_list)
+            new_df = pd.concat([new_data, df]).drop_duplicates(subset=["cntr_id"]).reset_index(drop=True)
+            logger.info(f"Updated DataFrame: {df.to_dict()}")
+            new_df.to_csv(path, index=False)
+            logger.debug(f"Saved DataFrame to {path}")
         except Exception as e:
-            logger.error(f"Save CSV failed: {e}")
-            raise
+            raise_with_log(f"Save CSV failed: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create containers")

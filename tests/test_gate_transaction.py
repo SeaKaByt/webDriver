@@ -2,8 +2,11 @@ import pandas as pd
 import pytest
 from pathlib import Path
 from helper.io_utils import read_csv
+from test_ui.flow.container_details import ContainerDetails
 from test_ui.flow.gate_transaction import GateTransaction
 from test_ui.flow.voyage_plan import Voyage
+
+path = Path("data/test.csv")
 
 @pytest.fixture
 def gate_transaction_data():
@@ -22,9 +25,9 @@ def temp_csv():
     df = pd.DataFrame({
         "cntr_id": ["TEST000127", "TEST000128", "TEST000125"],
         "bay": ["01D", "02D", "03D"],
-        "size": ["20", "40", "20"]
+        "size": ["20", "40", "20"],
+        "status": ["XF", "XF", "XF"],
     })
-    path = Path("data/test.csv")
     yield df, path
 
 def test_get_tractor(gate_transaction_data):
@@ -75,3 +78,17 @@ def test_update_bay(temp_csv):
     assert updated_df.loc[updated_df["cntr_id"] == "TEST000125", "bay"].values[0] == "05D"
     # assert updated_df.loc[updated_df["cntr_id"] == "TEST000128", "bay"].values[0] == "04D"
     # assert updated_df.loc[updated_df["cntr_id"] == "TEST000125", "bay"].values[0] == "05D"
+
+def test_yard_container(temp_csv):
+    # python -m pytest tests/test_gate_transaction.py::test_yard_container -v
+    c = ContainerDetails
+
+    df, path = temp_csv
+
+    new_data = [
+        {"cntr_id": "TEST000129", "status": "XF", "size": 40, "twin_ind": "N"},
+        {"cntr_id": "TEST000127", "status": "XF", "size": 20, "twin_ind": "Y"}  # Duplicate cntr_id
+    ]
+
+    c.save_as_csv(new_data, df, path)
+
