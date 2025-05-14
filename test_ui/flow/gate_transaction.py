@@ -53,13 +53,18 @@ class GateTransaction(BaseFlow):
 
     def create_gate_pickup(self) -> None:
         try:
-            self._get_tractor(self.gate_pickup_df, self.gate_pickup_data_path)
-            self._validate_dataframe(self.gate_pickup_df, ["cntr_id", "pin", "tractor"], ["twin_ind"])
+            df = self.gate_pickup_df
+            path = self.gate_pickup_data_path
+
+            df_filtered = df[df['tractor'].isna() & df['cntr_id'].notna()]
+
+            self._get_tractor(df, path)
+            # self._validate_dataframe(self.gate_pickup_df, ["cntr_id", "pin", "tractor"], ["twin_ind"])
 
             if not self.properties.visible(self.search_tractor, timeout=1):
                 self.module_view(self.module)
 
-            grouped = self.gate_pickup_df.groupby("tractor")
+            grouped = df.groupby("tractor")
             for tractor, group in grouped:
                 logger.info(f"Processing tractor group: {tractor}, size: {len(group)}")
                 if self.properties.editable(self.search_tractor):
@@ -83,8 +88,10 @@ class GateTransaction(BaseFlow):
                     else:
                         raise_with_log("Create Pickup window not found", RuntimeError)
 
-                    if wait_for_window(".*gatex0225$", 1):
+                    if wait_for_window(".*gatex0225$"):
                         send_keys_with_log("{ENTER}")
+                    else:
+                        raise_with_log("gatex0225 window not found!")
 
                     self._handle_auth_window(".*gatex3276$")
                     self.actions.click(self.create_pickup_ok_btn)

@@ -53,7 +53,7 @@ class ContainerDetails(BaseFlow):
             "cntr_id": self.cntr_id,
             "status": self.status,
             "size": self.size,
-            "twin": "N"
+            "twin_ind": "S"
         })
         self.actions.click(self.cd_cntr_id)
         send_keys_with_log("^a")
