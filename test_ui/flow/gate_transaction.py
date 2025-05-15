@@ -41,7 +41,8 @@ class GateTransaction(BaseFlow):
         self.gate_confirm_ok_btn = gt_config["gate_confirm_ok_btn"]
         self.confirm_yes_btn = gt_config["confirm_yes_btn"]
 
-    def _validate_dataframe(self, df: pd.DataFrame, required_cols: list, optional_cols: list = None) -> None:
+    @staticmethod
+    def _validate_dataframe(df: pd.DataFrame, required_cols: list, optional_cols: list = None) -> None:
         if df.empty:
             raise_with_log("DataFrame is empty", ValueError)
         missing = [col for col in required_cols if col not in df.columns]
@@ -58,7 +59,7 @@ class GateTransaction(BaseFlow):
 
             df_filtered = df[df['tractor'].isna() & df['cntr_id'].notna()]
 
-            self._get_tractor(df, path)
+            self.get_tractor(df, path)
             # self._validate_dataframe(self.gate_pickup_df, ["cntr_id", "pin", "tractor"], ["twin_ind"])
 
             if not self.properties.visible(self.search_tractor, timeout=1):
@@ -109,7 +110,7 @@ class GateTransaction(BaseFlow):
 
     def create_gate_ground(self) -> None:
         try:
-            self._get_tractor(self.gate_ground_df, self.gate_ground_data_path)
+            self.get_tractor(self.gate_ground_df, self.gate_ground_data_path)
             self._validate_dataframe(self.gate_ground_df, ["cntr_id", "tractor"], ["twin_ind", "size"])
 
             if not self.properties.visible(self.search_tractor, 1):
@@ -195,7 +196,8 @@ class GateTransaction(BaseFlow):
         except Exception as e:
             raise_with_log(f"Create gate grounding failed: {e}", RuntimeError)
 
-    def _get_tractor(self, df: pd.DataFrame, path: Path, twin_col: str = "twin_ind", tractor_prefix: str = "XT") -> None:
+    @staticmethod
+    def get_tractor(df: pd.DataFrame, path: Path, twin_col: str = "twin_ind", tractor_prefix: str = "XT") -> None:
         try:
             if df.empty:
                 raise_with_log("DataFrame is empty", ValueError)

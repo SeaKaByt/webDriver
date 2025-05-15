@@ -96,7 +96,8 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             logger.error(f"Full load failed: {e}")
             raise
 
-    def send_credentials(self, username: str, password: str) -> None:
+    @staticmethod
+    def send_credentials(username: str, password: str) -> None:
         """Send username and password to login window."""
         try:
             logger.info("Sending credentials")
