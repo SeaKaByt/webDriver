@@ -69,12 +69,12 @@ def test_update_bay(temp_csv):
     # python -m pytest tests/fixture.py::test_update_bay -v
     v = Voyage()
 
-    df, path = temp_csv
-    df.to_csv(path)
+    df, p = temp_csv
+    df.to_csv(p)
 
     # Test updating bay
-    v.update_bay(path, "TEST000125", "05D")
-    updated_df = read_csv(path)
+    v.update_bay(p, "TEST000125", "05D")
+    updated_df = read_csv(p)
     assert updated_df.loc[updated_df["cntr_id"] == "TEST000125", "bay"].values[0] == "05D"
     # assert updated_df.loc[updated_df["cntr_id"] == "TEST000128", "bay"].values[0] == "04D"
     # assert updated_df.loc[updated_df["cntr_id"] == "TEST000125", "bay"].values[0] == "05D"
