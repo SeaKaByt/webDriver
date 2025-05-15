@@ -57,8 +57,6 @@ class GateTransaction(BaseFlow):
             df = self.gate_pickup_df
             path = self.gate_pickup_data_path
 
-            df_filtered = df[df['tractor'].isna() & df['cntr_id'].notna()]
-
             self.get_tractor(df, path)
             # self._validate_dataframe(self.gate_pickup_df, ["cntr_id", "pin", "tractor"], ["twin_ind"])
 

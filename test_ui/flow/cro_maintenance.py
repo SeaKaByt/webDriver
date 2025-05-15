@@ -2,6 +2,9 @@ import sys
 from typing import Optional
 from pathlib import Path
 from datetime import datetime
+
+from numpy.ma.core import default_filler
+
 from helper.logger import logger
 from helper.sys_utils import raise_with_log
 from helper.win_utils import wait_for_window, send_keys_with_log
@@ -24,6 +27,10 @@ class CROMaintenance(BaseFlow):
         self.row0_pin = cro_config.get("row0_pin")
 
     def create_cro(self) -> None:
+        path = self.gate_pickup_data_path
+        df = self.gate_pickup_df
+        self.cro_no_list = []
+
         try:
             if not self.properties.visible(self.cro_cntr_id, timeout=1):
                 logger.info("Opening CRO module")
@@ -32,8 +39,11 @@ class CROMaintenance(BaseFlow):
                 logger.info("Resetting CRO form")
                 self.actions.click(self.reset)
 
-            self.cro_no_list = []
-            for cntr_id in self.gate_pickup_df["cntr_id"]:
+            df_filtered = df[df["pin"].isna() & df["cntr_id"].notna()]
+            if df_filtered.empty:
+                raise_with_log("No containers available for CRO creation")
+
+            for cntr_id in df_filtered["cntr_id"]:
                 logger.info(f"Creating CRO for cntr_id: {cntr_id}")
                 self.actions.click(self.create)
                 self.actions.click(self.create_cntr_id)
@@ -57,10 +67,8 @@ class CROMaintenance(BaseFlow):
                 send_keys_with_log("{ENTER}")
                 self.cro_no_list.append(self.cro_no)
 
-            if len(self.cro_no_list) == len(self.gate_pickup_df):
-                self.gate_pickup_df["cro_no"] = self.cro_no_list
-                logger.info(f"Updated DataFrame: {self.gate_pickup_df.to_dict()}")
-                self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
+            df_filtered["cro_no"] = self.cro_no_list
+            df_filtered.to_csv(path, index=False)
         except Exception as e:
             logger.error(f"CRO creation failed: {e}")
             raise
@@ -74,13 +82,20 @@ class CROMaintenance(BaseFlow):
             raise_with_log(f"Failed to generate CRO number: {e}")
 
     def get_pin(self) -> None:
+        self.pin_list = []
+        df = self.gate_pickup_df
+        path = self.gate_pickup_data_path
+
+        df_filtered = df[df["pin"].isna() & df["cntr_id"].notna()]
+        if df_filtered.empty:
+            raise_with_log("No containers available for PIN retrieval")
+
         try:
             logger.info("Fetching pins for CRO")
             self.actions.click(self.reset)
             self.actions.click(self.cro_status)
             send_keys_with_log("active")
-            self.pin_list = []
-            for cntr_id in self.gate_pickup_df["cntr_id"]:
+            for cntr_id in df_filtered["cntr_id"]:
                 logger.info(f"Fetching pin for cntr_id: {cntr_id}")
                 self.actions.click(self.cro_cntr_id)
                 send_keys_with_log("^a")
@@ -97,9 +112,8 @@ class CROMaintenance(BaseFlow):
                     logger.error("User Information window unexpected")
                     raise RuntimeError("Unexpected User Information window")
 
-            self.gate_pickup_df["pin"] = self.pin_list
-            logger.info(f"Updated DataFrame: {self.gate_pickup_df.to_dict()}")
-            self.gate_pickup_df.to_csv(self.gate_pickup_data_path, index=False)
+            df_filtered["pin"] = self.pin_list
+            df_filtered.to_csv(path, index=False)
         except Exception as e:
             raise_with_log(f"Get pin failed: {e}")
 

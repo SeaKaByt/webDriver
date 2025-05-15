@@ -94,7 +94,7 @@ class BolMaintenance(BaseFlow):
         if df_filtered.empty:
             raise_with_log("No containers without BOL were found")
 
-        for cntr_id in df["cntr_id"]:
+        for cntr_id in df_filtered["cntr_id"]:
             logger.info(f"Adding container: {cntr_id}")
             self.actions.click(self.create_cntr_id)
             send_keys_with_log(cntr_id)
@@ -124,5 +124,4 @@ if __name__ == "__main__":
         elif args.method == "add_cntr":
             bol.add_cntr()
     except Exception as e:
-        logger.error(f"BolMaintenance failed: {e}")
-        sys.exit(1)
+        raise_with_log(f"BolMaintenance failed: {e}")

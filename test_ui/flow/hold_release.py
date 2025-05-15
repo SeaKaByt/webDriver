@@ -22,7 +22,7 @@ class HoldRelease(BaseFlow):
         self.hr_voyage = hr_config.get("hr_voyage")
         # Define attributes
         self.bol = hr_config.get("bol_value")
-        self.hold_condition = hr_config.get("hold_condition", "dt")
+        self.hold_condition = hr_config.get("hold_condition")
         self.declaration_value = hr_config.get("declaration_value", "automation")
 
     def search_cntr(self, hold_condition) -> None:
@@ -46,6 +46,7 @@ class HoldRelease(BaseFlow):
         self.search_cntr(hold_condition)
         if wait_for_window(".*inv0693$", 1):
             logger.warning("inv0693 window found, no record found!")
+            send_keys_with_log("{ENTER}")
             return
         self.actions.click(self.release_hold_condition)
         send_keys_with_log(hold_condition)
@@ -66,13 +67,13 @@ class HoldRelease(BaseFlow):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Hold Release Automation")
     parser.add_argument("method", choices=["release_hold"], default="release_hold", help="Method to execute")
-    parser.add_argument("--hold_condition", type=str, required=True, help="First hold condition to use (e.g., 'dt', 'cc', 'mv')", default=None)
-    parser.add_argument("--hold_condition2", type=str, default=None, help="Second hold condition")
+    parser.add_argument("--hc1", type=str, required=True, help="First hold condition to use (e.g., 'dt', 'cc', 'mv')", default=None)
+    parser.add_argument("--hc2", type=str, default=None, help="Second hold condition")
     args = parser.parse_args()
 
     try:
         hr = HoldRelease()
         if args.method == "release_hold":
-            hr.release_hold(hold_condition=args.hold_condition, hold_condition2=args.hold_condition2)
+            hr.release_hold(hold_condition=args.hc1, hold_condition2=args.hc2)
     except Exception as e:
         raise_with_log(f"Error in HoldRelease: {e}")
