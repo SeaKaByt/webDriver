@@ -79,6 +79,7 @@ class BookingMaintenance(BaseFlow):
                     elif size == "40":
                         self.actions.click(self.request_sequence_2882)
 
+                time.sleep(1)
                 send_keys_with_log("%r")
                 if wait_for_window("Laden Return"):
                     logger.info("Laden window found")
@@ -92,6 +93,9 @@ class BookingMaintenance(BaseFlow):
                     logger.info(f"Processing row: {row}")
                     send_keys_with_log(row["cntr_id"])
                     self.actions.click(self.add_next_btn)
+                    if wait_for_window(".*ioc2617$", 1):
+                        logger.info("ioc2617 window found")
+                        send_keys_with_log("{ENTER}")
 
                 self.actions.click(self.add_next_cancel_btn)
                 self.actions.click(self.laden_save_btn)

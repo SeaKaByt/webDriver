@@ -66,14 +66,14 @@ def vessel_discharge_plan(c):
 @task
 def gate_pickup_task(c):
     # create_cro(c)
-    # hold_release(c, "dt")
-    # initiate(c)
-    # create_cntr(c, 3)
-    # add_bol(c)
+    hold_release(c, "dt")
+    initiate(c)
+    create_cntr(c, 3)
+    add_bol(c)
     create_gate_pickup_movement(c)
 
 @task
 def gate_ground_task(c):
     # initiate(c)
-    add_return_cntr(c)
+    # add_return_cntr(c)
     create_gate_ground_movement(c)
