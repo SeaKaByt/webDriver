@@ -7,12 +7,13 @@ vessel_discharge_plan:
 
 vessel_loading_plan:
   release_hold: true
-  work_plan: true
-  cwp_release: true
+  work_plan: false
+  cwp_release: false
 
 gate_pickup_task:
   create_container: true
   add_bol: true
+  get_pin: true
   release_hold: true
   gate_pickup: true
 

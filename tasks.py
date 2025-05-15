@@ -79,6 +79,8 @@ def gate_pickup_task(c, count=1):
         create_cntr(c, count)
     if config.get("add_bol", True):
         add_bol(c)
+    if config.get("get_pin", True):
+        create_cro(c)
     if config.get("release_hold", True):
         hold_release(c, "dt")
     if config.get("gate_pickup", True):
@@ -104,9 +106,8 @@ def add_bol(c):
 def create_cro(c):
     c.run("python -m test_ui.flow.cro_maintenance")
 
-def hold_release(c, *holds):
-    for hold in holds:
-        c.run(f"python -m test_ui.flow.hold_release {hold}")
+def hold_release(c, h1, h2=None):
+    c.run(f"python -m test_ui.flow.hold_release release_hold --hc1 {h1} --hc2 {h2}")
 
 def add_return_cntr(c):
     c.run("python -m test_ui.flow.booking_maintenance")
