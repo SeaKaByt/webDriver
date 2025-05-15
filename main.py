@@ -13,9 +13,6 @@ def main():
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         raise
-    finally:
-        if 'driver' in locals():
-            driver.cleanup()
 
 if __name__ == "__main__":
     main()

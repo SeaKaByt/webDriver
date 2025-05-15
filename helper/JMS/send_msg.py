@@ -115,9 +115,6 @@ if __name__ == "__main__":
         )
         cur_path = os.path.dirname(os.path.abspath(__file__))
         cur_dir = os.path.dirname(cur_path)
-        # jms_path = os.path.join(cur_dir, "webDriver", "baplie_sample.xml")
-        # with open(jms_path, "r", encoding="UTF-8") as file:
-        #     msg = file.read()
         data_path = Path("data/vessel_discharge_data.csv")
         msg = generate_message(data_path)
         # print(msg)
