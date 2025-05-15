@@ -1,9 +1,7 @@
 from selenium.webdriver.common.by import By
 from helper.logger import logger
-from helper.sys_utils import raise_with_log
 
-
-class ElementProperties():
+class ElementProperties:
     def __init__(self, driver):
         self.driver = driver
 
