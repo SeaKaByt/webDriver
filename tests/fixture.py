@@ -11,14 +11,14 @@ path = Path("data/test.csv")
 @pytest.fixture
 def gate_transaction_data():
     df = pd.DataFrame({"twin_ind": ["T", "T", "S", "T", "T", "S"]})
-    path = Path("data/test.csv")
-    yield df, path
+    p = Path("data/test.csv")
+    yield df, p
 
 @pytest.fixture
 def voyage_plan_data():
     df = pd.DataFrame({"cntr_id":["TEST000127", "TEST000128", "TEST000125"]})
-    path = Path("data/test.csv")
-    yield df, path
+    p = Path("data/test.csv")
+    yield df, p
 
 @pytest.fixture
 def temp_csv():
@@ -31,19 +31,19 @@ def temp_csv():
     yield df, path
 
 def test_get_tractor(gate_transaction_data):
-    # python -m pytest tests/test_gate_transaction.py::test_get_tractor -v
-    df, path = gate_transaction_data
+    # python -m pytest tests/fixture.py::test_get_tractor -v
+    df, p = gate_transaction_data
 
-    GateTransaction()._get_tractor(df, path)
+    GateTransaction()._get_tractor(df, p)
 
     expected = ["XT001", "XT001", "XT003", "XT002", "XT002", "XT004"]
     assert df["tractor"].tolist() == expected, f"Expected {expected}, got {df['tractor'].tolist()}"
-    assert path.exists()
-    saved_df = read_csv(path)
+    assert p.exists()
+    saved_df = read_csv(p)
     assert saved_df["tractor"].tolist() == expected
 
 def test_next_bay():
-    # python -m pytest tests/test_gate_transaction.py::test_next_bay -v
+    # python -m pytest tests/fixture.py::test_next_bay -v
     v = Voyage()
 
     assert v.next_bay(20, "02D") == "03D"
@@ -66,7 +66,7 @@ def test_next_bay():
         v.next_bay(40, "79D")
 
 def test_update_bay(temp_csv):
-    # python -m pytest tests/test_gate_transaction.py::test_update_bay -v
+    # python -m pytest tests/fixture.py::test_update_bay -v
     v = Voyage()
 
     df, path = temp_csv
@@ -80,7 +80,7 @@ def test_update_bay(temp_csv):
     # assert updated_df.loc[updated_df["cntr_id"] == "TEST000125", "bay"].values[0] == "05D"
 
 def test_yard_container(temp_csv):
-    # python -m pytest tests/test_gate_transaction.py::test_yard_container -v
+    # python -m pytest tests/fixture.py::test_yard_container -v
     c = ContainerDetails
 
     df, path = temp_csv
