@@ -104,7 +104,7 @@ class BaseFlow(BaseDriver):
                     (self.actions.click, (self.gate_menu,)),
                     (send_keys, ("{F1}",)),
                     (send_keys, ("{F1}",)),
-                    (self._handle_gate_terminal, ())
+                    (self.handle_gate_terminal, ())
                 ],
                 "QM": [
                     (self.actions.click, (self.mc_menu,)),
@@ -131,7 +131,8 @@ class BaseFlow(BaseDriver):
             logger.error(f"Failed to navigate to module {module}: {e}")
             raise
 
-    def _handle_gate_terminal(self) -> None:
+    @staticmethod
+    def handle_gate_terminal() -> None:
         """Handle gate terminal selection window."""
         try:
             if wait_for_window("Select Working Terminal", timeout=1):

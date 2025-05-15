@@ -34,7 +34,7 @@ def test_get_tractor(gate_transaction_data):
     # python -m pytest tests/fixture.py::test_get_tractor -v
     df, p = gate_transaction_data
 
-    GateTransaction()._get_tractor(df, p)
+    GateTransaction().get_tractor(df, p)
 
     expected = ["XT001", "XT001", "XT003", "XT002", "XT002", "XT004"]
     assert df["tractor"].tolist() == expected, f"Expected {expected}, got {df['tractor'].tolist()}"

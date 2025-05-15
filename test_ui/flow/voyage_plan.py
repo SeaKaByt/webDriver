@@ -134,7 +134,7 @@ class Voyage(BaseFlow):
             self.actions.click(self.minimize_mask_view)
             logger.info("Mask view minimized")
 
-    def _add_cntr(self) -> None:
+    def add_cntr(self) -> None:
         path = Path("data/vessel_loading_data.csv")
         df = read_csv(path)
 
@@ -211,5 +211,5 @@ class Voyage(BaseFlow):
 
 if __name__ == "__main__":
     v = Voyage()
-    v._add_cntr()
+    v.add_cntr()
     v.order_out_all()
