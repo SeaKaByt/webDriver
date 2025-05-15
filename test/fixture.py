@@ -31,7 +31,7 @@ def temp_csv():
     yield df, path
 
 def test_get_tractor(gate_transaction_data):
-    # python -m pytest tests/fixture.py::test_get_tractor -v
+    # python -m pytest test/fixture.py::test_get_tractor -v
     df, p = gate_transaction_data
 
     GateTransaction().get_tractor(df, p)
@@ -43,7 +43,7 @@ def test_get_tractor(gate_transaction_data):
     assert saved_df["tractor"].tolist() == expected
 
 def test_next_bay():
-    # python -m pytest tests/fixture.py::test_next_bay -v
+    # python -m pytest test/fixture.py::test_next_bay -v
     v = Voyage()
 
     assert v.next_bay(20, "02D") == "03D"
@@ -66,7 +66,7 @@ def test_next_bay():
         v.next_bay(40, "79D")
 
 def test_update_bay(temp_csv):
-    # python -m pytest tests/fixture.py::test_update_bay -v
+    # python -m pytest test/fixture.py::test_update_bay -v
     v = Voyage()
 
     df, p = temp_csv
@@ -80,7 +80,7 @@ def test_update_bay(temp_csv):
     # assert updated_df.loc[updated_df["cntr_id"] == "TEST000125", "bay"].values[0] == "05D"
 
 def test_yard_container(temp_csv):
-    # python -m pytest tests/fixture.py::test_yard_container -v
+    # python -m pytest test/fixture.py::test_yard_container -v
     c = ContainerDetails
 
     df, path = temp_csv
