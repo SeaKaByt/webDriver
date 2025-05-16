@@ -34,11 +34,11 @@ def vessel_loading_plan(c):
     """
     config = load_config().get("vessel_loading_plan", {})
 
-    if config.get("release_hold", True):
+    if config.get("release_hold", False):
         hold_release(c, "vm")
-    if config.get("work_plan", True):
+    if config.get("work_plan", False):
         voyage_plan(c)
-    if config.get("cwp_release", True):
+    if config.get("cwp_release", False):
         cwp_plan(c)
 
 @task
@@ -53,15 +53,15 @@ def vessel_discharge_plan(c):
     """
     config = load_config().get("vessel_discharge_plan", {})
 
-    if config.get("send_msg", True):
+    if config.get("send_msg", False):
         send_jms(c)
-    if config.get("upload_bay_plan", True):
+    if config.get("upload_bay_plan", False):
         upload_bay_plan(c)
-    if config.get("release_hold", True):
+    if config.get("release_holds", False):
         hold_release(c, "cc", "hp")
-    if config.get("edit_plan", True):
+    if config.get("edit_plan", False):
         plan_discharge_container(c)
-    if config.get("cwp_release", True):
+    if config.get("cwp_release", False):
         cwp_plan(c)
 
 @task
@@ -75,15 +75,15 @@ def gate_pickup_task(c, count=1):
     """
     config = load_config().get("gate_pickup_task", {})
 
-    if config.get("create_container", True):
+    if config.get("create_container", False):
         create_cntr(c, count)
-    if config.get("add_bol", True):
+    if config.get("add_bol", False):
         add_bol(c)
-    if config.get("get_pin", True):
+    if config.get("get_pin", False):
         create_cro(c)
-    if config.get("release_hold", True):
+    if config.get("release_hold", False):
         hold_release(c, "dt")
-    if config.get("gate_pickup", True):
+    if config.get("gate_pickup", False):
         create_gate_pickup_movement(c)
 
 @task
@@ -95,9 +95,9 @@ def gate_ground_task(c):
     """
     config = load_config().get("gate_ground_task", {})
 
-    if config.get("add_return_container", True):
+    if config.get("add_return_container", False):
         add_return_cntr(c)
-    if config.get("gate_ground", True):
+    if config.get("gate_ground", False):
         create_gate_ground_movement(c)
 
 def add_bol(c):
