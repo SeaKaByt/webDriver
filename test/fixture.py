@@ -10,15 +10,16 @@ path = Path("data/test.csv")
 
 @pytest.fixture
 def gate_transaction_data():
-    df = pd.DataFrame({"twin_ind": ["T", "T", "S", "T", "T", "S"]})
-    p = Path("data/test.csv")
-    yield df, p
+    df = pd.DataFrame({
+        "cntr_id":["TEST000127", "TEST000128", "TEST000125", "TEST000127", "TEST000128", "TEST000125"],
+        "twin_ind": ["T", "T", "S", "T", "T", "S"]
+    })
+    yield df, path
 
 @pytest.fixture
-def voyage_plan_data():
+def voyage_plan_data(tmp_path):
     df = pd.DataFrame({"cntr_id":["TEST000127", "TEST000128", "TEST000125"]})
-    p = Path("data/test.csv")
-    yield df, p
+    yield df, path
 
 @pytest.fixture
 def temp_csv():

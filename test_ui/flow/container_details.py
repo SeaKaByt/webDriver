@@ -4,6 +4,8 @@ import pandas as pd
 from typing import Optional
 from pathlib import Path
 
+from pandas.core.interchange.dataframe_protocol import DataFrame
+
 from helper.sys_utils import raise_with_log
 from test_ui.base_flow import BaseFlow
 from helper.win_utils import wait_for_window, send_keys_with_log
@@ -33,20 +35,18 @@ class ContainerDetails(BaseFlow):
         self.confirm_yes = cd_config.get("confirm_yes_btn")
         self.ags4999 = cd_config.get("ags4999")
 
-    def create_cntr(self, count: int) -> None:
+    def create_cntr(self, count: int, df: DataFrame, p: Path) -> None:
         """Create a specified number of containers."""
-        try:
-            if not self.properties.visible(self.cd_cntr_id, timeout=1):
-                logger.info("Opening CD module")
-                self.module_view(self.module)
-            self.cntr_list = []
-            for i in range(count):
-                logger.info(f"Creating container {i+1}/{count}")
-                self.common_details()
-            self.save_as_csv(self.cntr_list, self.gate_pickup_df, self.gate_pickup_data_path)
-        except Exception as e:
-            logger.error(f"Container creation failed: {e}")
-            raise
+        if not self.properties.visible(self.cd_cntr_id, timeout=1):
+            logger.info("Opening CD module")
+            self.module_view(self.module)
+
+        self.cntr_list = []
+        for i in range(count):
+            logger.info(f"Creating container {i+1}/{count}")
+            self.common_details()
+
+        self.save_as_csv(self.cntr_list, df, self.gate_pickup_data_path)
 
     def common_details(self) -> None:
         self.cntr_list.append({
@@ -142,15 +142,22 @@ class ContainerDetails(BaseFlow):
             raise
 
     @staticmethod
-    def save_as_csv(cntr_list, df, path) -> None:
+    def save_as_csv(cntr_list: list, df: DataFrame, p: Path) -> None:
         try:
             new_data = pd.DataFrame(cntr_list)
-            new_df = pd.concat([new_data, df]).drop_duplicates(subset=["cntr_id"]).reset_index(drop=True)
-            logger.info(f"Updated DataFrame: {df.to_dict()}")
-            new_df.to_csv(path, index=False)
-            logger.debug(f"Saved DataFrame to {path}")
-        except Exception as e:
-            raise_with_log(f"Save CSV failed: {e}")
+
+            new_df = pd.concat([new_data, df]).drop_duplicates(
+                subset=["cntr_id"], keep="first"
+            ).reset_index(drop=True)
+
+            logger.info(f"Updated DataFrame: {new_df.to_dict()}")
+
+            new_df.to_csv(p, index=False)
+            logger.debug(f"Saved DataFrame to {p}")
+        except (pd.errors.EmptyDataError, ValueError) as e:
+            raise_with_log(f"Data processing failed: {e}", ValueError)
+        except OSError as e:
+            raise_with_log(f"Failed to save CSV to {p}: {e}", OSError)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create containers")
