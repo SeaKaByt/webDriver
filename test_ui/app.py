@@ -95,6 +95,9 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
         except Exception as e:
             logger.error(f"Full load failed: {e}")
             raise
+        finally:
+            self.driver.quit()
+            logger.info("Driver quit successfully")
 
     @staticmethod
     def send_credentials(username: str, password: str) -> None:
