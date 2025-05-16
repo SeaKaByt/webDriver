@@ -97,6 +97,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             raise
         finally:
             self.driver.quit()
+            input("Press Enter to close the application...")
             logger.info("Driver quit successfully")
 
     @staticmethod

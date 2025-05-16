@@ -3,7 +3,7 @@ vessel_discharge_plan:
   upload_bay_plan: true
   release_holds: true
   edit_plan: true
-  cwp_release: ture
+  cwp_release: true
 
 vessel_loading_plan:
   release_hold: true
