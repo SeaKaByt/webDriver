@@ -14,30 +14,38 @@ def initiate(c):
     c.run("python -m test_ui.app full_load")
 
 @task
-def create_cntr(c, count=1):
+def create_cntr(c, count=1, movement=None):
     """
     UI automation for creating containers
 
     *** args ***
     count: Number of containers to create
+    movement: Type of movement (loading, gatePickup)
     """
-    cmd = f"python -m test_ui.flow.container_details {count}"
+    cmd = f"python -m test_ui.flow.container_details {count} {movement}"
     c.run(cmd)
 
 @task
-def vessel_loading_plan(c):
+def vessel_loading_plan(c, count=1, size_20=0, size_40=0, movement="loading" ):
     """
     UI automation for creating vessel loading movements
     - Release VM hold condition
     - Add work plan in guilder
     - CWP release
+
+    *** args ***
+    count: Number of containers to create
+    size_20: Number of 20ft containers
+    size_40: Number of 40ft containers
     """
     config = load_config().get("vessel_loading_plan", {})
 
+    if config.get("create_container", False):
+        create_cntr(c, count, movement)
     if config.get("release_hold", False):
         hold_release(c, "vm")
     if config.get("work_plan", False):
-        voyage_plan(c)
+        voyage(c, size_20, size_40)
     if config.get("cwp_release", False):
         cwp_plan(c)
 
@@ -65,7 +73,7 @@ def vessel_discharge_plan(c):
         cwp_plan(c)
 
 @task
-def gate_pickup_task(c, count=1):
+def gate_pickup_task(c, count=1, movement="gatePickup"):
     """
     UI automation for creating gate pickup movements
     - Create container
@@ -76,7 +84,7 @@ def gate_pickup_task(c, count=1):
     config = load_config().get("gate_pickup_task", {})
 
     if config.get("create_container", False):
-        create_cntr(c, count)
+        create_cntr(c, count, movement)
     if config.get("add_bol", False):
         add_bol(c)
     if config.get("get_pin", False):
@@ -118,8 +126,8 @@ def create_gate_pickup_movement(c):
 def create_gate_ground_movement(c):
     c.run("python -m test_ui.flow.gate_transaction --methods create_gate_ground")
 
-def voyage_plan(c):
-    c.run("python -m test_ui.flow.voyage_plan")
+def voyage(c, size_20, size_40):
+    c.run(f"python -m test_ui.flow. {size_20} {size_40}")
 
 def cwp_plan(c):
     c.run("python -m test_ui.flow.cwp_plan")

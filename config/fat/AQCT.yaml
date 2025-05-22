@@ -76,7 +76,6 @@ cd:
   ags4999: /form[@title='User Error ags4999']/?/?/container[@name='OptionPane.buttonArea']/button[@name='OptionPane.button']
 
 cro:
-  default_status: "active"
   reset: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/button[@name='resetButton']
   create: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='mainPanel']/container[@name='buttonPanel']/?/?/button[@name='createButton']
   cro_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='searchContanerNoTextField']
@@ -86,13 +85,6 @@ cro:
   row0_pin: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='tablePanel']/container/container[1]/table[@name='CROTable']/row[@index='0']/cell[@columnindex='1']
 
 bol:
-  line_value: "NVD"
-  bol_value: "BL01"
-  vessel: "tshm04"
-  voyage: "V01"
-  default_field: "automation"
-  test_field: "test"
-
   line: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='panelSearch']/text[@name='txtLineCodeS']
   add_cntr_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='buttonPanel']/container[@name='allBtnPanel']/button[@name='btnAddCntr']
   add_next: /form[@title>'Create Bill of lading con']/?/?/container[@name='buttonPanel']/button[@name='btnAddNext']
@@ -183,23 +175,41 @@ bm:
   request_sequence_2882: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2882']
 
 voyage:
-  voyage_tree_qc: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/?/?/container[@name='leftComponent' and @type='JSplitPane']//container[@name='viewport']/tree[@name='tree']/?/?/treeitem[@text>'OQ1']
-  plan_section: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/?/?/container[@name='leftComponent' and @type='JSplitPane']//container[@name='jPanel3']/?/?/container[@name='viewport']/element[@name='planSectionContainer']
-  filter: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/tabpage[@title='Filter']
-  filter_cntr_id: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/container[@name='filterTabPanel']/?/?/container[@name='viewport']//container[@name='cntrIDPanel']/text[@name='cntrIDText']
-  search_list_btn: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='buttonPanel1']/button[@name='searchButton']
-  voyage_qc: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='leftComponent']//container[@name='controlPanel']/container[@name='controlPanel2']/container[@name='qcInOutPanel']/combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
-  work_plan_add_btn: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/toolbar[@type='JToolBar']/?/?/toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[7]
-  voyage_bay: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='leftComponent']//container[@name='controlPanel']/container[@name='controlPanel2']/container[@name='byBayPanel']/combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
-  list_row_cntr: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='viewport']/table[@name='containerManagerTable']/row/cell
-  list_row: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='tabbedPane']/container[@name='containerListTabPanel']//container[@name='viewport']/table[@name='containerManagerTable']/row/cell[@columnindex='0']
-  list_row_planned: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='tabbedPane']/container[@name='containerListTabPanel']//container[@name='viewport']/table[@name='containerManagerTable']/row
-  option_list: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='tabbedPane']/container[@name='filterTabPanel']/?/?/container[@name='viewport']//container[@name='optionPanel']/container[@name='jScrollPane1']/container[@name='viewport']/list[@name='multiInputList']
+  # window
+  mode_2: "//titlebar[@accessiblerole='TitleBar' and @text='Voyage  (NVD-TSHM04-V01  TSHM04) -- Exclusive Mode  :  2']"
 
-  mask_view: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']//container[@name='rightComponent']/container[@name='viewport']/element[@name='maskSettingView']
-  minimize_mask_view: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//button[@accessiblename='' and @type='BasicSplitPaneDivider$2']
-  qc_methods: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//container[@name='leftComponent']//container[@name='controlPanel']/container[@name='controlPanel2']/container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
-  refresh_btn: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']//toolbar[@name='optOthersToolBar']/button[4]
+  # button
+  reset: //container[@name='buttonPanel1']/button[@name='resetButton']
+  refresh: //toolbar[@name='optOthersToolBar']/button[4]
+  search_list: //container[@name='buttonPanel1']/button[@name='searchButton']
+  work_plan_add: "/form[@title<'Exclusive Mode  :  1']//button[7]"
+  edit_plan_add: //toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[11]
+
+  # fields
+  qc: //combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
+  bay: //combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
+
+  qc_tree: "//tree[@name='tree']/?/?/treeitem[@text>'OQ1,LD#28,DS#71 (Total: G']"
+  plan_section: //container[@name='viewport']/element[@name='planSectionContainer']
+  qc_methods: //container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
+
+  mask_view:
+    # window
+    view: //container[@name='viewport']/element[@name='maskSettingView']
+
+    # button
+    minimize: //container[@name='panelRightPart']//button[@accessiblename='' and @type='BasicSplitPaneDivider$2']
+
+  filter:
+    tag: //container[@name='panelRightPart']//container[@name='tabbedPane']/tabpage[@title='Filter']
+    # Fields
+    size: //container[@name='sizePanel1']/text[@name='sizeMInputText']
+
+    list: //container[@name='viewport']/list[@name='multiInputList']
+
+  list:
+    row_0: //table[@name='containerManagerTable']/row[@index='0']/cell[@columnindex='0']
+    count: //container[@name='jPanel4']/text[@name='countLabel']
 
 guider:
   title: /form[@title='Guider']/titlebar[@accessiblerole='TitleBar']
@@ -219,3 +229,7 @@ cwp:
 bay_plan:
   bp_voyage: /form[@title>'nGen FAT-AQCT-DC']//element[@name='voyageIdField']/text[@name='guiTextField1']
   bp_table_row_0: /form[@title='Inbound Bay Plan']//table[@name='resultTable']/row[@index='0']
+
+tractor_card:
+  detail:
+    tractor: //container[@name='tractorNoPanel']/text[@name='tractorNoTextField']

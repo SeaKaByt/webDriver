@@ -18,16 +18,8 @@ class BaseDriver:
         self.env = os.environ.get("TEST_ENV", "FAT")
         self.yaml_path = Path(f"config/{self.env}/{self.bu}.yaml")
         self.json_data_path = Path("data/data.json")
-        self.gate_pickup_data_path = Path("data/gate_pickup_data.csv")
-        self.gate_ground_data_path = Path("data/gate_ground_data.csv")
-        try:
-            self.config = read_yaml(self.yaml_path)
-            self.config_j = read_json(self.json_data_path)
-            self.gate_pickup_df = read_csv(self.gate_pickup_data_path)
-            self.gate_ground_df = read_csv(self.gate_ground_data_path)
-        except Exception as e:
-            logger.error(f"Failed to load configs: {e}")
-            raise
+        self.config = read_yaml(self.yaml_path)
+        self.config_j = read_json(self.json_data_path)
         self.url = os.environ.get("WEBDRIVER_URL", "http://127.0.0.1:7993")
         self.driver = self._initialize_driver()
         self.actions = ElementActions(self.driver)
