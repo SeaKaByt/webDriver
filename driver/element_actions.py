@@ -32,8 +32,7 @@ class ElementActions:
             element.click()
             logger.info(f"Clicked on element: {xpath}")
         except Exception as e:
-            logger.error(f"Failed to click on element: {xpath} - {e}")
-            raise
+            raise Exception(f"Failed to click on element: {xpath} - {e}")
 
     def set_text(self, xpath, text, timeout=10):
         try:
@@ -55,9 +54,9 @@ class ElementActions:
 
             mouse.right_click(coords=(screen_x, screen_y))
 
-            logger.info(f"Context clicked on element: {xpath}")
+            logger.info(f"Right clicked on element: {xpath}")
         except Exception as e:
-            raise_with_log(f"Failed to right-click on element: {xpath} - {e}")
+            raise Exception(f"Failed to right-click on element: {xpath} - {e}")
 
     def drag_release(self, xpath, offset_x, offset_y, target_x, target_y, timeout=10):
         element = self.find(xpath, timeout)

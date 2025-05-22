@@ -6,17 +6,18 @@ vessel_discharge_plan:
   cwp_release: true
 
 vessel_loading_plan:
-  release_hold: true
-  work_plan: true
-  cwp_release: true
+  create_container:
+  release_hold: ture
+  work_plan: ture
+  cwp_release: ture
 
 gate_pickup_task:
-  create_container: true
-  add_bol: true
-  get_pin: true
-  release_hold: true
-  gate_pickup: true
+  create_container:
+  add_bol: ture
+  get_pin: ture
+  release_hold: ture
+  gate_pickup: ture
 
 gate_ground_task:
-  add_return_container: true
+  add_return_container:
   gate_ground: true

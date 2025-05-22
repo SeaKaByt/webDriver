@@ -4,7 +4,7 @@ from pathlib import Path
 from helper.io_utils import read_csv
 from test_ui.flow.container_details import ContainerDetails
 from test_ui.flow.gate_transaction import GateTransaction
-from test_ui.flow.voyage_plan import Voyage
+from test_ui.flow.voyage import Voyage
 
 path = Path("data/test.csv")
 
@@ -37,7 +37,7 @@ def test_get_tractor(gate_transaction_data):
 
     GateTransaction().get_tractor(df, p)
 
-    expected = ["XT001", "XT001", "XT003", "XT002", "XT002", "XT004"]
+    expected = ["XT005", "XT005", "XT007", "XT006", "XT006", "XT008"]
     assert df["tractor"].tolist() == expected, f"Expected {expected}, got {df['tractor'].tolist()}"
     assert p.exists()
     saved_df = read_csv(p)
@@ -84,12 +84,13 @@ def test_yard_container(temp_csv):
     # python -m pytest test/fixture.py::test_yard_container -v
     c = ContainerDetails
 
-    df, path = temp_csv
+    df, p = temp_csv
 
     new_data = [
         {"cntr_id": "TEST000129", "status": "XF", "size": 40, "twin_ind": "N"},
-        {"cntr_id": "TEST000127", "status": "XF", "size": 20, "twin_ind": "Y"}  # Duplicate cntr_id
+        {"cntr_id": "TEST000127", "status": "XF", "size": 20, "twin_ind": "Y"},
+        {"cntr_id": "TEST000130"},
+        {"cntr_id": "TEST000131", "bay": "01D"},
     ]
 
     c.save_as_csv(new_data, df, path)
-

@@ -1,5 +1,7 @@
 from typing import Dict, Any, Optional
 from pathlib import Path
+
+from helper.io_utils import read_csv
 from helper.win_utils import wait_for_window, send_keys_with_log
 from helper.logger import logger
 from driver.base_driver import BaseDriver
@@ -141,3 +143,36 @@ class BaseFlow(BaseDriver):
         except Exception as e:
             logger.error(f"Failed to handle gate terminal: {e}")
             raise
+
+    @staticmethod
+    def get_loading_data():
+        p = Path("data/vessel_loading_data.csv")
+        df = read_csv(p)
+        yield df, p
+
+    @staticmethod
+    def get_discharge_data():
+        p = Path("data/vessel_discharge_data.csv")
+        df = read_csv(p)
+        yield df, p
+        
+    @staticmethod
+    def get_gate_pickup_data():
+        p = Path("data/gate_pickup_data.csv")
+        df = read_csv(p)
+        yield df, p
+
+    @staticmethod
+    def get_gate_ground_data():
+        p = Path("data/gate_ground_data.csv")
+        df = read_csv(p)
+        yield df, p
+
+    @staticmethod
+    def update_column(df, cntr_id, column: str, value) -> None:
+        mask = df["cntr_id"] == cntr_id
+        if mask.any():
+            df.loc[mask, column] = value
+            logger.info(f"Updated {column} for {cntr_id} to {value}")
+        else:
+            raise Exception(f"Cannot update {column} for {cntr_id}")

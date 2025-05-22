@@ -1,11 +1,8 @@
-import sys
 import argparse
 import pandas as pd
-from typing import Optional
 from pathlib import Path
-
 from pandas.core.interchange.dataframe_protocol import DataFrame
-
+from pandas.errors import EmptyDataError
 from helper.sys_utils import raise_with_log
 from test_ui.base_flow import BaseFlow
 from helper.win_utils import wait_for_window, send_keys_with_log
@@ -35,26 +32,32 @@ class ContainerDetails(BaseFlow):
         self.confirm_yes = cd_config.get("confirm_yes_btn")
         self.ags4999 = cd_config.get("ags4999")
 
-    def create_cntr(self, count: int, df: DataFrame, p: Path) -> None:
-        """Create a specified number of containers."""
+    def create_cntr(self, count: int, movement: str) -> None:
+        if movement == "loading":
+            df, p = next(self.get_loading_data())
+        elif movement == "gatePickup":
+            df, p = next(self.get_gate_pickup_data())
+
         if not self.properties.visible(self.cd_cntr_id, timeout=1):
             logger.info("Opening CD module")
             self.module_view(self.module)
 
-        self.cntr_list = []
         for i in range(count):
             logger.info(f"Creating container {i+1}/{count}")
-            self.common_details()
+            self.common_details(movement)
 
-        self.save_as_csv(self.cntr_list, df, self.gate_pickup_data_path)
+        self.save_as_csv(self.cntr_list, df, p)
 
-    def common_details(self) -> None:
-        self.cntr_list.append({
+    def common_details(self, movement: str) -> None:
+        details = {
             "cntr_id": self.cntr_id,
             "status": self.status,
             "size": self.size,
-            "twin_ind": "S"
-        })
+        }
+        if movement == "gatePickup":
+            details["twin_ind"] = "S"
+        self.cntr_list.append(details)
+
         self.actions.click(self.cd_cntr_id)
         send_keys_with_log("^a")
         send_keys_with_log(self.cntr_id)
@@ -63,8 +66,8 @@ class ContainerDetails(BaseFlow):
             self.actions.click(self.create_yes)
             self.actions.click(self.create_confirm)
         else:
-            logger.error("Create Container window not found")
             raise RuntimeError("Create Container window not found")
+
         self.actions.click(self.cd_status)
         send_keys_with_log(self.status)
         send_keys_with_log(self.size)
@@ -122,54 +125,40 @@ class ContainerDetails(BaseFlow):
             self.actions.set_text(self.loading_shipper, "BOT")
             self.actions.set_text(self.loading_gross_wt, self.gross_wt)
         else:
-            raise_with_log(f"Invalid status: {status}")
+            raise ValueError(f"Invalid status: {status}")
 
     def get_tier(self) -> str:
-        try:
-            v = self.properties.text_value(self.cd_yard)
-            if not v:
-                logger.error("cd_yard text is empty")
-                raise ValueError("Invalid cd_yard value")
-            parts = v.split()
-            if not parts or "/" not in parts[-1]:
-                logger.error(f"Invalid cd_yard format: {v}")
-                raise ValueError(f"Invalid cd_yard format: {v}")
-            self.tier = parts[-1].split("/")[-1]
-            logger.debug(f"Extracted tier: {self.tier}")
-            return self.tier
-        except Exception as e:
-            logger.error(f"Get tier failed: {e}")
-            raise
+        v = self.properties.text_value(self.cd_yard)
+        if not v:
+            raise ValueError("Invalid cd_yard value")
+        parts = v.split()
+        if not parts or "/" not in parts[-1]:
+            raise ValueError(f"Invalid cd_yard format: {v}")
+        tier = parts[-1].split("/")[-1]
+        logger.debug(f"Extracted tier: {tier}")
+        return tier
 
     @staticmethod
     def save_as_csv(cntr_list: list, df: DataFrame, p: Path) -> None:
-        try:
-            new_data = pd.DataFrame(cntr_list)
+        new_data = pd.DataFrame(cntr_list)
+        if new_data.empty:
+            raise EmptyDataError("No new data to save")
 
-            new_df = pd.concat([new_data, df]).drop_duplicates(
-                subset=["cntr_id"], keep="first"
-            ).reset_index(drop=True)
+        new_df = pd.concat([new_data, df]).drop_duplicates(
+            subset=["cntr_id"], keep="first"
+        ).reset_index(drop=True)
 
-            logger.info(f"Updated DataFrame: {new_df.to_dict()}")
+        logger.info(f"Updated DataFrame: {new_df.to_dict()}")
 
-            new_df.to_csv(p, index=False)
-            logger.debug(f"Saved DataFrame to {p}")
-        except (pd.errors.EmptyDataError, ValueError) as e:
-            raise_with_log(f"Data processing failed: {e}", ValueError)
-        except OSError as e:
-            raise_with_log(f"Failed to save CSV to {p}: {e}", OSError)
+        new_df.to_csv(p, index=False)
+        logger.debug(f"Saved DataFrame to {p}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create containers")
     parser.add_argument("count", type=int, nargs="?", default=1, help="Number of containers to create")
-    parser.add_argument("--test", action="store_true", help="Run test code")
+    parser.add_argument("movement", type=str, nargs="?", default=None, help="Movement type")
     args = parser.parse_args()
 
-    try:
-        cd = ContainerDetails()
-        if args.test:
-            logger.info("Test mode not implemented")
-        elif args.count is not None:
-            cd.create_cntr(args.count)
-    except Exception as e:
-        raise_with_log(f"ContainerDetails failed: {e}")
+    cd = ContainerDetails()
+    if args.movement is not None:
+        cd.create_cntr(args.count, args.movement)

@@ -22,7 +22,7 @@ class BayPlan(BaseFlow):
             send_keys_with_log("{ENTER}")
             send_keys_with_log("%u")
         else:
-            raise_with_log("Inbound Bay Plan window not found")
+            raise RuntimeError("Inbound Bay Plan window not found")
 
 if __name__ == "__main__":
     bp = BayPlan()

@@ -9,14 +9,10 @@ class WindowNotFoundError(Exception):
 
 def send_keys_with_log(keys: str, with_tab: bool = False) -> None:
     """Send keys with optional TAB press."""
-    try:
-        logger.info(f"Sending keys: {keys}{' + TAB' if with_tab else ''}")
-        send_keys(keys)
-        if with_tab:
-            send_keys("{TAB}")
-    except Exception as e:
-        logger.error(f"Failed to send keys {keys}: {e}")
-        raise
+    logger.info(f"Sending keys: {keys}{' + TAB' if with_tab else ''}")
+    send_keys(keys)
+    if with_tab:
+        send_keys("{TAB}")
 
 def wait_for_window(title: str, timeout: int = 10) -> Optional[List[int]]:
     """Wait for a window with the given title to appear."""

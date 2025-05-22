@@ -42,6 +42,17 @@ class ElementProperties:
             logger.error(f"Enabled check failed for {xpath}: {e}")
             return False
 
+    def selected(self, xpath: str, timeout: int = 10) -> bool:
+        try:
+            self.driver.implicitly_wait(timeout)
+            element = self.driver.find_element(By.XPATH, xpath)
+            is_selected = element.get_dom_attribute("selected") == "True"
+            logger.info(f"Element selected state for {xpath}: {is_selected}")
+            return is_selected
+        except Exception as e:
+            logger.error(f"Selected check failed for {xpath}: {e}")
+            return False
+
     def get_row_index(self, xpath: str, timeout: int = 10) -> int | None:
         try:
             self.driver.implicitly_wait(timeout)

@@ -14,14 +14,8 @@ load_dotenv()
 
 class ApplicationLauncher(BaseFlow, WinAppHandler):
     """Launches and logs into nGen and Guider applications."""
-    def __init__(self, config_path: Optional[Path] = None):
-        """
-        Initialize ApplicationLauncher with config and pywinauto app.
-
-        Args:
-            config_path: Optional path to YAML config file.
-        """
-        super().__init__(config_path=config_path)  # Initialize BaseFlow
+    def __init__(self):
+        super().__init__()  # Initialize BaseFlow
         WinAppHandler.__init__(self, app=Application(backend="uia"))  # Initialize WinAppHandler
         try:
             self.username = self.config["nGen"]["username"]
@@ -56,8 +50,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
                 self.send_credentials(self.username, self.password)
             logger.info(f"Successfully logged into {app_name}")
         except Exception as e:
-            logger.error(f"Failed to login to {app_name}: {e}")
-            raise
+            raise Exception(f"Failed to login to {app_name}: {e}")
 
     def login_ngen(self) -> None:
         """Log into the nGen application."""
@@ -70,8 +63,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
                 self._login("ngen", "ngen_login", self.app_ngen, self.ngen_login)
                 window_exists(self.window_titles["ngen"], timeout=15)
         except Exception as e:
-            logger.error(f"nGen login failed: {e}")
-            raise
+            raise Exception(f"nGen login failed: {e}")
 
     def login_guider(self) -> None:
         """Log into the Guider application."""
@@ -82,8 +74,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             self._login("guider", "guider_login", self.app_guider)
             window_exists(self.window_titles["guider"], timeout=15)
         except Exception as e:
-            logger.error(f"Guider login failed: {e}")
-            raise
+            raise Exception(f"Guider login failed: {e}")
 
     def full_load(self) -> None:
         """Execute full login sequence for nGen and Guider."""
@@ -93,8 +84,7 @@ class ApplicationLauncher(BaseFlow, WinAppHandler):
             self.login_guider()
             logger.info("Full load completed successfully")
         except Exception as e:
-            logger.error(f"Full load failed: {e}")
-            raise
+            raise Exception(f"Full load failed: {e}")
         finally:
             self.driver.quit()
             input("Press Enter to close the application...")
@@ -135,8 +125,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    try:
-        app = ApplicationLauncher()
-        app.run_method(args.method)
-    except Exception as e:
-        raise_with_log(f"Application failed: {e}")
+    app = ApplicationLauncher()
+    app.run_method(args.method)
