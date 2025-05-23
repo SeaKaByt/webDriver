@@ -205,7 +205,7 @@ class Producer:
 
 
 if __name__ == "__main__":
-    # "D:\90798\Issac\repo\python-integrated-test\helper\generate_jms\data\baplie_tmp.xml"
+    # "D:\90798\Issac\repo\python-integrated-tests\helper\generate_jms\data\baplie_tmp.xml"
     # python -m helper.jms.producer
     producer = Producer(
         "t3://icaveiut1.hphit.hutchisonports.com:30152",

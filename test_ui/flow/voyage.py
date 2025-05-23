@@ -3,7 +3,6 @@ import time
 from pathlib import Path
 from helper.logger import logger
 from helper.io_utils import read_csv
-from helper.sys_utils import raise_with_log
 from helper.win_utils import send_keys_with_log, wait_for_window
 from test_ui.base_flow import BaseFlow
 
@@ -67,7 +66,7 @@ class Voyage(BaseFlow):
             else:
                 bay_number += 4
         else:
-            raise_with_log(f"Invalid size: {size}")
+            raise ValueError(f"Invalid size: {size}")
 
         if bay_number > maximum_bay:
             return None
@@ -82,7 +81,7 @@ class Voyage(BaseFlow):
         if mask.any():
             df.loc[mask, "bay"] = new_bay
         else:
-            raise_with_log(f"Container ID {cntr_id} not found in DataFrame")
+            raise ValueError(f"Container ID {cntr_id} not found in DataFrame")
 
     @staticmethod
     def update_planned(df, cntr_id):
@@ -152,7 +151,7 @@ class Voyage(BaseFlow):
                 send_keys_with_log("{ENTER}")
 
             if wait_for_window("Host Error", 1):
-                raise_with_log("Host Error window appeared")
+                raise Exception("Host Error window appeared")
 
             if not self.actions.find(cntr_id_xpath, timeout=1):
                 self.update_planned(df, cntr_id)
@@ -160,7 +159,7 @@ class Voyage(BaseFlow):
                 size = df[df["cntr_id"] == cntr_id]["size"].iloc[0]
                 new_bay = self.next_bay(int(size), bay)
                 if new_bay is None:
-                    raise_with_log(f"No space available for cntr_id: {cntr_id}")
+                    raise Exception(f"No space available for cntr_id: {cntr_id}")
                 self.update_bay(df, cntr_id, new_bay)
                 logger.info(f"Moved {cntr_id} to bay {new_bay}")
                 self.setup_bay(new_bay)
@@ -170,7 +169,7 @@ class Voyage(BaseFlow):
                     send_keys_with_log("{ENTER}")
 
                 if self.actions.find(cntr_id_xpath, 1):
-                    raise_with_log(f"Container {cntr_id} still in table after second attempt")
+                    raise Exception(f"Container {cntr_id} still in table after second attempt")
                 else:
                     self.update_planned(df, cntr_id)
 

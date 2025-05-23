@@ -93,6 +93,14 @@ bol:
   create_cancel: /form[@title>'Create Bill of lading con']/?/?/container[@name='buttonPanel']/button[@name='btnCancel']
   details_line: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='decPaneMaster']/container[@name='null.layeredPane']/container[@name='null.contentPane']/text[@name='txtLineCode']
 
+  add_cntr:
+    # fields
+    cntr_id: //element[@name='txtCntrId']/text[@name='guiTextField1']
+
+    # button
+    ok: //container[@name='buttonPanel']/button[@name='btnOK']
+    add_next: //container[@name='buttonPanel']/button[@name='btnAddNext']
+
 hr:
   bol_value: "BL01"
   hold_condition: "dt"
@@ -141,6 +149,12 @@ gt:
   gate_confirm_ok_btn: /form[@title='Gate Confirm']//container[@name='buttonPanel']/button[@name='okButton']
   confirm_yes_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
 
+  create_pickup:
+    # fields
+    driver: //container[@name='sealPanel']/text[@name='driverIdTextField']
+    tag: //container[@name='companyNamePanel']/text[@name='batTextField']
+    pin: //container[@name='pinNoPanel']/text[@name='pinNoTextField']
+
 qm:
   fcl_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
   row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
@@ -156,6 +170,9 @@ qm:
 
 bm:
   booking_no_list: ["BK01", "BK02"]
+
+  # button
+  return_cntr: //container[@name='initButtonCard']/button[@name='returnButton']
 
   principal_line: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/text[@name='cmpCodeTextField']
   booking_record_0: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='requestDetailPanel']/container/container[1]/table[@name='requestDetailTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
@@ -174,6 +191,15 @@ bm:
   request_sequence_2843: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2843']
   request_sequence_2882: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2882']
 
+  laden_return:
+    # button
+    create: //button[@name='createButton']
+    copy: //button[@name='copyButton']
+    add_next: //button[@name='addNextStyledButton']
+
+    # fields
+    new_cntr: ///text[@name='newCntrIdTextField']
+
 voyage:
   # window
   mode_2: "//titlebar[@accessiblerole='TitleBar' and @text='Voyage  (NVD-TSHM04-V01  TSHM04) -- Exclusive Mode  :  2']"
@@ -189,7 +215,7 @@ voyage:
   qc: //combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
   bay: //combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
 
-  qc_tree: "//tree[@name='tree']/?/?/treeitem[@text>'OQ1,LD#28,DS#71 (Total: G']"
+  qc_tree: "//tree[@name='tree']/?/?/treeitem[@text>'OQ1']"
   plan_section: //container[@name='viewport']/element[@name='planSectionContainer']
   qc_methods: //container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
 

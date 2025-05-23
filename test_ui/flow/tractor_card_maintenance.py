@@ -26,6 +26,6 @@ class TractorCard(BaseFlow):
 
 if __name__ == "__main__":
     t = TractorCard()
-    t.create_tractor_card(9, 12)
+    t.create_tractor_card(21, 20)
 
 
