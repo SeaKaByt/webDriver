@@ -24,9 +24,10 @@ class CROMaintenance(BaseFlow):
             logger.info("Resetting CRO form")
             self.actions.click(self.cro_config["reset"])
 
-        df_filtered = df[df["cro_no"].isna() & df["cntr_id"].notna()]
+        df_filtered = df[df["mvt"].isna() & df["cntr_id"].notna() & df["cro_no"].isna()]
         if df_filtered.empty:
-            raise EmptyDataError("No containers available for CRO creation")
+            logger.warning("No containers to create CRO for")
+            return
 
         for cntr_id in df_filtered["cntr_id"]:
             logger.info(f"Creating CRO for cntr_id: {cntr_id}")
@@ -74,9 +75,10 @@ class CROMaintenance(BaseFlow):
     def get_pin(self, df, p) -> None:
         cro_status = "active"
 
-        df_filtered = df[df["pin"].isna() & df["cntr_id"].notna()]
+        df_filtered = df[df["pin"].isna() & df["cntr_id"].notna() & df["mvt"].isna()]
         if df_filtered.empty:
-            raise EmptyDataError("No containers available for PIN retrieval")
+            logger.warning("No containers to fetch pins for")
+            return
 
         logger.info("Fetching pins for CRO")
         self.actions.click(self.cro_config["reset"])

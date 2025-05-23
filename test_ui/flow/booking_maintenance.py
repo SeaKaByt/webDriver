@@ -12,6 +12,7 @@ class BookingMaintenance(BaseFlow):
     def __init__(self):
         super().__init__()
         self.bm_config = self.config["bm"]
+        self.laden_return_config = self.bm_config["laden_return"]
 
     def add_return_cntr(self) -> None:
         df, p = next(self.get_gate_ground_data())
@@ -21,8 +22,9 @@ class BookingMaintenance(BaseFlow):
         # Clean and validate the DataFrame
         df["status"] = df["status"].astype(str).str.strip()
         df["size"] = df["size"].astype(str).str.strip()
+        df_filtered = df[df["mvt"] != "C"]
 
-        for status, group in df.groupby("status"):
+        for status, group in df_filtered.groupby("status"):
             logger.info(f"Processing status group: {status}")
             self.actions.click(self.bm_config["principal_line"])
             send_keys_with_log("^a")
@@ -53,18 +55,20 @@ class BookingMaintenance(BaseFlow):
                 if not self.properties.selected(request_sequence):
                     raise RuntimeError(f"Failed to select request_sequence for status: {status}, size: {size}")
 
-                send_keys_with_log("%r")
+                self.actions.click(self.bm_config["return_cntr"])
                 if not wait_for_window("Laden Return"):
                     logger.error("Laden window not found")
                     raise RuntimeError("Laden window not found")
 
                 self.actions.click(self.bm_config["laden_return_cntr_0"])
-                send_keys_with_log("%y")
+                self.actions.click(self.laden_return_config["copy"])
 
                 for _, row in subgroup.iterrows():
                     logger.info(f"Processing row: {row}")
+                    self.actions.click(self.laden_return_config["new_cntr"])
+                    send_keys_with_log("^a")
                     send_keys_with_log(row["cntr_id"])
-                    self.actions.click(self.bm_config["add_next_btn"])
+                    self.actions.click(self.laden_return_config["add_next"])
                     if wait_for_window(".*ioc2617$", 1):
                         logger.info("ioc2617 window found")
                         send_keys_with_log("{ENTER}")
@@ -77,6 +81,9 @@ class BookingMaintenance(BaseFlow):
                 else:
                     logger.error("Confirm window not found")
                     raise RuntimeError("Confirm window not found")
+                if wait_for_window(".*ioc5643$", 1):
+                    logger.info("ioc5643 window found")
+                    send_keys_with_log("{ENTER}")
                 self.actions.click(self.bm_config["return_cntr_close"])
 
             self.actions.click(self.bm_config["request_record_close_btn"])

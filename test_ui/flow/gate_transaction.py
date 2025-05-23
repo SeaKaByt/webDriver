@@ -14,15 +14,19 @@ class GateTransaction(BaseFlow):
         super().__init__()
         self.ngen_config = self.config["nGen"]
         self.gt_config = self.config["gt"]
+        self.create_pickup_config = self.gt_config["create_pickup"]
 
     def create_gate_pickup(self) -> None:
         df, p = next(self.get_gate_pickup_data())
         self.get_tractor(df, p)
+        df_filtered = df[df["mvt"].isna()]
+        if df_filtered.empty:
+            raise EmptyDataError("No data to process")
 
         if not self.properties.visible(self.gt_config["search_tractor"], timeout=1):
             self.module_view(self.module)
 
-        for tractor, group in df.groupby("tractor"):
+        for tractor, group in df_filtered.groupby("tractor"):
             logger.info(f"Processing tractor group: {tractor}, size: {len(group)}")
             if self.properties.editable(self.gt_config["search_tractor"]):
                 self.actions.set_text(self.gt_config["search_tractor"], tractor)
@@ -38,8 +42,12 @@ class GateTransaction(BaseFlow):
                     raise RuntimeError("Pickup button not enabled")
 
                 if wait_for_window("Create Pickup"):
-                    self.actions.set_text(self.gt_config["create_pin"], str(row["pin"]))
-                    self.actions.set_text(self.gt_config["create_driver"], row["tractor"])
+                    self.actions.click(self.create_pickup_config["pin"])
+                    send_keys_with_log(str(row["pin"])[:6])
+                    # self.actions.click(self.create_pickup_config["tag"])
+                    # send_keys_with_log(row["tractor"])
+                    self.actions.click(self.create_pickup_config["driver"])
+                    send_keys_with_log(row["tractor"])
                     send_keys_with_log("{ENTER}")
                 else:
                     raise RuntimeError("Create Pickup window not found")
@@ -57,17 +65,23 @@ class GateTransaction(BaseFlow):
                 else:
                     raise RuntimeError("Confirmation window not found")
 
+                df.loc[df["cntr_id"] == row["cntr_id"], "mvt"] = "C"
+                df.to_csv(p, index=False)
+
             self.actions.click(self.gt_config["gate_transaction_refresh_btn"])
             self.release_print_cwp()
 
     def create_gate_ground(self) -> None:
         df, p = next(self.get_gate_ground_data())
         self.get_tractor(df, p)
+        df_filtered = df[df["mvt"].isna()]
+        if df_filtered.empty:
+            raise EmptyDataError("No data to process")
 
         if not self.properties.visible(self.gt_config["search_tractor"], timeout=1):
             self.module_view(self.module)
 
-        for tractor, group in df.groupby("tractor"):
+        for tractor, group in df_filtered.groupby("tractor"):
             logger.info(f"Processing tractor group: {tractor}, cntr_id: {group['cntr_id'].tolist()}")
             if self.properties.editable(self.gt_config["search_tractor"]):
                 self.actions.set_text(self.gt_config["search_tractor"], tractor)
@@ -139,27 +153,32 @@ class GateTransaction(BaseFlow):
                 else:
                     raise RuntimeError("Confirm window not found")
 
+                df.loc[df["cntr_id"] == row["cntr_id"], "mvt"] = "C"
+                df.to_csv(p, index=False)
+
                 self.actions.click(self.gt_config["gate_transaction_refresh_btn"])
             self.release_print_cwp()
 
     @staticmethod
-    def get_tractor(df: pd.DataFrame, path: Path, twin_col: str = "twin_ind", tractor_prefix: str = "XT") -> None:
+    def get_tractor(df: pd.DataFrame, path: Path) -> None:
         tractor_path = Path("data/tractor_usage.csv")
         tractor_df = read_csv(tractor_path)
+        twin_col = "twin_ind"
 
-        if df.empty:
-            raise EmptyDataError("DataFrame is empty")
         if twin_col not in df.columns:
             df[twin_col] = "S"
         if not df[twin_col].isin(["T", "S"]).all():
             raise ValueError("twin_ind must be 'T' or 'S'")
 
-        df["tractor"] = None
-        available_tractors = tractor_df[tractor_df["reserved"].isna()]
+        df_filtered = df[df["tractor"].isna() & df["mvt"].isna()]
+        if df_filtered.empty:
+            return
+
+        available_tractors = tractor_df[(tractor_df["reserved"] != "Y") & (tractor_df["problem"] != "Y")]
         if available_tractors.empty:
             raise EmptyDataError(f"No available tractors in {tractor_path}")
 
-        twin_indices = df.index[df[twin_col] == "T"].tolist()
+        twin_indices = df_filtered.index[df_filtered[twin_col] == "T"].tolist()
         for i in range(0, len(twin_indices), 2):
             if i + 1 < len(twin_indices):
                 if not available_tractors.empty:
@@ -168,7 +187,7 @@ class GateTransaction(BaseFlow):
                     tractor_df.loc[tractor_df["tractor_id"] == tractor_id, "reserved"] = "Y"
                     available_tractors = available_tractors[available_tractors["tractor_id"] != tractor_id]
 
-        single_indices = df.index[df[twin_col] == "S"].tolist()
+        single_indices = df_filtered.index[df_filtered[twin_col] == "S"].tolist()
         for idx in single_indices:
             if not available_tractors.empty:
                 tractor_id = available_tractors.iloc[0]["tractor_id"]

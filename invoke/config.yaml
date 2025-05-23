@@ -13,11 +13,11 @@ vessel_loading_plan:
 
 gate_pickup_task:
   create_container:
-  add_bol: ture
-  get_pin: ture
-  release_hold: ture
-  gate_pickup: ture
+  add_bol:
+  get_pin: t
+  release_hold: t
+  gate_pickup: t
 
 gate_ground_task:
   add_return_container:
-  gate_ground: true
+  gate_ground: t

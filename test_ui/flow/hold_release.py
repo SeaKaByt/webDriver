@@ -41,7 +41,7 @@ class HoldRelease(BaseFlow):
         send_keys_with_log(self.voyage)
         send_keys_with_log("%s")
 
-    def release_hold(self, hold_condition: str, hold_condition2: str) -> None:
+    def release_hold(self, hold_condition: str, hold_condition2: str = None) -> None:
         logger.info(f"Releasing hold condition: {hold_condition}, {hold_condition2}")
         self.search_cntr(hold_condition)
         if wait_for_window(".*inv0693$", 1):
@@ -50,7 +50,7 @@ class HoldRelease(BaseFlow):
             return
         self.actions.click(self.release_hold_condition)
         send_keys_with_log(hold_condition)
-        if hold_condition2 != "None":
+        if hold_condition2 is not None:
             send_keys_with_log(f", {hold_condition2}")
         self.actions.click(self.declaration)
         send_keys_with_log(self.declaration_value, with_tab=True)

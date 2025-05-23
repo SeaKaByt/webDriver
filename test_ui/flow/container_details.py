@@ -1,54 +1,74 @@
 import argparse
 import pandas as pd
 from pathlib import Path
-from pandas.core.interchange.dataframe_protocol import DataFrame
 from pandas.errors import EmptyDataError
-from helper.sys_utils import raise_with_log
 from test_ui.base_flow import BaseFlow
 from helper.win_utils import wait_for_window, send_keys_with_log
 from helper.container_utils import next_loc
 from helper.logger import logger
 
+
 class ContainerDetails(BaseFlow):
-    module = "CD"
-    cntr_list = []
+    """Handles container creation and management in a UI-based logistics application."""
+
+    MODULE = "CD"
 
     def __init__(self):
+        """Initialize the ContainerDetails class with configuration."""
         super().__init__()
-        cd_config = self.config.get("cd", {})
-        self.cd_cntr_id = cd_config.get("cntr_id")
-        self.cd_owner = cd_config.get("owner")
-        self.cd_voyage = cd_config.get("voyage")
-        self.cd_pol = cd_config.get("pol")
-        self.cd_gross_wt = cd_config.get("gross_wt")
-        self.cd_status = cd_config.get("status")
-        self.cd_yard = cd_config.get("yard")
-        self.loading_blk = cd_config.get("loading_blk")
-        self.loading_shipper = cd_config.get("loading_shipper")
-        self.loading_gross_wt = cd_config.get("loading_gross_wt")
-        self.create_yes = cd_config.get("create_yes_btn")
-        self.create_confirm = cd_config.get("create_confirm_btn")
-        self.cancel = cd_config.get("cancel_btn")
-        self.confirm_yes = cd_config.get("confirm_yes_btn")
-        self.ags4999 = cd_config.get("ags4999")
+        self.cd_config = self.config["cd"]
+        self.cntr_list = []
 
     def create_cntr(self, count: int, movement: str) -> None:
-        if movement == "loading":
-            df, p = next(self.get_loading_data())
-        elif movement == "gatePickup":
-            df, p = next(self.get_gate_pickup_data())
+        """Create containers in the UI and update the corresponding CSV file.
 
-        if not self.properties.visible(self.cd_cntr_id, timeout=1):
+        Args:
+            count: Number of containers to create.
+            movement: Type of movement ('loading' or 'gatePickup').
+
+        Raises:
+            ValueError: If movement type is invalid.
+            RuntimeError: If UI operations fail.
+        """
+        df, path = self._load_data(movement)
+
+        if not self.properties.visible(self.cd_config["cntr_id"], timeout=1):
             logger.info("Opening CD module")
-            self.module_view(self.module)
+            self.module_view(self.MODULE)
 
         for i in range(count):
-            logger.info(f"Creating container {i+1}/{count}")
-            self.common_details(movement)
+            logger.info(f"Creating container {i + 1}/{count}")
+            self._enter_container_details(movement)
 
-        self.save_as_csv(self.cntr_list, df, p)
+        self._save_to_csv(df, path)
 
-    def common_details(self, movement: str) -> None:
+    def _load_data(self, movement: str) -> tuple[pd.DataFrame, Path]:
+        """Load container data from CSV based on movement type.
+
+        Args:
+            movement: Type of movement ('loading' or 'gatePickup').
+
+        Returns:
+            Tuple of DataFrame and file path.
+
+        Raises:
+            ValueError: If movement type is invalid.
+        """
+        if movement == "loading":
+            return next(self.get_loading_data())
+        elif movement == "gatePickup":
+            return next(self.get_gate_pickup_data())
+        raise ValueError(f"Invalid movement: {movement}")
+
+    def _enter_container_details(self, movement: str) -> None:
+        """Enter container details in the UI and append to container list.
+
+        Args:
+            movement: Type of movement ('loading' or 'gatePickup').
+
+        Raises:
+            RuntimeError: If UI interactions fail.
+        """
         details = {
             "cntr_id": self.cntr_id,
             "status": self.status,
@@ -58,107 +78,164 @@ class ContainerDetails(BaseFlow):
             details["twin_ind"] = "S"
         self.cntr_list.append(details)
 
-        self.actions.click(self.cd_cntr_id)
+        # Enter container ID
+        self.actions.click(self.cd_config["cntr_id"])
         send_keys_with_log("^a")
         send_keys_with_log(self.cntr_id)
         send_keys_with_log("{ENTER}")
-        if wait_for_window("Create Container", timeout=5):
-            self.actions.click(self.create_yes)
-            self.actions.click(self.create_confirm)
-        else:
-            raise RuntimeError("Create Container window not found")
 
-        self.actions.click(self.cd_status)
+        # Handle Create Container window
+        if not wait_for_window("Create Container", timeout=5):
+            raise RuntimeError("Create Container window not found")
+        self.actions.click(self.cd_config["create_yes_btn"])
+        self.actions.click(self.cd_config["create_confirm_btn"])
+
+        # Enter common container details
+        self._set_common_fields()
+
+        # Enter voyage-specific details if applicable
+        if self.status in ("XF", "IF"):
+            self._set_voyage_details(self.status)
+
+        send_keys_with_log("{ENTER}")
+
+        # Handle ags4999 window for lane adjustment
+        if wait_for_window(".*ags4999$", timeout=1):
+            self._handle_ags4999_error()
+
+        # Handle Confirmation window
+        if wait_for_window("Confirmation", timeout=1):
+            send_keys_with_log("{TAB}")
+            send_keys_with_log("{ENTER}")
+
+        # Check for User Error
+        if wait_for_window("User Error", timeout=1):
+            logger.error("Container cannot be created")
+            raise RuntimeError("Container cannot be created")
+
+        # Verify container creation
+        if not self.properties.editable(self.cd_config["cntr_id"]):
+            logger.error("Container creation failed: cntr_id not editable")
+            raise RuntimeError("Container creation failed: cntr_id not editable")
+
+        # Update location attributes
+        location_data = next_loc(
+            self.cntr_id, self.size, self.stack, self.lane,
+            self._get_tier(), self.json_data_path
+        )
+        for key, value in location_data.items():
+            setattr(self, key, value)
+
+    def _set_common_fields(self) -> None:
+        """Set common container fields in the UI."""
+        self.actions.click(self.cd_config["status"])
         send_keys_with_log(self.status)
         send_keys_with_log(self.size)
         send_keys_with_log(self.type)
-        self.actions.click(self.cd_owner)
+        self.actions.click(self.cd_config["owner"])
         send_keys_with_log(self.owner, with_tab=True)
         send_keys_with_log("{TAB}")
         send_keys_with_log(self.block)
         send_keys_with_log(self.stack, with_tab=True)
         send_keys_with_log(self.lane)
-        if self.status in ("XF", "IF"):
-            self.voyage_details(self.status)
-        send_keys_with_log("{ENTER}")
 
-        if wait_for_window(".*ags4999$", 1):
-            self.lane = f"{int(self.lane) + 1}"
-            self.actions.click(self.ags4999)
-            self.actions.click(self.cd_yard)
-            send_keys_with_log("{TAB}")
-            send_keys_with_log("{TAB}")
-            send_keys_with_log(self.lane)
-            send_keys_with_log("{ENTER}")
+    def _set_voyage_details(self, status: str) -> None:
+        """Set voyage-specific details in the UI.
 
-        if wait_for_window("Confirmation", 1):
-            send_keys_with_log("{TAB}")
-            send_keys_with_log("{ENTER}")
+        Args:
+            status: Container status ('XF' or 'IF').
 
-        if wait_for_window("User Error", 1):
-            raise_with_log("Container cannot be created")
+        Raises:
+            ValueError: If status is invalid.
+        """
+        self.actions.click(self.cd_config["voyage"])
+        send_keys_with_log("^a")
+        send_keys_with_log(self.line, with_tab=True)
+        send_keys_with_log(self.vessel)
+        send_keys_with_log(self.voyage)
 
-        if not self.properties.editable(self.cd_cntr_id):
-            raise_with_log("Container creation failed: cntr_id not editable")
-        d = next_loc(self.cntr_id, self.size, self.stack, self.lane, self.get_tier(), self.json_data_path)
-        for k, v in d.items():
-            setattr(self, k, v)
-
-    def voyage_details(self, status) -> None:
         if status == "IF":
-            self.actions.click(self.cd_voyage)
-            send_keys_with_log("^a")
-            send_keys_with_log(self.line, with_tab=True)
-            send_keys_with_log(self.vessel)
-            send_keys_with_log(self.voyage)
-            self.actions.click(self.cd_pol)
+            self.actions.click(self.cd_config["pol"])
             send_keys_with_log(self.pol)
-            self.actions.click(self.cd_gross_wt)
+            self.actions.click(self.cd_config["gross_wt"])
             send_keys_with_log(self.gross_wt)
         elif status == "XF":
-            self.actions.click(self.cd_voyage)
-            send_keys_with_log("^a")
-            send_keys_with_log(self.line, with_tab=True)
-            send_keys_with_log(self.vessel)
-            send_keys_with_log(self.voyage)
-            self.actions.set_text(self.loading_blk, self.blk)
-            self.actions.set_text(self.loading_shipper, "BOT")
-            self.actions.set_text(self.loading_gross_wt, self.gross_wt)
+            self.actions.set_text(self.cd_config["loading_blk"], self.blk)
+            self.actions.set_text(self.cd_config["loading_shipper"], "BOT")
+            self.actions.set_text(self.cd_config["loading_gross_wt"], self.gross_wt)
         else:
             raise ValueError(f"Invalid status: {status}")
 
-    def get_tier(self) -> str:
-        v = self.properties.text_value(self.cd_yard)
-        if not v:
+    def _handle_ags4999_error(self) -> None:
+        """Handle the ags4999 window by updating the lane and retrying."""
+        self.lane = f"{int(self.lane) + 1}"
+        self.actions.click(self.cd_config["ags4999"])
+        self.actions.click(self.cd_config["yard"])
+        send_keys_with_log("{TAB}")
+        send_keys_with_log("{TAB}")
+        send_keys_with_log(self.lane)
+        send_keys_with_log("{ENTER}")
+
+    def _get_tier(self) -> str:
+        """Extract the tier value from the yard field.
+
+        Returns:
+            The extracted tier value.
+
+        Raises:
+            ValueError: If yard value or format is invalid.
+        """
+        yard_value = self.properties.text_value(self.cd_config["yard"])
+        if not yard_value:
             raise ValueError("Invalid cd_yard value")
-        parts = v.split()
+
+        parts = yard_value.split()
         if not parts or "/" not in parts[-1]:
-            raise ValueError(f"Invalid cd_yard format: {v}")
+            raise ValueError(f"Invalid cd_yard format: {yard_value}")
+
         tier = parts[-1].split("/")[-1]
         logger.debug(f"Extracted tier: {tier}")
         return tier
 
-    @staticmethod
-    def save_as_csv(cntr_list: list, df: DataFrame, p: Path) -> None:
-        new_data = pd.DataFrame(cntr_list)
+    def _save_to_csv(self, df: pd.DataFrame, path: Path) -> None:
+        """Save container list to CSV, merging with existing data.
+
+        Args:
+            df: Existing DataFrame from CSV.
+            path: Path to the CSV file.
+
+        Raises:
+            EmptyDataError: If no new data to save.
+        """
+        new_data = pd.DataFrame(self.cntr_list)
         if new_data.empty:
             raise EmptyDataError("No new data to save")
 
-        new_df = pd.concat([new_data, df]).drop_duplicates(
+        updated_df = pd.concat([new_data, df]).drop_duplicates(
             subset=["cntr_id"], keep="first"
         ).reset_index(drop=True)
 
-        logger.info(f"Updated DataFrame: {new_df.to_dict()}")
+        logger.info(f"Updated DataFrame: {updated_df.to_dict()}")
+        updated_df.to_csv(path, index=False)
+        logger.debug(f"Saved DataFrame to {path}")
 
-        new_df.to_csv(p, index=False)
-        logger.debug(f"Saved DataFrame to {p}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Create containers")
-    parser.add_argument("count", type=int, nargs="?", default=1, help="Number of containers to create")
-    parser.add_argument("movement", type=str, nargs="?", default=None, help="Movement type")
+    parser = argparse.ArgumentParser(description="Create containers in logistics application")
+    parser.add_argument(
+        "count",
+        type=int,
+        nargs="?",
+        default=1,
+        help="Number of containers to create"
+    )
+    parser.add_argument(
+        "movement",
+        type=str,
+        choices=["loading", "gatePickup"],
+        help="Movement type (loading or gatePickup)"
+    )
     args = parser.parse_args()
 
     cd = ContainerDetails()
-    if args.movement is not None:
-        cd.create_cntr(args.count, args.movement)
+    cd.create_cntr(args.count, args.movement)
