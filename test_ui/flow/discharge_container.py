@@ -1,14 +1,14 @@
 from pathlib import Path
 from helper.io_utils import read_csv
 from helper.logger import logger
-from helper.win_utils import send_keys_with_log, wait_for_window
+from helper.win_utils import send_keys_wlog, wait_for_window
 from test_ui.flow.voyage import Voyage
 
 class DischargeContainer(Voyage):
     module = "DC"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, external_driver=None):
+        super().__init__(external_driver=external_driver)
         self.dc_config = self.config["dc"]
 
     def search_voyage(self):
@@ -16,10 +16,10 @@ class DischargeContainer(Voyage):
             self.module_view(self.module)
 
         self.actions.click(self.dc_config["voyage"])
-        send_keys_with_log("^a")
-        send_keys_with_log(self.line, with_tab=True)
-        send_keys_with_log(self.vessel)
-        send_keys_with_log(self.voyage)
+        send_keys_wlog("^a")
+        send_keys_wlog(self.line, with_tab=True)
+        send_keys_wlog(self.vessel)
+        send_keys_wlog(self.voyage)
         self.actions.click(self.dc_config["search_btn"])
 
     def data_confirmed(self):
@@ -55,27 +55,27 @@ class DischargeContainer(Voyage):
         if not self.properties.visible(self.dc_config["data_confirmed_btn"]):
             self.module_view(self.module)
 
-        send_keys_with_log("%r")
+        send_keys_wlog("%r")
         self.actions.click(self.dc_config["voyage"])
-        send_keys_with_log("^a")
-        send_keys_with_log(self.line, with_tab=True)
-        send_keys_with_log(self.vessel)
-        send_keys_with_log(self.voyage)
-        send_keys_with_log("%s")
+        send_keys_wlog("^a")
+        send_keys_wlog(self.line, with_tab=True)
+        send_keys_wlog(self.vessel)
+        send_keys_wlog(self.voyage)
+        send_keys_wlog("%s")
 
         if not self.properties.visible(self.dc_config["result_table"]):
             raise Exception("Result table is not visible")
-        send_keys_with_log("%t")
+        send_keys_wlog("%t")
 
         if wait_for_window("confirm"):
-            send_keys_with_log("{ENTER}")
+            send_keys_wlog("{ENTER}")
         else:
             raise Exception("Confirm window not found")
 
     def voyage_discharge_actions(self):
-        self.data_confirmed()
+        # self.data_confirmed()
         self.open_voyage_plan()
-        self.setup_voyage("Load", "Disc")
+        self.setup_voyage("Disc")
         self.edit_add()
         self.order_out_all()
 

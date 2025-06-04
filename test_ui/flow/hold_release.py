@@ -1,77 +1,78 @@
 import argparse
 from helper.sys_utils import raise_with_log
-from test_ui.base_flow import BaseFlow
-from helper.win_utils import send_keys_with_log, wait_for_window
+from test_ui.flow_config import BaseFlow
+from helper.win_utils import send_keys_wlog, wait_for_window, find_window
 from helper.logger import logger
 
 class HoldRelease(BaseFlow):
     module = "HR"
+    declaration = "automation"
 
-    def __init__(self):
-        super().__init__()
-        hr_config = self.config.get("hr", {})
-        self.release_tab = hr_config.get("release_tab")
-        self.result_table = hr_config.get("result_table")
-        self.search_hold_condition = hr_config.get("search_hold_condition")
-        self.release_hold_condition = hr_config.get("release_hold_condition")
-        self.hr_bol = hr_config.get("bol")
-        self.declaration = hr_config.get("declaration")
-        self.select_all = hr_config.get("select_all")
-        self.release_batch = hr_config.get("release_batch")
-        self.search_tab = hr_config.get("search_tab")
-        self.hr_voyage = hr_config.get("hr_voyage")
-        # Define attributes
-        self.bol = hr_config.get("bol_value")
-        self.hold_condition = hr_config.get("hold_condition")
-        self.declaration_value = hr_config.get("declaration_value", "automation")
+
+    def __init__(self, external_driver=None):
+        super().__init__(external_driver=external_driver)
+        self.hr = self.config["hr"]
+        self.tab = self.hr["tab"]
+        self.rr = self.hr["release"]["release"]
+        self.rs = self.hr["release"]["search"]
 
     def search_cntr(self, hold_condition) -> None:
-        if not self.properties.visible(self.result_table):
+        if not self.properties.visible(self.rs["hold"], timeout=1):
             logger.info("Opening HR module")
             self.module_view(self.module)
-            self.actions.click(self.release_tab)
-            self.actions.click(self.search_tab)
-        send_keys_with_log("%r")
-        self.actions.click(self.search_hold_condition)
-        send_keys_with_log(hold_condition)
-        self.actions.click(self.hr_voyage)
-        send_keys_with_log("^a")
-        send_keys_with_log(self.line, with_tab=True)
-        send_keys_with_log(self.vessel)
-        send_keys_with_log(self.voyage)
-        send_keys_with_log("%s")
+
+        self.actions.click(self.tab["release"])
+        self.actions.click(self.tab["search"])
+
+        send_keys_wlog("%r")
+
+        self.actions.click(self.rs["hold"])
+        send_keys_wlog(hold_condition)
+
+        self.actions.click(self.rs["voyage"])
+        send_keys_wlog("^a")
+        send_keys_wlog(self.line, field_length=4)
+        send_keys_wlog(self.vessel, field_length=6)
+        send_keys_wlog(self.voyage)
+
+        send_keys_wlog("%s")
 
     def release_hold(self, hold_condition: str, hold_condition2: str = None) -> None:
+        import time
+
         logger.info(f"Releasing hold condition: {hold_condition}, {hold_condition2}")
         self.search_cntr(hold_condition)
-        if wait_for_window(".*inv0693$", 1):
+
+        time.sleep(0.5)
+        if find_window(".*inv0693$") is not None:
             logger.warning("inv0693 window found, no record found!")
-            send_keys_with_log("{ENTER}")
+            send_keys_wlog("{ENTER}")
             return
-        self.actions.click(self.release_hold_condition)
-        send_keys_with_log(hold_condition)
-        if hold_condition2 is not None:
-            send_keys_with_log(f", {hold_condition2}")
-        self.actions.click(self.declaration)
-        send_keys_with_log(self.declaration_value, with_tab=True)
-        send_keys_with_log(self.date)
-        self.actions.click(self.select_all)
-        if not wait_for_window(".*inv0799$", 1):
-            send_keys_with_log("%b")
+
+        if self.properties.visible(self.rr["hold"]):
+            self.actions.click(self.rr["hold"])
         else:
-            raise_with_log("User error: inv0799 window found")
-        self.driver.quit()
+            logger.error("Hold release condition not found in the UI")
+            raise
+
+        send_keys_wlog(hold_condition)
+        if hold_condition2 is not None:
+            send_keys_wlog(f", {hold_condition2}")
+
+        self.actions.click(self.rr["declaration"])
+        send_keys_wlog(self.declaration)
+        self.actions.click(self.hr["select_all"])
+        time.sleep(0.5)
+        if find_window(".*inv0799$"):
+            logger.warning("inv0799 window found")
+            raise
+        send_keys_wlog("%b")
+
+def main():
+    if find_window(".*inv0693$") is not None:
+        logger.warning("inv0693 window found, no record found!")
+        send_keys_wlog("{ENTER}")
+        return
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Hold Release Automation")
-    parser.add_argument("method", choices=["release_hold"], default="release_hold", help="Method to execute")
-    parser.add_argument("--hc1", type=str, required=True, help="First hold condition to use (e.g., 'dt', 'cc', 'mv')", default=None)
-    parser.add_argument("--hc2", type=str, default=None, help="Second hold condition")
-    args = parser.parse_args()
-
-    try:
-        hr = HoldRelease()
-        if args.method == "release_hold":
-            hr.release_hold(hold_condition=args.hc1, hold_condition2=args.hc2)
-    except Exception as e:
-        raise_with_log(f"Error in HoldRelease: {e}")
+    main()

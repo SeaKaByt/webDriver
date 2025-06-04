@@ -3,31 +3,34 @@ defaults:
   env: FAT
 
 nGen:
+  # path
   jal_path: D:/jal/ngen.bat
+
+  # credentials
   username: oscar
   password: "!auto12345"
+
+  # windows
+  title: /form[@title>'nGen']/titlebar[@accessiblerole='TitleBar']
+
+  # button
+  home: //button[@text='Home']
+  minimize: /form[@title>'nGen']/?/?/button[@accessiblename='Minimize']
+
   ngen_login: /form[@title='Login']/container[@name='mainPanel']/?/?/text[@type='GuiTextField']
-  title: /form[@title>'nGen FAT-AQCT-DC']/titlebar[@accessiblerole='TitleBar']
-  home_btn: /form[@title>'nGen FAT-AQCT-DC']/?/?/button[@text='Home']
 
-  minimize: /form[@title>'nGen FAT-AQCT-DC']/?/?/button[@accessiblename='Minimize']
-  inv_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[6]/tag[@tagname='p-implied']
-  sp_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[6]/tag[@tagname='p-implied']
-  ioc_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[4]/tag[@tagname='p-implied']
-  gate_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[2]/td[3]/tag[@tagname='p-implied']
-  mc_menu: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//body/?/?/table/tr[3]/td[3]/tag[@tagname='p-implied']
+  menu:
+    # button
+    inventory: //table/tr[2]/td[6]/tag[@tagname='p-implied']
+    shipPlan: //table/tr[3]/td[6]/tag[@tagname='p-implied']
+    IOC: //table/tr[2]/td[4]/tag[@tagname='p-implied']
+    gatehouse: //table/tr[2]/td[3]/tag[@tagname='p-implied']
+    movementControl: //table/tr[3]/td[3]/tag[@tagname='p-implied']
 
-app:
-  ngen: /form[@title>'Application Launcher']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
-#  ngen: /form[@title>'Application Launcher']//body/div/section[3]//h4[@innertext='nGen']
-  guider: /form[@title>'Application Launcher']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='Guider']
-
-windows:
-  ngen: "nGen"
-  guider: "Guider"
-  launcher: "Application Launcher"
-  ngen_login: "Login"
-  guider_login: "Guider Logon"
+launcher:
+  # button
+  ngen: //container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
+  guider: //container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='Guider']
 
 stowage_rules:
   max_row: 12
@@ -74,6 +77,8 @@ cd:
   cancel_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='headButtonPanel']/container[@name='headOkCancelButtonPanel']/button[@name='amendCancelButton']
   confirm_yes_btn: /form[@title='Confirm']//container[@name='OptionPane.buttonArea']/button[@text='Yes']
   ags4999: /form[@title='User Error ags4999']/?/?/container[@name='OptionPane.buttonArea']/button[@name='OptionPane.button']
+  loading:
+    shipper: //text[@name='shipperTextArea']
 
 cro:
   reset: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchDecoratedPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/button[@name='resetButton']
@@ -102,22 +107,35 @@ bol:
     add_next: //container[@name='buttonPanel']/button[@name='btnAddNext']
 
 hr:
-  bol_value: "BL01"
-  hold_condition: "dt"
-  declaration_value: "automation"
+  # button
+  select_all: //button[@name='selectAllButton']
 
-  release_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='tabbedPanel']/tabpage[@title='* Release']
-  search_hold_condition: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/container[@name='holdConditionSPanel']/text[@name='searchHoldConditionTextField']
-  release_hold_condition: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/container[@name='holdConditionRPanel']/text[@name='releaseHoldConditionTextField']
-  search_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='tabbedPanel']/container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/tabpage[@title='Search']
-  declaration: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='conditionPanel']/text[@name='declarationNoTextField']
-  bol: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/text[@name='billLadingNoTextField']
-  select_all: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='selectAllButton']
-  release_batch: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='releaseActionPanel']/container[@name='releaseButtonPanel']/button[@name='releaseBatchButton']
-  result_table: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='resultPanel']/container[@name='searchResultPanel']/container[@name='searchResultTablePanel']/container[1]
-  hr_voyage: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='releaseContainerView']/?/?/container[@name='headerPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='searchPanel']/container[@name='voyageIdPanel']/text[@name='voyageIdTextField']
+  tab:
+    release: //tabpage[@title='* Release']
+    search: //tabpage[@title='Search']
+
+  release:
+    # tab
+    search:
+      # fields
+      hold: //text[@name='searchHoldConditionTextField']
+      voyage: //text[@name='voyageIdTextField']
+
+    release:
+      # fields
+      hold: //text[@name='releaseHoldConditionTextField']
+      declaration: //text[@name='declarationNoTextField']
+      declaration_date: //text[@name='declarationDateTextField']
 
 gt:
+  # button
+  refresh: //button[@name='refreshButton']
+  release: //button[@name='releaseButton']
+  printCMS: //button[@name='printCMSButton']
+
+  # fields
+  printer: //combobox[@name='printerIdComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+
   search_tractor: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='detailPanel']/container[@name='guiPanel2']/text[@name='tractorNoTextField']
   create_pin: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='pinNoPanel']/text[@name='pinNoTextField']
   create_driver: /form[@title='Create Pickup Movement']//container[@name='cntrPanel']/container[@name='cntrView']/?/?/container[@name='sealPanel']/text[@name='driverIdTextField']
@@ -154,6 +172,22 @@ gt:
     driver: //container[@name='sealPanel']/text[@name='driverIdTextField']
     tag: //container[@name='companyNamePanel']/text[@name='batTextField']
     pin: //container[@name='pinNoPanel']/text[@name='pinNoTextField']
+
+  create_grounding:
+    # fields
+    cntr_id: //text[@name='cntrNoTextField']
+    driver: //text[@name='driverIdTextField']
+    size: //combobox[@name='sizeComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+    material: //combobox[@name='materialComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
+    fa: //text[@name='faIndTextField']
+    gross: //text[@name='inputGrossWtTextField']
+
+    # button
+    ok: //button[@name='okButton']
+    noo: //button[@text='No']
+
+    inspection:
+      ok: //button[@name='okStyledButton']
 
 qm:
   fcl_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
@@ -200,45 +234,73 @@ bm:
     # fields
     new_cntr: ///text[@name='newCntrIdTextField']
 
-voyage:
-  # window
-  mode_2: "//titlebar[@accessiblerole='TitleBar' and @text='Voyage  (NVD-TSHM04-V01  TSHM04) -- Exclusive Mode  :  2']"
+#voyage:
+#  # window
+#  mode_2: "//titlebar[@accessiblerole='TitleBar' and @text='Voyage  (NVD-TSHM04-V01  TSHM04) -- Exclusive Mode  :  2']"
+#
+#  # button
+#  reset: //container[@name='buttonPanel1']/button[@name='resetButton']
+#  refresh: //toolbar[@name='optOthersToolBar']/button[4]
+#  search_list: //container[@name='buttonPanel1']/button[@name='searchButton']
+#  work_plan_add: "/form[@title<'Exclusive Mode  :  1']//button[7]"
+#  edit_plan_add: //toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[11]
+#
+#  # fields
+#  qc: //combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
+#
+#  plan_section: //container[@name='viewport']/element[@name='planSectionContainer']
+#  qc_methods: //container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
 
-  # button
-  reset: //container[@name='buttonPanel1']/button[@name='resetButton']
-  refresh: //toolbar[@name='optOthersToolBar']/button[4]
-  search_list: //container[@name='buttonPanel1']/button[@name='searchButton']
-  work_plan_add: "/form[@title<'Exclusive Mode  :  1']//button[7]"
-  edit_plan_add: //toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[11]
-
-  # fields
-  qc: //combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
-  bay: //combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
-
-  qc_tree: "//tree[@name='tree']/?/?/treeitem[@text>'OQ1']"
-  plan_section: //container[@name='viewport']/element[@name='planSectionContainer']
-  qc_methods: //container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
-
-  mask_view:
-    # window
-    view: //container[@name='viewport']/element[@name='maskSettingView']
-
-    # button
-    minimize: //container[@name='panelRightPart']//button[@accessiblename='' and @type='BasicSplitPaneDivider$2']
-
-  filter:
-    tag: //container[@name='panelRightPart']//container[@name='tabbedPane']/tabpage[@title='Filter']
-    # Fields
-    size: //container[@name='sizePanel1']/text[@name='sizeMInputText']
-
-    list: //container[@name='viewport']/list[@name='multiInputList']
-
-  list:
-    row_0: //table[@name='containerManagerTable']/row[@index='0']/cell[@columnindex='0']
-    count: //container[@name='jPanel4']/text[@name='countLabel']
 
 guider:
+  # windows
   title: /form[@title='Guider']/titlebar[@accessiblerole='TitleBar']
+
+  voyage_plan:
+    # fields
+    voyage: //text[@name='voyageIdField']
+
+    # button
+    open: //button[@name='btnOpen']
+    open_plan: //toolbar[@type='GuiderToolBarManager$OpenToolBar']/button[1]
+
+  voyage:
+    # button
+    refresh: //toolbar[@name='optOthersToolBar']/button[4]
+    reset: //container[@name='buttonPanel1']/button[@name='resetButton']
+    search_list: //container[@name='buttonPanel1']/button[@name='searchButton']
+    work_plan_add: "/form[@title<'Exclusive Mode  :  1']//button[7]"
+    edit_plan_add: //toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[11]
+
+    # fields
+    qc: //combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
+    mode: //container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
+    bay: //combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
+
+    qc_tree: "//tree[@name='tree']/?/?/treeitem[@text>'OQ1']"
+    plan_section: //element[@name='planSectionContainer']
+
+    mask_view:
+      # window
+      view: //container[@name='viewport']/element[@name='maskSettingView']
+
+      # button
+      minimize: //container[@name='panelRightPart']//button[@accessiblename='' and @type='BasicSplitPaneDivider$2']
+
+    filter:
+      tag: //container[@name='panelRightPart']//container[@name='tabbedPane']/tabpage[@title='Filter']
+      # Fields
+      size: //container[@name='sizePanel1']/text[@name='sizeMInputText']
+
+      list: //container[@name='viewport']/list[@name='multiInputList']
+
+    list:
+      # button
+      search_list: //container[@name='buttonPanel1']/button[@name='searchButton']
+
+      row_0: //table[@name='containerManagerTable']/row[@index='0']/cell[@columnindex='0']
+      count: //container[@name='jPanel4']/text[@name='countLabel']
+
   window_1: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/titlebar[@accessiblerole='TitleBar' and @text<'1']
   window_2: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/titlebar[@accessiblerole='TitleBar' and @text<'2']
   window_2_penal: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/container[@name='filterTabPanel']/?/?/container[@name='viewport']/?/?/container[@name='jPanel26']

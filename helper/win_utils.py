@@ -1,42 +1,82 @@
-from typing import List, Optional
+from typing import Optional
 import pywinauto
 from pywinauto.keyboard import send_keys
 from helper.logger import logger
+import win32con
+import time
 
-class WindowNotFoundError(Exception):
-    """Raised when a window is not found."""
-    pass
+def send_keys_wlog(keys: str, with_tab: bool = False, field_length: Optional[int] = None) -> None:
+    should_send_tab = with_tab or (field_length is not None and len(keys) < field_length)
 
-def send_keys_with_log(keys: str, with_tab: bool = False) -> None:
-    """Send keys with optional TAB press."""
-    logger.info(f"Sending keys: {keys}{' + TAB' if with_tab else ''}")
+    logger.info(f"Sending keys: {keys}{' + TAB' if should_send_tab else ''}")
     send_keys(keys)
-    if with_tab:
+    if should_send_tab:
         send_keys("{TAB}")
 
-def wait_for_window(title: str, timeout: int = 10) -> Optional[List[int]]:
+def wait_for_window(title: str, timeout: int = 10) -> None:
     """Wait for a window with the given title to appear."""
     import time
+    logger.info(f"Waiting for window: {title} (timeout={timeout}s)")
+    for _ in range(timeout * 2):  # 0.5s intervals
+        windows = pywinauto.findwindows.find_windows(title_re=title)
+        if windows:
+            logger.info(f"Found window: {windows}")
+            return windows
+        time.sleep(0.5)
+    logger.warning(f"Window not found: {title} after {timeout}s")
+    return None
+
+def find_window(title: str, exact_match: bool = False) -> list:
+    if exact_match:
+        windows = pywinauto.findwindows.find_windows(title=title)
+    else:
+        windows = pywinauto.findwindows.find_windows(title_re=title)
+    return windows
+
+def focus_window(title: str, exact_match: bool = False) -> bool:
+    """Bring a window to the front by its title.
+    
+    Args:
+        title: The title of the window to bring to front
+        exact_match: If True, match title exactly. If False, use regex pattern
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
     try:
-        logger.info(f"Waiting for window: {title} (timeout={timeout}s)")
-        for _ in range(timeout * 2):  # 0.5s intervals
+        # Find windows matching the title
+        if exact_match:
+            windows = pywinauto.findwindows.find_windows(title=title)
+        else:
             windows = pywinauto.findwindows.find_windows(title_re=title)
-            if windows:
-                logger.info(f"Found window: {windows}")
-                return windows
-            time.sleep(1)
-        logger.warning(f"Window not found: {title} after {timeout}s")
-        return None
+        
+        if not windows:
+            logger.warning(f"No windows found with title: {title}")
+            return False
+        
+        # Try each matching window until one succeeds
+        for window_handle in windows:
+            try:
+                # Use pywinauto to connect to the window and bring it to front
+                app = pywinauto.Application().connect(handle=window_handle)
+                window = app.window(handle=window_handle)
+                window.set_focus()
+                logger.info(f"Successfully brought window to front: {title} (handle: {window_handle})")
+                return True
+            except Exception as window_error:
+                logger.debug(f"Failed to focus window handle {window_handle}: {window_error}")
+                continue
+        
+        logger.warning(f"All windows with title '{title}' failed to activate")
+        return False
+        
     except Exception as e:
-        logger.error(f"Error waiting for window {title}: {e}")
-        raise
+        logger.error(f"Error bringing window to front by title '{title}': {e}")
+        return False
 
-def window_exists(title: str, timeout: int = 10) -> bool:
-    """Check if a window exists, raising an error if not found."""
-    windows = wait_for_window(title, timeout)
-    if windows:
-        logger.info(f"Window exists: {title}")
-        return True
-    logger.error(f"Window not found: {title}")
-    raise WindowNotFoundError(f"Window not found: {title}")
+def main():
+    focus_window("Guider")
+    focus_window("Application")
 
+if __name__ == "__main__":
+    main()

@@ -12,16 +12,22 @@ from pathlib import Path
 load_dotenv()
 
 class BaseDriver:
-    def __init__(self):
+    def __init__(self, external_driver=None):
         self.driver = None
-        self.bu = os.environ.get("TEST_BU", "AQCT")
-        self.env = os.environ.get("TEST_ENV", "FAT")
+        self.bu = os.environ.get("TEST_BU")
+        self.env = os.environ.get("TEST_ENV")
+        self.url = os.environ.get("WEBDRIVER_URL")
         self.yaml_path = Path(f"config/{self.env}/{self.bu}.yaml")
-        self.json_data_path = Path("data/data.json")
         self.config = read_yaml(self.yaml_path)
-        self.config_j = read_json(self.json_data_path)
-        self.url = os.environ.get("WEBDRIVER_URL", "http://127.0.0.1:7993")
-        self.driver = self._initialize_driver()
+        self.config_j = read_json(Path("data/data_templant.json"))
+
+        # Use external driver if provided, otherwise create own driver
+        if external_driver:
+            self.driver = external_driver
+            logger.debug(f"Using external driver: {external_driver}")
+        else:
+            self.driver = self._initialize_driver()
+            
         self.actions = ElementActions(self.driver)
         self.properties = ElementProperties(self.driver)
 

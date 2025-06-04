@@ -12,7 +12,7 @@ class ProjectPaths:
 
     @staticmethod
     def get_json_data_path() -> Path:
-        return ProjectPaths.DATA / "data.json"
+        return ProjectPaths.DATA / "data_templant.json"
 
     @staticmethod
     def get_excel_data_path(file_name: str = "gate_pickup_data.csv") -> Path:
