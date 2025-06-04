@@ -2,8 +2,8 @@ import argparse
 import pandas as pd
 from pathlib import Path
 from pandas.errors import EmptyDataError
-from test_ui.base_flow import BaseFlow
-from helper.win_utils import wait_for_window, send_keys_with_log
+from test_ui.flow_config import BaseFlow
+from helper.win_utils import wait_for_window, send_keys_wlog
 from helper.container_utils import next_loc
 from helper.logger import logger
 
@@ -13,9 +13,9 @@ class ContainerDetails(BaseFlow):
 
     MODULE = "CD"
 
-    def __init__(self):
+    def __init__(self, external_driver=None):
         """Initialize the ContainerDetails class with configuration."""
-        super().__init__()
+        super().__init__(external_driver=external_driver)
         self.cd_config = self.config["cd"]
         self.cntr_list = []
 
@@ -28,7 +28,7 @@ class ContainerDetails(BaseFlow):
 
         Raises:
             ValueError: If movement type is invalid.
-            RuntimeError: If UI operations fail.
+            RuntimeError: If UI gate_house fail.
         """
         df, path = self._load_data(movement)
 
@@ -80,9 +80,9 @@ class ContainerDetails(BaseFlow):
 
         # Enter container ID
         self.actions.click(self.cd_config["cntr_id"])
-        send_keys_with_log("^a")
-        send_keys_with_log(self.cntr_id)
-        send_keys_with_log("{ENTER}")
+        send_keys_wlog("^a")
+        send_keys_wlog(self.cntr_id)
+        send_keys_wlog("{ENTER}")
 
         # Handle Create Container window
         if not wait_for_window("Create Container", timeout=5):
@@ -97,7 +97,7 @@ class ContainerDetails(BaseFlow):
         if self.status in ("XF", "IF"):
             self._set_voyage_details(self.status)
 
-        send_keys_with_log("{ENTER}")
+        send_keys_wlog("{ENTER}")
 
         # Handle ags4999 window for lane adjustment
         if wait_for_window(".*ags4999$", timeout=1):
@@ -105,8 +105,8 @@ class ContainerDetails(BaseFlow):
 
         # Handle Confirmation window
         if wait_for_window("Confirmation", timeout=1):
-            send_keys_with_log("{TAB}")
-            send_keys_with_log("{ENTER}")
+            send_keys_wlog("{TAB}")
+            send_keys_wlog("{ENTER}")
 
         # Check for User Error
         if wait_for_window("User Error", timeout=1):
@@ -129,15 +129,15 @@ class ContainerDetails(BaseFlow):
     def _set_common_fields(self) -> None:
         """Set common container fields in the UI."""
         self.actions.click(self.cd_config["status"])
-        send_keys_with_log(self.status)
-        send_keys_with_log(self.size)
-        send_keys_with_log(self.type)
+        send_keys_wlog(self.status)
+        send_keys_wlog(self.size)
+        send_keys_wlog(self.type)
         self.actions.click(self.cd_config["owner"])
-        send_keys_with_log(self.owner, with_tab=True)
-        send_keys_with_log("{TAB}")
-        send_keys_with_log(self.block)
-        send_keys_with_log(self.stack, with_tab=True)
-        send_keys_with_log(self.lane)
+        send_keys_wlog(self.owner, with_tab=True)
+        send_keys_wlog("{TAB}")
+        send_keys_wlog(self.block)
+        send_keys_wlog(self.stack, with_tab=True)
+        send_keys_wlog(self.lane)
 
     def _set_voyage_details(self, status: str) -> None:
         """Set voyage-specific details in the UI.
@@ -149,16 +149,16 @@ class ContainerDetails(BaseFlow):
             ValueError: If status is invalid.
         """
         self.actions.click(self.cd_config["voyage"])
-        send_keys_with_log("^a")
-        send_keys_with_log(self.line, with_tab=True)
-        send_keys_with_log(self.vessel)
-        send_keys_with_log(self.voyage)
+        send_keys_wlog("^a")
+        send_keys_wlog(self.line, with_tab=True)
+        send_keys_wlog(self.vessel)
+        send_keys_wlog(self.voyage)
 
         if status == "IF":
             self.actions.click(self.cd_config["pol"])
-            send_keys_with_log(self.pol)
+            send_keys_wlog(self.pol)
             self.actions.click(self.cd_config["gross_wt"])
-            send_keys_with_log(self.gross_wt)
+            send_keys_wlog(self.gross_wt)
         elif status == "XF":
             self.actions.set_text(self.cd_config["loading_blk"], self.blk)
             self.actions.set_text(self.cd_config["loading_shipper"], "BOT")
@@ -171,10 +171,10 @@ class ContainerDetails(BaseFlow):
         self.lane = f"{int(self.lane) + 1}"
         self.actions.click(self.cd_config["ags4999"])
         self.actions.click(self.cd_config["yard"])
-        send_keys_with_log("{TAB}")
-        send_keys_with_log("{TAB}")
-        send_keys_with_log(self.lane)
-        send_keys_with_log("{ENTER}")
+        send_keys_wlog("{TAB}")
+        send_keys_wlog("{TAB}")
+        send_keys_wlog(self.lane)
+        send_keys_wlog("{ENTER}")
 
     def _get_tier(self) -> str:
         """Extract the tier value from the yard field.

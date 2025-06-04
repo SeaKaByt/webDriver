@@ -5,16 +5,16 @@ from pathlib import Path
 
 import pandas as pd
 
-from test_ui.base_flow import BaseFlow
-from helper.win_utils import wait_for_window, send_keys_with_log
+from test_ui.flow_config import BaseFlow
+from helper.win_utils import wait_for_window, sendKeys
 from helper.logger import logger
 
 class QMon(BaseFlow):
     """Handles QM module for backup confirmation of tractor transactions."""
     module = "QM"
 
-    def __init__(self, config_path: Optional[Path] = None):
-        super().__init__(config_path=config_path)
+    def __init__(self, external_driver=None):
+        super().__init__(external_driver=external_driver)
         try:
             qm_config = self.config.get("qm", {})
             self.fcl_tab = qm_config.get("fcl_tab")
@@ -62,9 +62,9 @@ class QMon(BaseFlow):
                     logger.error("FCL tab not found after search")
                     raise RuntimeError("FCL tab not found")
                 self.actions.click(self.fcl_tractor)
-                send_keys_with_log("^a")
-                send_keys_with_log(str(tractor))
-                send_keys_with_log("{ENTER}")
+                sendKeys("^a")
+                sendKeys(str(tractor))
+                sendKeys("{ENTER}")
 
                 # Process each row in the group based on group size
                 group_size = len(group)
@@ -84,12 +84,12 @@ class QMon(BaseFlow):
                             raise ValueError("Group size should be 1 or 2")
 
                     # Perform confirmation steps
-                    send_keys_with_log("{F2}")
+                    sendKeys("{F2}")
                     self.actions.click(self.bk_confirm_btn)
 
                     # Handle a Backup Confirm window
                     if wait_for_window("Backup Confirm"):
-                        send_keys_with_log("{ENTER}")
+                        sendKeys("{ENTER}")
                     else:
                         logger.error("Backup window not found")
                         raise RuntimeError("Backup window not found")

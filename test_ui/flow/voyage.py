@@ -3,47 +3,53 @@ import time
 from pathlib import Path
 from helper.logger import logger
 from helper.io_utils import read_csv
-from helper.win_utils import send_keys_with_log, wait_for_window
-from test_ui.base_flow import BaseFlow
+from helper.win_utils import send_keys_wlog, wait_for_window, focus_window, find_window
+from test_ui.flow_config import BaseFlow
 
 class Voyage(BaseFlow):
-    def __init__(self):
-        super().__init__()
-        self.guider_config = self.config["guider"]
-        self.voyage_config = self.config["voyage"]
-        self.filter_config = self.config["voyage"]["filter"]
-        self.list_config = self.config["voyage"]["list"]
-        self.mask_view_config = self.config["voyage"]["mask_view"]
+    def __init__(self, external_driver=None):
+        super().__init__(external_driver=external_driver)
+        focus_window("Guider")
+        self.guider = self.config["guider"]
+        self.vp = self.guider["voyage_plan"]
+        self.voyage = self.guider["voyage"]
+        self.filter = self.voyage["filter"]
+        self.list = self.voyage["list"]
+        self.mask = self.voyage["mask_view"]
+
 
     def order_out_all(self):
-        self.actions.right_click(self.voyage_config["qc_tree"])
+        self.actions.right_click(self.voyage["qc_tree"])
         for _ in range(5):
-            send_keys_with_log("{VK_DOWN}")
-        send_keys_with_log("{VK_RIGHT}")
-        send_keys_with_log("{ENTER}")
+            send_keys_wlog("{VK_DOWN}")
+        send_keys_wlog("{VK_RIGHT}")
+        send_keys_wlog("{ENTER}")
+        time.sleep(0.5)
+        if find_window("Order-Out"):
+            logger.error("Order-Out window appeared unexpectedly")
+            raise
 
     def set_display_scale(self):
-        self.actions.right_click(self.voyage_config["plan_section"])
+        self.actions.right_click(self.voyage["plan_section"])
         for _ in range(2):
-            send_keys_with_log("{VK_DOWN}")
-        send_keys_with_log("{ENTER}")
-        send_keys_with_log("^a")
-        send_keys_with_log("65")
-        send_keys_with_log("{ENTER}")
+            send_keys_wlog("{VK_DOWN}")
+        send_keys_wlog("{ENTER}")
+        send_keys_wlog("^a")
+        send_keys_wlog("65")
+        send_keys_wlog("{ENTER}")
 
     def panel_drag_release(self, function: str):
-        self.actions.click(self.voyage_config[function])
-        self.actions.drag_release(self.voyage_config["plan_section"], 50, 50, 680, 370)
+        self.actions.click(self.voyage[function])
+        self.actions.drag_release(self.voyage["plan_section"], 50, 50, 680, 370)
 
     def open_voyage_plan(self):
-        if not wait_for_window("Voyage", 1):
-            self.actions.click(self.guider_config["title"])
-            self.actions.click(self.guider_config["voyage_plan_btn"])
+        if not find_window("Voyage"):
+            self.actions.click(self.vp["open_plan"])
             if wait_for_window("Open Voyage Plan"):
-                self.actions.click(self.guider_config["voyage_plan_voyage"])
-                send_keys_with_log(f"{self.full_voyage}")
-                send_keys_with_log("{ENTER}")
-                self.actions.click(self.guider_config["open_module_btn"])
+                self.actions.click(self.vp["voyage"])
+                send_keys_wlog(f"{self.full_voyage}")
+                send_keys_wlog("{ENTER}")
+                self.actions.click(self.vp["open"])
             else:
                 raise Exception("Open Voyage Plan window not found")
 
@@ -92,22 +98,22 @@ class Voyage(BaseFlow):
             raise ValueError(f"Container ID {cntr_id} not found in DataFrame")
 
     def setup_bay(self, bay):
-        self.actions.click(self.voyage_config["bay"])
-        send_keys_with_log("^a")
-        send_keys_with_log(bay)
-        send_keys_with_log("{ENTER}")
+        self.actions.click(self.voyage["bay"])
+        send_keys_wlog("^a")
+        send_keys_wlog(bay)
+        send_keys_wlog("{ENTER}")
 
     def check_mask_view(self):
-        element = self.actions.find(self.mask_view_config["view"])
+        element = self.actions.find(self.mask["view"])
         if element.size['height'] > 500:
-            self.actions.click(self.mask_view_config["minimize"])
+            self.actions.click(self.mask["minimize"])
             logger.info("Mask view minimized")
 
     def setup_qc(self):
-        self.actions.click(self.voyage_config["qc"])
-        send_keys_with_log("^a")
-        send_keys_with_log(self.qc)
-        send_keys_with_log("{ENTER}")
+        self.actions.click(self.voyage["qc"])
+        send_keys_wlog("^a")
+        send_keys_wlog(self.qc)
+        send_keys_wlog("{ENTER}")
 
     def add_cntr(self) -> None:
         p = Path("data/vessel_loading_data.csv")
@@ -118,18 +124,18 @@ class Voyage(BaseFlow):
             time.sleep(10)
 
         self.check_mask_view()
-        self.actions.click(self.voyage_config["option_list"])
-        self.actions.click(self.voyage_config["refresh"])
+        self.actions.click(self.voyage["option_list"])
+        self.actions.click(self.voyage["refresh"])
         self.set_display_scale()
         self.setup_qc()
 
-        if self.properties.item_text(self.voyage_config["qc_methods"]) == "Disc":
-            self.actions.click(self.voyage_config["qc_methods"])
+        if self.properties.item_text(self.voyage["qc_methods"]) == "Disc":
+            self.actions.click(self.voyage["qc_methods"])
 
-        if self.properties.item_text(self.voyage_config["qc_methods"]) != "Load":
+        if self.properties.item_text(self.voyage["qc_methods"]) != "Load":
             raise ValueError("QC method is not Load")
 
-        self.actions.click(self.voyage_config["search_list"])
+        self.actions.click(self.voyage["search_list"])
 
         for bay, group in df.groupby("bay"):
             logger.info(f"Processing bay: {bay}")
@@ -141,14 +147,14 @@ class Voyage(BaseFlow):
 
     def place_cntr_in_bay(self, df, bay, cntr_ids):
         for cntr_id in cntr_ids:
-            cntr_id_xpath = self.voyage_config["list_row_cntr"].rsplit("cell", 1)[0] + f"cell[@text='{cntr_id}']"
+            cntr_id_xpath = self.voyage["list_row_cntr"].rsplit("cell", 1)[0] + f"cell[@text='{cntr_id}']"
             if not self.actions.find(cntr_id_xpath):
                 self.update_planned(df, cntr_id)
                 continue
 
             self.actions.click(cntr_id_xpath)
             if wait_for_window(".*(gdr2303|gdr1239)$", 1):
-                send_keys_with_log("{ENTER}")
+                send_keys_wlog("{ENTER}")
 
             if wait_for_window("Host Error", 1):
                 raise Exception("Host Error window appeared")
@@ -166,7 +172,7 @@ class Voyage(BaseFlow):
                 self.panel_drag_release("work_plan_add")
                 self.actions.click(cntr_id_xpath)
                 if wait_for_window(".*(gdr2303|gdr1239)$", 1):
-                    send_keys_with_log("{ENTER}")
+                    send_keys_wlog("{ENTER}")
 
                 if self.actions.find(cntr_id_xpath, 1):
                     raise Exception(f"Container {cntr_id} still in table after second attempt")
@@ -177,25 +183,33 @@ class Voyage(BaseFlow):
         times = 1
         limit = 3
 
-        if not self.properties.visible(self.list_config["row_0"]):
+        if not self.properties.visible(self.list["row_0"]):
             raise Exception("No container in the list")
 
+        hold = True
         for bay in bay_list:
             if times >= limit:
                 raise Exception("Abnormal loop count")
 
-            count = self.properties.text_value(self.list_config["count"])
+            count = self.properties.text_value(self.list["count"])
             logger.info(count)
 
             self.setup_bay(bay)
             if target_count == 1:
                 self.panel_drag_release("work_plan_add")
-                self.actions.click(self.list_config["row_0"])
+                self.actions.click(self.list["row_0"])
             else:
                 logger.info(target_count)
                 self.work_plan_add(target_count)
 
-            current_count = self.properties.text_value(self.list_config["count"])
+            if hold:
+                time.sleep(0.5)
+                if find_window(".*-gdr2303"):
+                    send_keys_wlog("{ENTER}")
+                else:
+                    hold = False
+
+            current_count = self.properties.text_value(self.list["count"])
             target_count = target_count + int(current_count) - int(count)
 
             if target_count > 0:
@@ -210,12 +224,12 @@ class Voyage(BaseFlow):
             times += 1
 
     def work_plan_add(self, count: int):
-        self.actions.click(self.list_config["row_0"])
+        self.actions.click(self.list["row_0"])
         self.panel_drag_release("work_plan_add")
-        self.actions.click(self.voyage_config["mode_2"])
+        focus_window(".*Mode  :  1$")
         for _ in range(count - 1):
-            send_keys_with_log("+{DOWN}")
-        self.actions.right_click(self.list_config["row_0"])
+            send_keys_wlog("+{DOWN}")
+        self.actions.right_click(self.list["row_0"])
 
     @staticmethod
     def get_20_bay(df) -> list[str]:
@@ -239,17 +253,15 @@ class Voyage(BaseFlow):
         df = read_csv(p)
         yield df, p
 
-    def setup_voyage(self, unexpected_method: str, target_method: str):
+    def setup_voyage(self, mode: str):
+        focus_window(".*Mode  :  1$")
         self.check_mask_view()
-        self.actions.click(self.voyage_config["refresh"])
+        self.actions.click(self.voyage["refresh"])
         self.set_display_scale()
         self.setup_qc()
 
-        if self.properties.item_text(self.voyage_config["qc_methods"]) == unexpected_method:
-            self.actions.click(self.voyage_config["qc_methods"])
-
-        if self.properties.item_text(self.voyage_config["qc_methods"]) != target_method:
-            raise ValueError("QC method is not Load")
+        if self.properties.item_text(self.voyage["mode"]) != mode:
+            self.actions.click(self.voyage["mode"])
 
     def session_1(self, size_20_count: int, size_40_count: int, df, p):
         groups = [
@@ -259,26 +271,25 @@ class Voyage(BaseFlow):
 
         for group in groups:
             if group["count"] > 0:
-                self.actions.click(self.filter_config["tag"])
-                self.actions.click(self.voyage_config["reset"])
-                self.actions.click(self.filter_config["size"])
-                send_keys_with_log(group["size"])
-                self.actions.click(self.voyage_config["search_list"])
+                focus_window(".*Mode  :  2$")
+                self.actions.click(self.filter["tag"])
+                self.actions.click(self.voyage["reset"])
+                self.actions.click(self.filter["size"])
+                send_keys_wlog(group["size"])
+                self.actions.click(self.list["search_list"])
                 self.plan_cntr(group["count"], group["bay_list"], df, p)
 
     def voyage_loading_actions(self, size_20_count: int, size_40_count: int):
         df, p = next(self.get_stowage_usage())
 
         self.open_voyage_plan()
-        self.setup_voyage("Disc", "Load")
+        self.setup_voyage("Load")
         self.session_1(size_20_count, size_40_count, df, p)
         self.order_out_all()
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Voyage management")
-    parser.add_argument("size_20_count", type=int, nargs="?", default=0, help="Number of 20 size containers")
-    parser.add_argument("size_40_count", type=int, nargs="?", default=0, help="Number of 40 size containers")
-    args = parser.parse_args()
-
+def main():
     v = Voyage()
-    v.voyage_loading_actions(args.size_20_count, args.size_40_count)
+    focus_window(".*Mode  :  2$")
+
+if __name__ == "__main__":
+    main()

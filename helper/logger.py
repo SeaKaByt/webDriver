@@ -19,14 +19,53 @@ class TopInsertRotatingFileHandler(RotatingFileHandler):
                 self.doRollover()
 
             if not os.path.exists(self.baseFilename):
-                open(self.baseFilename, "a").close()
+                open(self.baseFilename, "a", encoding="utf-8").close()
 
-            with open(self.baseFilename, "r+") as f:
+            with open(self.baseFilename, "r+", encoding="utf-8", errors="replace") as f:
                 content = f.read()
                 f.seek(0, 0)
-                f.write(f"{self.format(record)}\n{content}")
+                # Remove emojis and special Unicode characters for Windows compatibility
+                formatted_record = self.format(record)
+                clean_record = self._clean_unicode(formatted_record)
+                f.write(f"{clean_record}\n{content}")
         except Exception:
             self.handleError(record)
+    
+    def _clean_unicode(self, text: str) -> str:
+        """Clean Unicode characters that may cause encoding issues on Windows."""
+        # Replace common emojis with text equivalents
+        replacements = {
+            '🔧': '[TOOL]',
+            '🚗': '[CAR]', 
+            '⚙️': '[GEAR]',
+            '✅': '[OK]',
+            '🆕': '[NEW]',
+            '♻️': '[RECYCLE]',
+            '⚠️': '[WARNING]',
+            '❌': '[ERROR]',
+            '🛑': '[STOP]',
+            '🔍': '[SEARCH]',
+            '🧹': '[CLEAN]',
+            '🔄': '[REFRESH]',
+            '🚀': '[ROCKET]',
+            '💾': '[SAVE]',
+            '📂': '[FOLDER]',
+            '🗑️': '[TRASH]',
+            '🔓': '[UNLOCK]',
+            '⏳': '[WAIT]'
+        }
+        
+        for emoji, replacement in replacements.items():
+            text = text.replace(emoji, replacement)
+        
+        # Remove any other non-ASCII characters that might cause issues
+        try:
+            text.encode('ascii', errors='ignore').decode('ascii')
+        except:
+            # If still having issues, remove all non-ASCII characters
+            text = ''.join(char for char in text if ord(char) < 128)
+        
+        return text
 
 class LogColorerFormatter(logging.Formatter):
     def __init__(self, fmt=None, datefmt=None, style="%"):
@@ -65,7 +104,7 @@ class LoggerSingleton:
         logger.handlers.clear()  # Clear any existing handlers to avoid duplicates
         logger.propagate = False  # Prevent propagation to parent loggers
 
-        # File handler
+        # File handler with UTF-8 encoding
         file_handler = TopInsertRotatingFileHandler(
             LOG_FILE, mode="a", maxBytes=MAX_LOG_SIZE, backupCount=BACKUP_COUNT, encoding="utf-8", delay=False
         )

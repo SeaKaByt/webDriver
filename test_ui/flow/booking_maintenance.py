@@ -3,14 +3,14 @@ import time
 from pathlib import Path
 from typing import Optional
 from helper.logger import logger
-from helper.win_utils import send_keys_with_log, wait_for_window
-from test_ui.base_flow import BaseFlow
+from helper.win_utils import send_keys_wlog, wait_for_window
+from test_ui.flow_config import BaseFlow
 
 class BookingMaintenance(BaseFlow):
     module = "BM"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, external_driver=None):
+        super().__init__(external_driver=external_driver)
         self.bm_config = self.config["bm"]
         self.laden_return_config = self.bm_config["laden_return"]
 
@@ -27,12 +27,12 @@ class BookingMaintenance(BaseFlow):
         for status, group in df_filtered.groupby("status"):
             logger.info(f"Processing status group: {status}")
             self.actions.click(self.bm_config["principal_line"])
-            send_keys_with_log("^a")
-            send_keys_with_log(self.line, with_tab=True)
+            send_keys_wlog("^a")
+            send_keys_wlog(self.line, with_tab=True)
             booking_no = self.bm_config["booking_no_list"][0 if status == "XF" else 1]
-            send_keys_with_log(booking_no)
-            send_keys_with_log("{ENTER}")
-            send_keys_with_log("%b")
+            send_keys_wlog(booking_no)
+            send_keys_wlog("{ENTER}")
+            send_keys_wlog("%b")
 
             if not wait_for_window("Booking Request"):
                 logger.error("Booking Request window not found")
@@ -66,24 +66,24 @@ class BookingMaintenance(BaseFlow):
                 for _, row in subgroup.iterrows():
                     logger.info(f"Processing row: {row}")
                     self.actions.click(self.laden_return_config["new_cntr"])
-                    send_keys_with_log("^a")
-                    send_keys_with_log(row["cntr_id"])
+                    send_keys_wlog("^a")
+                    send_keys_wlog(row["cntr_id"])
                     self.actions.click(self.laden_return_config["add_next"])
-                    if wait_for_window(".*ioc2617$", 1):
-                        logger.info("ioc2617 window found")
-                        send_keys_with_log("{ENTER}")
+                    if wait_for_window("User Error", 1):
+                        logger.info("User Error window is found")
+                        send_keys_wlog("{ENTER}")
 
                 self.actions.click(self.bm_config["add_next_cancel_btn"])
                 self.actions.click(self.bm_config["laden_save_btn"])
                 if wait_for_window("Confirm"):
-                    send_keys_with_log("{TAB}")
-                    send_keys_with_log("{ENTER}")
+                    send_keys_wlog("{TAB}")
+                    send_keys_wlog("{ENTER}")
                 else:
                     logger.error("Confirm window not found")
                     raise RuntimeError("Confirm window not found")
                 if wait_for_window(".*ioc5643$", 1):
                     logger.info("ioc5643 window found")
-                    send_keys_with_log("{ENTER}")
+                    send_keys_wlog("{ENTER}")
                 self.actions.click(self.bm_config["return_cntr_close"])
 
             self.actions.click(self.bm_config["request_record_close_btn"])
