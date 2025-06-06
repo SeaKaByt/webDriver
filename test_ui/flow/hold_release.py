@@ -1,7 +1,9 @@
 import argparse
+import logging
+
 from helper.sys_utils import raise_with_log
 from test_ui.flow_config import BaseFlow
-from helper.win_utils import send_keys_wlog, wait_for_window, find_window
+from helper.win_utils import send_keys_wlog, wait_for_window, find_window, focus_window
 from helper.logger import logger
 
 class HoldRelease(BaseFlow):
@@ -11,6 +13,7 @@ class HoldRelease(BaseFlow):
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
+        focus_window("nGen")
         self.hr = self.config["hr"]
         self.tab = self.hr["tab"]
         self.rr = self.hr["release"]["release"]
@@ -24,6 +27,10 @@ class HoldRelease(BaseFlow):
         self.actions.click(self.tab["release"])
         self.actions.click(self.tab["search"])
 
+        if not self.properties.selected(self.tab["search"]):
+            logging.error("Search tab is not selected")
+            raise
+
         send_keys_wlog("%r")
 
         self.actions.click(self.rs["hold"])
@@ -33,7 +40,7 @@ class HoldRelease(BaseFlow):
         send_keys_wlog("^a")
         send_keys_wlog(self.line, field_length=4)
         send_keys_wlog(self.vessel, field_length=6)
-        send_keys_wlog(self.voyage)
+        send_keys_wlog(self.voy)
 
         send_keys_wlog("%s")
 
@@ -44,7 +51,7 @@ class HoldRelease(BaseFlow):
         self.search_cntr(hold_condition)
 
         time.sleep(0.5)
-        if find_window(".*inv0693$") is not None:
+        if find_window(".*inv0693$"):
             logger.warning("inv0693 window found, no record found!")
             send_keys_wlog("{ENTER}")
             return
@@ -69,10 +76,8 @@ class HoldRelease(BaseFlow):
         send_keys_wlog("%b")
 
 def main():
-    if find_window(".*inv0693$") is not None:
-        logger.warning("inv0693 window found, no record found!")
-        send_keys_wlog("{ENTER}")
-        return
+    h = HoldRelease()
+    h.actions.click(h.rr["declaration"])
 
 if __name__ == "__main__":
     main()

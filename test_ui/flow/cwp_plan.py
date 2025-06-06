@@ -1,37 +1,42 @@
-from helper.sys_utils import raise_with_log
-from helper.win_utils import wait_for_window, send_keys_wlog
+from helper.logger import logger
+from helper.win_utils import wait_for_window, send_keys_wlog, focus_window
 from test_ui.flow_config import BaseFlow
 
 class CWP(BaseFlow):
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
+        gui = self.config["guider"]
+        self.cwp = gui["cwp"]
 
-        guider_config = self.config["guider"]
-        self.title = guider_config["title"]
-        self.cwp_plan_btn = guider_config["cwp_plan_btn"]
-        self.cwp_voyage = guider_config["cwp_voyage"]
-        self.open_module_btn = guider_config["open_module_btn"]
+        self.line = "NVD"
+        self.vessel = "TSHM04"
+        self.voyage = "V01"
 
-        cwp_config = self.config["cwp"]
-        self.cwp_view = cwp_config["cwp_view"]
-        self.control_menu = cwp_config["control_menu"]
 
     def open_cwp_plan(self):
-        self.actions.click(self.title)
-        self.actions.click(self.cwp_plan_btn)
+        focus_window("Guider")
+        self.actions.click(self.cwp["cwp_plan"])
         if wait_for_window("Open CWP"):
-            self.actions.click(self.cwp_voyage)
-            send_keys_wlog(f"{self.full_voyage}")
-            send_keys_wlog("{ENTER}")
+            self.actions.click(self.cwp["voyage"])
+            send_keys_wlog(f"{self.line}-{self.vessel}-{self.voyage}")
+            self.actions.click(self.cwp["open"])
+            self.actions.click(self.cwp["open"])
         else:
-            raise_with_log("Open CWP window not found")
-        self.actions.click(self.open_module_btn)
+            logger.error("Open CWP window not found")
+            raise
 
     def release_cwp(self):
         if not wait_for_window("CWP", timeout=1):
             self.open_cwp_plan()
-        self.actions.drag_release(self.cwp_view, 0, 0, 580, 420)
-        self.actions.click(self.control_menu)
+
+        focus_window("CWP")
+
+        self.actions.click(self.cwp["refresh"])
+
+        self.actions.click(self.cwp["row"])
+        send_keys_wlog("^a")
+
+        self.actions.click(self.cwp["control"])
         for _ in range(2):
             send_keys_wlog("{VK_DOWN}")
         send_keys_wlog("{VK_RIGHT}")
@@ -41,8 +46,8 @@ class CWP(BaseFlow):
         if wait_for_window(".*(Release CWP|CWP Released).*"):
             send_keys_wlog("{ENTER}")
         else:
-            raise_with_log("Release CWP window not found")
+            logger.error("Release CWP window not found")
+            raise
 
 if __name__ == "__main__":
     cwp = CWP()
-    cwp.release_cwp()

@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 from pathlib import Path
 
 from helper.io_utils import read_csv
-from helper.win_utils import wait_for_window, send_keys_wlog
+from helper.win_utils import wait_for_window, send_keys_wlog, focus_window
 from helper.logger import logger
 from driver.base_driver import BaseDriver
 from pywinauto.keyboard import send_keys
@@ -30,6 +30,7 @@ class BaseFlow(BaseDriver):
         self.ioc = self.menu["IOC"]
         self.gate = self.menu["gatehouse"]
         self.mc = self.menu["movementControl"]
+        self.mVoy = self.menu["voyage"]
 
         # Load JSON config for container details
         self.cntr_id = self.config_j.get("cntr_id")
@@ -44,7 +45,7 @@ class BaseFlow(BaseDriver):
         self.max_gross_wt = self.config_j.get("max_gross_wt")
         self.line = self.config_j.get("line")
         self.vessel = self.config_j.get("vessel")
-        self.voyage = self.config_j.get("voyage")
+        self.voy = self.config_j.get("voyage")
         self.pol = self.config_j.get("POL")
         self.gross_wt = self.config_j.get("gross_wt")
         self.bay = self.config_j.get("bay")
@@ -78,7 +79,7 @@ class BaseFlow(BaseDriver):
     def module_view(self, module: Optional[str] = None) -> None:
         try:
             logger.info(f"Navigating to module: {module or 'default'}")
-            self.actions.click(self.title)
+            focus_window("nGen")
             self.actions.click(self.home)
 
             module_actions = {
@@ -124,6 +125,15 @@ class BaseFlow(BaseDriver):
                 "BP": [
                     (self.actions.click, (self.sp,)),
                     (send_keys_wlog, ("{F3}",))
+                ],
+                "VS": [
+                    (self.actions.click, (self.mVoy,)),
+                    (send_keys_wlog, ("{F6}",))
+                ],
+                "TC": [
+                    (self.actions.click, (self.gate,)),
+                    (send_keys_wlog, ("{F3}",),),
+                    (send_keys_wlog, ("{F1}",))
                 ]
             }
 
@@ -150,7 +160,7 @@ class BaseFlow(BaseDriver):
 
     @staticmethod
     def get_loading_data():
-        p = Path("data/vessel_loading_data.csv")
+        p = Path("data/container_data.csv")
         df = read_csv(p)
         yield df, p
 

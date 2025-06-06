@@ -1,7 +1,6 @@
 import argparse
 from pathlib import Path
 import pandas as pd
-from pandas.errors import EmptyDataError
 from test_ui.flow_config import BaseFlow
 from helper.win_utils import wait_for_window, send_keys_wlog
 from helper.logger import logger
@@ -91,7 +90,7 @@ class BolMaintenance(BaseFlow):
             (self.bol_config["details_line"], self.bol, True),
             (self.bol_config["details_line"], self.line, True),
             (self.bol_config["details_line"], self.vessel),
-            (self.bol_config["details_line"], self.voyage, True),
+            (self.bol_config["details_line"], self.voy, True),
             (self.bol_config["details_line"], "{TAB}", False, 3),
             (self.bol_config["details_line"], "{ENTER}")
         ])
