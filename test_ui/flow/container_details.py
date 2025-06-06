@@ -121,7 +121,7 @@ class ContainerDetails(BaseFlow):
         # Update location attributes
         location_data = next_loc(
             self.cntr_id, self.size, self.stack, self.lane,
-            self._get_tier(), self.json_data_path
+            self._get_tier(), Path("data/data_templant.json")
         )
         for key, value in location_data.items():
             setattr(self, key, value)
@@ -152,7 +152,7 @@ class ContainerDetails(BaseFlow):
         send_keys_wlog("^a")
         send_keys_wlog(self.line, with_tab=True)
         send_keys_wlog(self.vessel)
-        send_keys_wlog(self.voyage)
+        send_keys_wlog(self.voy)
 
         if status == "IF":
             self.actions.click(self.cd_config["pol"])

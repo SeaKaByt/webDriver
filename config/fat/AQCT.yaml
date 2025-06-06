@@ -26,6 +26,7 @@ nGen:
     IOC: //table/tr[2]/td[4]/tag[@tagname='p-implied']
     gatehouse: //table/tr[2]/td[3]/tag[@tagname='p-implied']
     movementControl: //table/tr[3]/td[3]/tag[@tagname='p-implied']
+    voyage: //table/tr[4]/td[4]/tag[@tagname='p-implied']
 
 launcher:
   # button
@@ -43,7 +44,12 @@ gat_settings:
   printer_dummy: "dummy"
 
 dc:
-  voyage: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/element[@name='searchVoyageIdField']/text[@name='guiTextField1']
+  # button
+  data_confirmed: //button[@name='dataConfirmButton']
+
+  # fields
+  voyage: //element[@name='searchVoyageIdField']/text[@name='guiTextField1']
+
   search_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='guiPanel2']/container[@name='searchButtonPanel']/button[@name='searchButton']
   cntr_panel: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='detailPanel']/?/?/container[@name='null.layeredPane']
   bay: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/?/?/container[@name='recordPanel']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container[@name='guiPanel18']//container[@name='loadingPanel']/combobox[@name='dischargeBayComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
@@ -59,6 +65,14 @@ dc:
   edit_plan_add: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/toolbar[@type='JToolBar']/?/?/toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[11]
   dc_voyage: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']/container[@name='tablePanel']/?/?/container[@name='null.layeredPane']/?/?/container[@name='findPanel']/?/?/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/element[@name='searchVoyageIdField']/text[@name='guiTextField1']
   result_table: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='guiPanel17']/container[@name='createContainerPanel']//container[@name='null.layeredPane']//container[@name='searchTabbedPane']/container[@name='searchResultPane']/container[@name='guiScrollPane8']/container[1]/table[@name='searchResultTable']
+
+  schedule:
+    # fields
+    voyage: //text[@name='voyageIdTextField']
+    start: //element[@name='startDateField']/text[@name='guiTextField1']
+    end: //element[@name='endDateField']/text[@name='guiTextField1']
+
+    row: //table[@name='voyageDetailTable']/row[@index='0']/cell[@columnindex='0']
 
 cd:
   cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='headerPanel']/?/?/container[@name='commonDetailPanel']//combobox[@name='cntrNoComboBox']/text[@name='cntrNoEditField']
@@ -111,8 +125,8 @@ hr:
   select_all: //button[@name='selectAllButton']
 
   tab:
-    release: //tabpage[@title='* Release']
-    search: //tabpage[@title='Search']
+    release: //container[@name='tabbedPanel']//tabpage[@title='* Release']
+    search: //container[@name='releaseContainerView']//tabpage[@title='Search']
 
   release:
     # tab
@@ -124,7 +138,7 @@ hr:
     release:
       # fields
       hold: //text[@name='releaseHoldConditionTextField']
-      declaration: //text[@name='declarationNoTextField']
+      declaration: //container[@name='releaseContainerView']//text[@name='declarationNoTextField']
       declaration_date: //text[@name='declarationDateTextField']
 
 gt:
@@ -234,28 +248,7 @@ bm:
     # fields
     new_cntr: ///text[@name='newCntrIdTextField']
 
-#voyage:
-#  # window
-#  mode_2: "//titlebar[@accessiblerole='TitleBar' and @text='Voyage  (NVD-TSHM04-V01  TSHM04) -- Exclusive Mode  :  2']"
-#
-#  # button
-#  reset: //container[@name='buttonPanel1']/button[@name='resetButton']
-#  refresh: //toolbar[@name='optOthersToolBar']/button[4]
-#  search_list: //container[@name='buttonPanel1']/button[@name='searchButton']
-#  work_plan_add: "/form[@title<'Exclusive Mode  :  1']//button[7]"
-#  edit_plan_add: //toolbar[@type='VoyagePlanToolBar$OptPlanToolBar']/button[11]
-#
-#  # fields
-#  qc: //combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
-#
-#  plan_section: //container[@name='viewport']/element[@name='planSectionContainer']
-#  qc_methods: //container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
-
-
 guider:
-  # windows
-  title: /form[@title='Guider']/titlebar[@accessiblerole='TitleBar']
-
   voyage_plan:
     # fields
     voyage: //text[@name='voyageIdField']
@@ -263,6 +256,18 @@ guider:
     # button
     open: //button[@name='btnOpen']
     open_plan: //toolbar[@type='GuiderToolBarManager$OpenToolBar']/button[1]
+
+  cwp:
+    # fields
+    voyage: //text[@name='voyageIdField']
+
+    # button
+    cwp_plan: //toolbar[@name='bigToolBar']//button[4]
+    open: //button[@name='btnOpen']
+    refresh: //button[@name='refButton']
+
+    row: //table[@name='craneTable']/row[@index='0']
+    control: ///menuitem[@name='jMenu2']
 
   voyage:
     # button
@@ -310,14 +315,18 @@ guider:
   cwp_voyage: /form[@title='Open CWP']//container[@name='textPanel']/text[@name='voyageIdField']
   open_module_btn: /form[@title>'Open']//container[@name='inputPanel']/button[@name='btnOpen']
 
-cwp:
-  cwp_view: /form[@title>'CWP - NVD-TSHM04-V01 (Con']/?/?/container[@name='cwpSplitPane']/container[@name='rightComponent']/element[@name='textView']/?/?/container[@name='jTabbedPane1']//container[@name='tablePanel']/?/?/container[@name='viewport']
-  control_menu: /form[@title>'CWP - NVD-TSHM04-V01 (Con']/?/?/menuitem[@name='jMenu2']
-
-bay_plan:
-  bp_voyage: /form[@title>'nGen FAT-AQCT-DC']//element[@name='voyageIdField']/text[@name='guiTextField1']
-  bp_table_row_0: /form[@title='Inbound Bay Plan']//table[@name='resultTable']/row[@index='0']
-
 tractor_card:
   detail:
     tractor: //container[@name='tractorNoPanel']/text[@name='tractorNoTextField']
+
+EDI:
+  # tab
+  Inbound: //container[@name='findPanel']//tabpage[@title='Inbound']
+
+  # table
+  row: //table[@name='resultTable']/row[@index='0']
+
+
+
+
+

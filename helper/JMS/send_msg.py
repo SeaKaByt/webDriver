@@ -107,6 +107,18 @@ class Producer:
         print(f"Done {file_path}")
         return True
 
+    def send_bay_plan_message(self, data_path: str = "data/vessel_discharge_data.csv") -> bool:
+        """Send bay plan message using vessel discharge data"""
+        try:
+            data_file_path = Path(data_path)
+            msg = generate_message(data_file_path)
+            self.send_message(msg)
+            print(f"Bay plan message sent to queue: {self.queue}")
+            return True
+        except Exception as e:
+            print(f"Failed to send bay plan message: {e}")
+            return False
+
 if __name__ == "__main__":
     try:
         producer = Producer(
