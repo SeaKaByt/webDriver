@@ -1,6 +1,6 @@
 from helper.logger import logger
 from helper.win_utils import wait_for_window, send_keys_wlog, focus_window
-from test_ui.flow_config import BaseFlow
+from src.pages_config import BaseFlow
 
 class CWP(BaseFlow):
     def __init__(self, external_driver=None):

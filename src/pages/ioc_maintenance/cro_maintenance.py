@@ -1,15 +1,21 @@
 from datetime import datetime
-from pandas.errors import EmptyDataError
 from helper.logger import logger
 from helper.win_utils import wait_for_window, send_keys_wlog
-from test_ui.flow_config import BaseFlow
+from src.pages_config import BaseFlow
 
 class CROMaintenance(BaseFlow):
     module = "CRO"
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
+
         self.cro_config = self.config["cro"]
+
+        self.bol = "BL01"
+        self.owner = "NVD"
+        self.date = "01012026"
+        self.time = "0000"
+        self.agent = "BOT"
 
     def cro_actions(self):
         df, p = next(self.get_gate_pickup_data())
@@ -46,12 +52,15 @@ class CROMaintenance(BaseFlow):
             send_keys_wlog("{TAB}")
             send_keys_wlog(self.date)
             send_keys_wlog("{ENTER}")
+
             if wait_for_window("User Error", timeout=1):
                 logger.error("User Error in CRO creation")
                 raise RuntimeError("User Error detected")
+
             if not wait_for_window("User Information", timeout=5):
                 logger.error("User Information window not found")
                 raise RuntimeError("User Information window not found")
+
             send_keys_wlog("{ENTER}")
             self.update_column(df, cntr_id, "cro_no", cro_no)
             df.to_csv(p, index=False)

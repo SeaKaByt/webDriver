@@ -1,7 +1,9 @@
 import os
-from driver.element_actions import ElementActions
-from driver.element_properties import ElementProperties
-from helper.io_utils import read_yaml, read_json, read_csv
+
+from helper.paths import ProjectPaths
+from src.core.actions import ElementActions
+from src.core.properties import ElementProperties
+from helper.io_utils import read_yaml, read_json
 from helper.logger import logger
 from helper.decorators import debug_out_line
 from selenium import webdriver
@@ -14,17 +16,19 @@ load_dotenv()
 class BaseDriver:
     def __init__(self, external_driver=None):
         self.driver = None
-        self.bu = os.environ.get("TEST_BU")
-        self.env = os.environ.get("TEST_ENV")
-        self.url = os.environ.get("WEBDRIVER_URL")
-        self.yaml_path = Path(f"config/{self.env}/{self.bu}.yaml")
-        self.config = read_yaml(self.yaml_path)
-        self.config_j = read_json(Path("data/data_templant.json"))
+        self.bu = os.getenv("TEST_BU")
+        self.env = os.getenv("TEST_ENV")
+        self.url = os.getenv("WEBDRIVER_URL")
 
-        # Use external driver if provided, otherwise create own driver
+        self.yaml_path = ProjectPaths.CONFIG / f"{self.env}" / f"{self.bu}.yaml"
+        self.config = read_yaml(self.yaml_path)
+        
+        self.home = self.config["nGen"]["home"]
+
+        # Use external core if provided, otherwise create own core
         if external_driver:
             self.driver = external_driver
-            logger.debug(f"Using external driver: {external_driver}")
+            logger.info(f"Using external core: {external_driver}")
         else:
             self.driver = self._initialize_driver()
             
@@ -54,7 +58,7 @@ class BaseDriver:
                 self.driver.quit()
                 logger.info("Driver quit successfully")
             except Exception as e:
-                logger.warning(f"Failed to quit driver: {e}")
+                logger.warning(f"Failed to quit core: {e}")
             self.driver = None
 
     def __enter__(self):

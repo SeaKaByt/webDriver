@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from test_ui.flow_config import BaseFlow
+from src.pages_config import BaseFlow
 
 
 class GenerateDischarge(BaseFlow):

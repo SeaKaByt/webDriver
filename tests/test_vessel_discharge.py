@@ -1,12 +1,12 @@
 import allure
 import pytest
 
-from driver.base_driver import BaseDriver
-from test_ui.flow.bay_plan import BayPlan
-from test_ui.flow.cwp_plan import CWP
-from test_ui.flow.discharge_container import DischargeContainer
-from test_ui.flow.hold_release import HoldRelease
-from test_ui.flow.jms_messaging import JMSMessaging
+from src.core.driver import BaseDriver
+from src.pages.ship_plan.edi_bay_plan import BayPlan
+from src.pages.guider.cwp_plan import CWP
+from src.pages.ship_plan.discharge_container import DischargeContainer
+from src.pages.inventory_operation.hold_release import HoldRelease
+from src.common.messaging import JMSMessaging
 
 @pytest.mark.vessel_discharge
 @allure.title("Vessel Discharge Workflow")
@@ -25,7 +25,7 @@ def test_vessel_discharge_workflow(video_recorder):
     release_cwp = True
 
     with BaseDriver() as d:
-        # Initialize flow components
+        # Initialize pages components
         jms_flow = JMSMessaging()
         bay_plan_flow = BayPlan(d.driver)
         hold_flow = HoldRelease(d.driver)

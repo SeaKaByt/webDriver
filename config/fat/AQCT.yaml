@@ -6,10 +6,6 @@ nGen:
   # path
   jal_path: D:/jal/ngen.bat
 
-  # credentials
-  username: oscar
-  password: "!auto12345"
-
   # windows
   title: /form[@title>'nGen']/titlebar[@accessiblerole='TitleBar']
 
@@ -32,16 +28,6 @@ launcher:
   # button
   ngen: //container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
   guider: //container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='Guider']
-
-stowage_rules:
-  max_row: 12
-  max_tier: 98
-  reset_tier: 82
-
-gat_settings:
-  confirmation_code: "2000"
-  inspection_seal_value: "yfn"
-  printer_dummy: "dummy"
 
 dc:
   # button
@@ -72,6 +58,7 @@ dc:
     start: //element[@name='startDateField']/text[@name='guiTextField1']
     end: //element[@name='endDateField']/text[@name='guiTextField1']
 
+    # table
     row: //table[@name='voyageDetailTable']/row[@index='0']/cell[@columnindex='0']
 
 cd:
@@ -217,8 +204,6 @@ qm:
   movement_row_1: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='1']/cell[@columnindex='7']
 
 bm:
-  booking_no_list: ["BK01", "BK02"]
-
   # button
   return_cntr: //container[@name='initButtonCard']/button[@name='returnButton']
 

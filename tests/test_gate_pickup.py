@@ -1,12 +1,12 @@
 import allure
 import pytest
 
-from driver.base_driver import BaseDriver
-from test_ui.flow.bol_maintenance import BolMaintenance
-from test_ui.flow.container_details import ContainerDetails
-from test_ui.flow.cro_maintenance import CROMaintenance
-from test_ui.flow.gate_transaction import GateTransaction
-from test_ui.flow.hold_release import HoldRelease
+from src.core.driver import BaseDriver
+from src.pages.ioc_maintenance.bol_maintenance import BolMaintenance
+from src.pages.inventory_operation.container_details import ContainerDetails
+from src.pages.ioc_maintenance.cro_maintenance import CROMaintenance
+from src.pages.gate_house.gate_services.gate_transaction import GateTransaction
+from src.pages.inventory_operation.hold_release import HoldRelease
 
 @pytest.mark.gate_pickup
 @allure.title("Gate Pickup Workflow")
@@ -29,7 +29,7 @@ def test_gate_pickup_workflow(video_recorder):
     movement = "gatePickup"
 
     with BaseDriver() as d:
-        # Initialize flow components - they'll all share the same driver instance
+        # Initialize pages components - they'll all share the same core instance
         container_flow = ContainerDetails(d.driver)
         bol_flow = BolMaintenance(d.driver)
         cro_flow = CROMaintenance(d.driver)

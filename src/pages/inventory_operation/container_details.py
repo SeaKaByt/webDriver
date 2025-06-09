@@ -1,78 +1,70 @@
-import argparse
 import pandas as pd
+
 from pathlib import Path
 from pandas.errors import EmptyDataError
-from test_ui.flow_config import BaseFlow
-from helper.win_utils import wait_for_window, send_keys_wlog
+from helper.io_utils import read_json
+from helper.paths import ProjectPaths
+from src.core.driver import BaseDriver
+from src.common.menu import Menu
+from src.pages.inventory_operation.hold_release import HoldRelease
+from helper.win_utils import wait_for_window, send_keys_wlog, focus_window
 from helper.container_utils import next_loc
 from helper.logger import logger
 
-
-class ContainerDetails(BaseFlow):
-    """Handles container creation and management in a UI-based logistics application."""
-
+class ContainerDetails(BaseDriver):
     MODULE = "CD"
 
     def __init__(self, external_driver=None):
-        """Initialize the ContainerDetails class with configuration."""
         super().__init__(external_driver=external_driver)
+        self.p = ProjectPaths()
+
         self.cd_config = self.config["cd"]
         self.cntr_list = []
 
-    def create_cntr(self, count: int, movement: str) -> None:
-        """Create containers in the UI and update the corresponding CSV file.
+        self.j = read_json(self.p.DATA / "data_template.json")
+        self.cntr_id = self.j["cntr_id"]
+        self.block = self.j["block"]
+        self.stack = self.j["stack"]
+        self.lane = self.j["lane"]
 
-        Args:
-            count: Number of containers to create.
-            movement: Type of movement ('loading' or 'gatePickup').
+        self.owner = "NVD"
+        self.line = "NVD"
+        self.vessel = "TSHM04"
+        self.voyage = "V01"
+        self.pol = "HKHKG"
+        self.blk = "HKHKG"
+        self.gross_wt = "17500"
 
-        Raises:
-            ValueError: If movement type is invalid.
-            RuntimeError: If UI gate_house fail.
-        """
+    def create_cntr(self, count: int, movement: str, status: str, size: str, type: str) -> None:
         df, path = self._load_data(movement)
+
+        focus_window("nGen")
 
         if not self.properties.visible(self.cd_config["cntr_id"], timeout=1):
             logger.info("Opening CD module")
-            self.module_view(self.MODULE)
+            Menu.to_module(self.MODULE)
 
         for i in range(count):
             logger.info(f"Creating container {i + 1}/{count}")
-            self._enter_container_details(movement)
+            self._enter_container_details(movement, status, size, type)
 
         self._save_to_csv(df, path)
 
     def _load_data(self, movement: str) -> tuple[pd.DataFrame, Path]:
-        """Load container data from CSV based on movement type.
+        p = ProjectPaths()
 
-        Args:
-            movement: Type of movement ('loading' or 'gatePickup').
-
-        Returns:
-            Tuple of DataFrame and file path.
-
-        Raises:
-            ValueError: If movement type is invalid.
-        """
         if movement == "loading":
-            return next(self.get_loading_data())
+            return next(p.get_loading_data())
         elif movement == "gatePickup":
-            return next(self.get_gate_pickup_data())
+            return next(p.get_gate_pickup_data())
         raise ValueError(f"Invalid movement: {movement}")
 
-    def _enter_container_details(self, movement: str) -> None:
-        """Enter container details in the UI and append to container list.
-
-        Args:
-            movement: Type of movement ('loading' or 'gatePickup').
-
-        Raises:
-            RuntimeError: If UI interactions fail.
-        """
+    def _enter_container_details(self, movement: str, status: str, size: str, type: str) -> None:
         details = {
             "cntr_id": self.cntr_id,
-            "status": self.status,
-            "size": self.size,
+            "status": status,
+            "size": size,
+            "type": type,
         }
         if movement == "gatePickup":
             details["twin_ind"] = "S"
@@ -91,11 +83,11 @@ class ContainerDetails(BaseFlow):
         self.actions.click(self.cd_config["create_confirm_btn"])
 
         # Enter common container details
-        self._set_common_fields()
+        self._set_common_fields(status, size, type)
 
         # Enter voyage-specific details if applicable
-        if self.status in ("XF", "IF"):
-            self._set_voyage_details(self.status)
+        if status in ("XF", "IF"):
+            self._set_voyage_details(status)
 
         send_keys_wlog("{ENTER}")
 
@@ -120,18 +112,18 @@ class ContainerDetails(BaseFlow):
 
         # Update location attributes
         location_data = next_loc(
-            self.cntr_id, self.size, self.stack, self.lane,
-            self._get_tier(), Path("data/data_templant.json")
+            self.cntr_id, size, self.stack, self.lane,
+            self._get_tier(), Path("data/data_template.json")
         )
         for key, value in location_data.items():
             setattr(self, key, value)
 
-    def _set_common_fields(self) -> None:
+    def _set_common_fields(self, status: str, size: str, type: str) -> None:
         """Set common container fields in the UI."""
         self.actions.click(self.cd_config["status"])
-        send_keys_wlog(self.status)
-        send_keys_wlog(self.size)
-        send_keys_wlog(self.type)
+        send_keys_wlog(status)
+        send_keys_wlog(size)
+        send_keys_wlog(type)
         self.actions.click(self.cd_config["owner"])
         send_keys_wlog(self.owner, with_tab=True)
         send_keys_wlog("{TAB}")
@@ -140,19 +132,11 @@ class ContainerDetails(BaseFlow):
         send_keys_wlog(self.lane)
 
     def _set_voyage_details(self, status: str) -> None:
-        """Set voyage-specific details in the UI.
-
-        Args:
-            status: Container status ('XF' or 'IF').
-
-        Raises:
-            ValueError: If status is invalid.
-        """
         self.actions.click(self.cd_config["voyage"])
         send_keys_wlog("^a")
         send_keys_wlog(self.line, with_tab=True)
         send_keys_wlog(self.vessel)
-        send_keys_wlog(self.voy)
+        send_keys_wlog(self.voyage)
 
         if status == "IF":
             self.actions.click(self.cd_config["pol"])
@@ -177,14 +161,6 @@ class ContainerDetails(BaseFlow):
         send_keys_wlog("{ENTER}")
 
     def _get_tier(self) -> str:
-        """Extract the tier value from the yard field.
-
-        Returns:
-            The extracted tier value.
-
-        Raises:
-            ValueError: If yard value or format is invalid.
-        """
         yard_value = self.properties.text_value(self.cd_config["yard"])
         if not yard_value:
             raise ValueError("Invalid cd_yard value")
@@ -198,15 +174,6 @@ class ContainerDetails(BaseFlow):
         return tier
 
     def _save_to_csv(self, df: pd.DataFrame, path: Path) -> None:
-        """Save container list to CSV, merging with existing data.
-
-        Args:
-            df: Existing DataFrame from CSV.
-            path: Path to the CSV file.
-
-        Raises:
-            EmptyDataError: If no new data to save.
-        """
         new_data = pd.DataFrame(self.cntr_list)
         if new_data.empty:
             raise EmptyDataError("No new data to save")
@@ -219,23 +186,16 @@ class ContainerDetails(BaseFlow):
         updated_df.to_csv(path, index=False)
         logger.debug(f"Saved DataFrame to {path}")
 
+    def click(self):
+        self.actions.click(self.home)
+
+def main():
+    focus_window("nGen")
+
+    c = ContainerDetails()
+    c.click()
+    h = HoldRelease()
+    h.click()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Create containers in logistics application")
-    parser.add_argument(
-        "count",
-        type=int,
-        nargs="?",
-        default=1,
-        help="Number of containers to create"
-    )
-    parser.add_argument(
-        "movement",
-        type=str,
-        choices=["loading", "gatePickup"],
-        help="Movement type (loading or gatePickup)"
-    )
-    args = parser.parse_args()
-
-    cd = ContainerDetails()
-    cd.create_cntr(args.count, args.movement)
+    main()

@@ -2,8 +2,7 @@ import time
 
 from helper.logger import logger
 from helper.win_utils import wait_for_window, send_keys_wlog, focus_window, find_window
-from test_ui.flow_config import BaseFlow
-
+from src.pages_config import BaseFlow
 
 class BayPlan(BaseFlow):
     def __init__(self, external_driver=None):
@@ -30,7 +29,6 @@ class BayPlan(BaseFlow):
         if find_window("User Error",):
             logger.error("User Error window appeared")
             raise
-
 
 if __name__ == "__main__":
     bp = BayPlan()

@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException, TimeoutException
 from helper.logger import logger
-from helper.sys_utils import raise_with_log
 from helper.win_utils import send_keys_wlog
 
 class ElementActions:

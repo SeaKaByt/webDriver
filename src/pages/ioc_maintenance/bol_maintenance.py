@@ -1,22 +1,25 @@
-import argparse
-from pathlib import Path
 import pandas as pd
-from test_ui.flow_config import BaseFlow
+
+from pathlib import Path
+from src.pages_config import BaseFlow
 from helper.win_utils import wait_for_window, send_keys_wlog
 from helper.logger import logger
 
 class BolMaintenance(BaseFlow):
     """Handles Bill of Lading (BOL) creation and container addition in a UI-based logistics application."""
-
     MODULE = "BOL"
-    REQUIRED_ATTRS = ["bol", "line", "vessel", "voyage"]
 
     def __init__(self, external_driver=None):
         """Initialize with configuration and validate attributes."""
         super().__init__(external_driver=external_driver)
+        
         self.bol_config = self.config["bol"]
         self.add_cntr_config = self.bol_config["add_cntr"]
-        self._validate_attributes()
+
+        self.line = "NVD"
+        self.vessel = "TSHM04"
+        self.voyage = "V01"
+        self.bol = "BL01"
 
     def create_bol(self) -> None:
         """Create a new Bill of Lading in the UI."""
@@ -32,8 +35,6 @@ class BolMaintenance(BaseFlow):
         df_filtered = df[df["bol"].isna() & df["cntr_id"].notna()]
         if df_filtered.empty:
             logger.warning("No containers without BOL found; cancelling operation")
-            # self.actions.click(self.bol_config["create_cancel"])
-            # logger.warning("No containers without BOL were found")
             return
 
         if not self.properties.visible(self.bol_config["create_cntr_id"], timeout=1):
@@ -90,7 +91,7 @@ class BolMaintenance(BaseFlow):
             (self.bol_config["details_line"], self.bol, True),
             (self.bol_config["details_line"], self.line, True),
             (self.bol_config["details_line"], self.vessel),
-            (self.bol_config["details_line"], self.voy, True),
+            (self.bol_config["details_line"], self.voyage, True),
             (self.bol_config["details_line"], "{TAB}", False, 3),
             (self.bol_config["details_line"], "{ENTER}")
         ])
@@ -143,25 +144,3 @@ class BolMaintenance(BaseFlow):
             logger.info(f"Updated BOL for {cntr_id} to {bol}")
         else:
             raise ValueError(f"Container ID {cntr_id} not found in DataFrame")
-
-    def _validate_attributes(self) -> None:
-        """Validate required instance attributes."""
-        for attr in self.REQUIRED_ATTRS:
-            if not hasattr(self, attr) or not getattr(self, attr):
-                raise ValueError(f"Required attribute '{attr}' is not set or empty")
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Bill of Lading (BOL) Maintenance Automation")
-    parser.add_argument(
-        "method",
-        choices=["create_bol", "add_containers"],  # Updated to match method name
-        help="Method to execute (create_bol or add_containers)"
-    )
-    args = parser.parse_args()
-
-    try:
-        bol = BolMaintenance()
-        getattr(bol, args.method)()
-    except Exception as e:
-        logger.error(f"BolMaintenance failed: {e}")
-        raise

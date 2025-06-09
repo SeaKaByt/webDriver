@@ -5,18 +5,24 @@ from pathlib import Path
 from helper.logger import logger
 from helper.io_utils import read_csv
 from helper.win_utils import send_keys_wlog, wait_for_window, focus_window, find_window
-from test_ui.flow_config import BaseFlow
+from src.pages_config import BaseFlow
 
 class Voyage(BaseFlow):
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
-        focus_window("Guider")
+
         self.guider = self.config["guider"]
         self.vp = self.guider["voyage_plan"]
         self.gVoy = self.guider["voyage"]
         self.filter = self.gVoy["filter"]
         self.list = self.gVoy["list"]
         self.mask = self.gVoy["mask_view"]
+
+        self.qc = "OQ1"
+        self.line = "NVD"
+        self.vessel = "TSHM04"
+        self.voyage = "V01"
+        self.fv = f"{self.line}-{self.vessel}-{self.voyage}"
 
 
     def order_out_all(self):
@@ -44,11 +50,13 @@ class Voyage(BaseFlow):
         self.actions.drag_release(self.gVoy["plan_section"], 50, 50, 680, 370)
 
     def open_voyage_plan(self):
+        focus_window("Guider")
+
         if not find_window("Voyage"):
             self.actions.click(self.vp["open_plan"])
             if wait_for_window("Open Voyage Plan"):
                 self.actions.click(self.vp["voyage"])
-                send_keys_wlog(f"{self.full_voyage}")
+                send_keys_wlog(f"{self.fv}")
                 send_keys_wlog("{ENTER}")
                 self.actions.click(self.vp["open"])
             else:
@@ -295,9 +303,6 @@ class Voyage(BaseFlow):
         self.session_1(size_20_count, size_40_count, df, p)
         self.order_out_all()
 
-def main():
+if __name__ == "__main__":
     v = Voyage()
     v.open_voyage_plan()
-
-if __name__ == "__main__":
-    main()

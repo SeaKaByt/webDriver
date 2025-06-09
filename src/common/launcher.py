@@ -1,22 +1,26 @@
+import os
 import allure
 
-from typing import Optional
 from dotenv import load_dotenv
 from pywinauto import Application
 from helper.logger import logger
 from helper.win_utils import send_keys_wlog, wait_for_window, focus_window
-from test_ui.flow_config import BaseFlow
+from src.core.driver import BaseDriver
 
 load_dotenv()
 
-class ApplicationLauncher(BaseFlow):
+class ApplicationLauncher(BaseDriver):
     """
     Unified application launcher for nGen and Guider applications.
     Handles launching, login, and comprehensive error handling with Allure integration.
     """
     def __init__(self, external_driver=None):
-        super().__init__(external_driver=external_driver, app=Application(backend="uia"))
+        super().__init__(external_driver=external_driver)
+        self.app = Application(backend="uia")
         self.lanc = self.config["launcher"]
+
+        self.username = os.getenv("USERNAME")
+        self.password = os.getenv("PASSWORD")
 
     @allure.step("Login to nGen section")
     def login_ngen(self) -> None:
@@ -25,7 +29,7 @@ class ApplicationLauncher(BaseFlow):
             self.actions.click(self.lanc["ngen"])
 
         if wait_for_window("Login", timeout=30):
-            self.send_credentials(self.ng["username"], self.ng["password"])
+            self.send_credentials(self.username, self.password)
 
         assert wait_for_window("nGen", timeout=10)
 
@@ -38,21 +42,22 @@ class ApplicationLauncher(BaseFlow):
             self.actions.click(self.lanc["guider"])
 
         if wait_for_window("Guider Logon", timeout=30):
-            self.send_credentials(self.ng["username"], self.ng["password"])
+            self.send_credentials(self.username, self.password)
 
         assert True
 
     @allure.step("Initiate launcher section")
     def initiate_launcher(self):
         if not wait_for_window("Application Launcher"):
-            logger.info("Initiating application launcher")
-            self.launch(self.ng["jal_path"])
+            p = self.config["nGen"]["jal_path"]
+            logger.info(f"Launching {p}")
+            self.app.start(p, timeout=5, wait_for_idle=False, work_dir=os.path.dirname(p))
 
         assert wait_for_window("Application Launcher", timeout=10)
 
     def close_applications(self):
         """Close applications and clean up"""
-        if hasattr(self, 'driver') and self.driver:
+        if hasattr(self, 'core') and self.driver:
             self.driver.quit()
             logger.info("Applications closed successfully")
 
@@ -60,6 +65,10 @@ class ApplicationLauncher(BaseFlow):
     def send_credentials(username: str, password: str) -> None:
         """Send username and password to login window."""
         logger.info("Sending credentials")
-        send_keys_wlog(username, field_length=99)
+        send_keys_wlog(username, with_tab=True)
         send_keys_wlog(password)
         send_keys_wlog("{ENTER}")
+
+l = ApplicationLauncher()
+l.initiate_launcher()
+print("end")

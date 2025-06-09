@@ -22,15 +22,20 @@ def update_next_stowage(
     """Update stowage data and save to JSON."""
     path = Path(path)
     logger.info("Generating next container stowage")
+    rules = {
+        "max_row": 12,
+        "max_tier": 98,
+        "reset_tier": 82,
+    }
+
     try:
         bay_letter = bay[-1]
         bay_num = int(bay[:-1])
         row_num = int(row)
         tier_num = int(tier)
-        rules = self.config.get(stowage_rules, {})
-        max_row = rules.get("max_row", 12)
-        max_tier = rules.get("max_tier", 98)
-        reset_tier = rules.get("reset_tier", 82)
+        max_row = rules.get("max_row")
+        max_tier = rules.get("max_tier")
+        reset_tier = rules.get("reset_tier")
 
         # Increment container ID
         new_cntr_id = _increment_cntr_id(cntr_id)

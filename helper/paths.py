@@ -1,20 +1,32 @@
 from pathlib import Path
+from helper.io_utils import read_csv
 
 class ProjectPaths:
     ROOT = Path(__file__).resolve().parent.parent
-    CONFIG = ROOT / "config"
     DATA = ROOT / "data"
-    LOGS = ROOT / "logs"
+    CONFIG = ROOT / "config"
 
     @staticmethod
-    def get_yaml_path(env: str, bu: str) -> Path:
-        return ProjectPaths.CONFIG / env / f"{bu}.yaml"
+    def get_loading_data():
+        p = ProjectPaths.DATA / "container_data.csv"
+        df = read_csv(p)
+        yield df, p
 
     @staticmethod
-    def get_json_data_path() -> Path:
-        return ProjectPaths.DATA / "data_templant.json"
+    def get_discharge_data():
+        p = ProjectPaths.DATA / "vessel_discharge_data.csv"
+        df = read_csv(p)
+        yield df, p
+        
+    @staticmethod
+    def get_gate_pickup_data():
+        p = ProjectPaths.DATA / "gate_pickup_data.csv"
+        df = read_csv(p)
+        yield df, p
 
     @staticmethod
-    def get_excel_data_path(file_name: str = "gate_pickup_data.csv") -> Path:
-        return ProjectPaths.DATA / file_name
+    def get_gate_ground_data():
+        p = ProjectPaths.DATA / "gate_ground_data.csv"
+        df = read_csv(p)
+        yield df, p
 

@@ -1,12 +1,7 @@
-import argparse
-import sys
-from typing import Optional
-from pathlib import Path
-
 import pandas as pd
 
-from test_ui.flow_config import BaseFlow
-from helper.win_utils import wait_for_window, sendKeys
+from src.pages_config import BaseFlow
+from helper.win_utils import wait_for_window, send_keys_wlog
 from helper.logger import logger
 
 class QMon(BaseFlow):
@@ -62,9 +57,9 @@ class QMon(BaseFlow):
                     logger.error("FCL tab not found after search")
                     raise RuntimeError("FCL tab not found")
                 self.actions.click(self.fcl_tractor)
-                sendKeys("^a")
-                sendKeys(str(tractor))
-                sendKeys("{ENTER}")
+                send_keys_wlog("^a")
+                send_keys_wlog(str(tractor))
+                send_keys_wlog("{ENTER}")
 
                 # Process each row in the group based on group size
                 group_size = len(group)
@@ -84,12 +79,12 @@ class QMon(BaseFlow):
                             raise ValueError("Group size should be 1 or 2")
 
                     # Perform confirmation steps
-                    sendKeys("{F2}")
+                    send_keys_wlog("{F2}")
                     self.actions.click(self.bk_confirm_btn)
 
                     # Handle a Backup Confirm window
                     if wait_for_window("Backup Confirm"):
-                        sendKeys("{ENTER}")
+                        send_keys_wlog("{ENTER}")
                     else:
                         logger.error("Backup window not found")
                         raise RuntimeError("Backup window not found")
@@ -103,21 +98,3 @@ class QMon(BaseFlow):
         except Exception as e:
             logger.error(f"Backup confirmation failed: {e}")
             raise
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run QMon with pickup or ground mode.")
-    parser.add_argument("--pickup", action="store_true", help="Run in pickup mode")
-    parser.add_argument("--ground", action="store_true", help="Run in ground mode")
-    args = parser.parse_args()
-
-    try:
-        qmon = QMon()
-        if args.pickup:
-            logger.info("Running QMon in pickup mode")
-            qmon.backup_confirm(df=qmon.gate_pickup_df)
-        elif args.ground:
-            logger.info("Running QMon in ground mode")
-            qmon.backup_confirm(df=qmon.gate_ground_df)
-    except Exception as e:
-        logger.error(f"QMon failed: {e}")
-        raise

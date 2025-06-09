@@ -1,18 +1,18 @@
-import sys
-import time
-from pathlib import Path
-from typing import Optional
 from helper.logger import logger
 from helper.win_utils import send_keys_wlog, wait_for_window
-from test_ui.flow_config import BaseFlow
+from src.pages_config import BaseFlow
 
 class BookingMaintenance(BaseFlow):
     module = "BM"
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
+        
         self.bm_config = self.config["bm"]
         self.laden_return_config = self.bm_config["laden_return"]
+
+        self.line = "NVD"
+        self.booking_list = ["BK01", "BK02"]
 
     def add_return_cntr(self) -> None:
         df, p = next(self.get_gate_ground_data())
@@ -29,7 +29,7 @@ class BookingMaintenance(BaseFlow):
             self.actions.click(self.bm_config["principal_line"])
             send_keys_wlog("^a")
             send_keys_wlog(self.line, with_tab=True)
-            booking_no = self.bm_config["booking_no_list"][0 if status == "XF" else 1]
+            booking_no = self.booking_list[0 if status == "XF" else 1]
             send_keys_wlog(booking_no)
             send_keys_wlog("{ENTER}")
             send_keys_wlog("%b")

@@ -1,23 +1,26 @@
-import argparse
 import logging
 
-from helper.sys_utils import raise_with_log
-from test_ui.flow_config import BaseFlow
-from helper.win_utils import send_keys_wlog, wait_for_window, find_window, focus_window
+from src.core.driver import BaseDriver
+from src.pages_config import BaseFlow
+from helper.win_utils import send_keys_wlog, find_window
 from helper.logger import logger
 
-class HoldRelease(BaseFlow):
+class HoldRelease(BaseDriver):
     module = "HR"
     declaration = "automation"
 
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
-        focus_window("nGen")
+        
         self.hr = self.config["hr"]
         self.tab = self.hr["tab"]
         self.rr = self.hr["release"]["release"]
         self.rs = self.hr["release"]["search"]
+
+        self.line = "NVD"
+        self.vessel = "TSHM04"
+        self.voyage = "V01"
 
     def search_cntr(self, hold_condition) -> None:
         if not self.properties.visible(self.rs["hold"], timeout=1):
@@ -40,7 +43,7 @@ class HoldRelease(BaseFlow):
         send_keys_wlog("^a")
         send_keys_wlog(self.line, field_length=4)
         send_keys_wlog(self.vessel, field_length=6)
-        send_keys_wlog(self.voy)
+        send_keys_wlog(self.voyage)
 
         send_keys_wlog("%s")
 
@@ -74,6 +77,9 @@ class HoldRelease(BaseFlow):
             logger.warning("inv0799 window found")
             raise
         send_keys_wlog("%b")
+
+    def click(self):
+        self.actions.click(self.home)
 
 def main():
     h = HoldRelease()

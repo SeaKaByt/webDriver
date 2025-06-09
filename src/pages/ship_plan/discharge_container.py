@@ -2,19 +2,19 @@ from pathlib import Path
 from helper.io_utils import read_csv
 from helper.logger import logger
 from helper.win_utils import send_keys_wlog, wait_for_window, focus_window, find_window
-from test_ui.flow.voyage import Voyage
+from src.pages.guider.voyage import Voyage
 
 class DischargeContainer(Voyage):
     module = "DC"
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
+        self.dc = self.config["dc"]
+        self.sc = self.dc["schedule"]
+
         self.line = "NVD"
         self.vessel = "TSHM04"
         self.voyage = "V01"
-
-        self.dc = self.config["dc"]
-        self.sc = self.dc["schedule"]
 
     def search_voyage(self):
         if not self.properties.visible(self.dc["voyage"], timeout=1):
@@ -22,9 +22,9 @@ class DischargeContainer(Voyage):
 
         self.actions.click(self.dc["voyage"])
         send_keys_wlog("^a")
-        send_keys_wlog(self.line, with_tab=True)
-        send_keys_wlog(self.vessel)
-        send_keys_wlog(self.voy)
+        send_keys_wlog(self.line, field_length=4)
+        send_keys_wlog(self.vessel, field_length=6)
+        send_keys_wlog(self.voyage)
         self.actions.click(self.dc["search_btn"])
 
         if self.properties.enabled(self.dc["data_confirmed_btn"]):
@@ -98,7 +98,7 @@ class DischargeContainer(Voyage):
         send_keys_wlog("^a")
         send_keys_wlog(self.line, field_length=4)
         send_keys_wlog(self.vessel, field_length=6)
-        send_keys_wlog(self.voy)
+        send_keys_wlog(self.voyage)
 
         self.actions.click(self.sc["start"])
         send_keys_wlog("^a")
@@ -114,7 +114,7 @@ class DischargeContainer(Voyage):
         send_keys_wlog("%l")
         send_keys_wlog("{F1}")
 
-        time.sleep(0.7)
+        time.sleep(0.7) # more time for the window to appear
         if find_window("Confirm"):
             send_keys_wlog("{ENTER}")
         else:

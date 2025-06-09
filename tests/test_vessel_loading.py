@@ -1,11 +1,11 @@
 import allure
 import pytest
 
-from driver.base_driver import BaseDriver
-from test_ui.flow.container_details import ContainerDetails
-from test_ui.flow.cwp_plan import CWP
-from test_ui.flow.hold_release import HoldRelease
-from test_ui.flow.voyage import Voyage
+from src.core.driver import BaseDriver
+from src.pages.inventory_operation.container_details import ContainerDetails
+from src.pages.guider.cwp_plan import CWP
+from src.pages.inventory_operation.hold_release import HoldRelease
+from src.pages.guider.voyage import Voyage
 
 
 @pytest.mark.vessel_loading
@@ -23,13 +23,17 @@ def test_vessel_loading_workflow(video_recorder):
     release_cwp = False
 
     # Parameters
-    count = 20
-    size_20 = 10
-    size_40 = 10
+    count = 1
+    status = "XF"
+    size = "20"
+    type = "G0"
     movement = "loading"
 
+    size_20 = 10
+    size_40 = 10
+
     with BaseDriver() as d:
-        # Initialize flow components
+        # Initialize pages components
         container_flow = ContainerDetails(d.driver)
         hold_flow = HoldRelease(d.driver)
         voyage_flow = Voyage(d.driver)
@@ -38,7 +42,7 @@ def test_vessel_loading_workflow(video_recorder):
         # Execute workflow steps
         if create_containers:
             with allure.step(f"Create {count} containers for vessel loading"):
-                container_flow.create_cntr(count=count, movement=movement)
+                container_flow.create_cntr(count=count, movement=movement, status=status, size=size, type=type)
 
         if release_hold:
             with allure.step("Release VM hold for vessel operations"):

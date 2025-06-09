@@ -1,9 +1,8 @@
-from typing import Optional
 import pywinauto
+
+from typing import Optional
 from pywinauto.keyboard import send_keys
 from helper.logger import logger
-import win32con
-import time
 
 def send_keys_wlog(keys: str, with_tab: bool = False, field_length: Optional[int] = None) -> None:
     should_send_tab = with_tab or (field_length is not None and len(keys) < field_length)
@@ -34,15 +33,6 @@ def find_window(title: str, exact_match: bool = False) -> list:
     return windows
 
 def focus_window(title: str, exact_match: bool = False) -> bool:
-    """Bring a window to the front by its title.
-    
-    Args:
-        title: The title of the window to bring to front
-        exact_match: If True, match title exactly. If False, use regex pattern
-        
-    Returns:
-        bool: True if successful, False otherwise
-    """
     try:
         # Find windows matching the title
         if exact_match:

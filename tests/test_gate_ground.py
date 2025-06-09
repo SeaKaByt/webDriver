@@ -1,9 +1,9 @@
 import allure
 import pytest
 
-from driver.base_driver import BaseDriver
-from test_ui.flow.booking_maintenance import BookingMaintenance
-from test_ui.flow.gate_transaction import GateTransaction
+from src.core.driver import BaseDriver
+from src.pages.ioc_maintenance.booking_maintenance import BookingMaintenance
+from src.pages.gate_house.gate_services.gate_transaction import GateTransaction
 
 @pytest.mark.gate_ground
 @allure.title("Gate Ground Workflow")
@@ -11,7 +11,7 @@ def test_gate_ground_workflow(video_recorder):
     return_cntr = False
     create_gate_ground = True
 
-    # Create a single shared driver session
+    # Create a single shared core session
     with BaseDriver() as d:
         booking_flow = BookingMaintenance(d.driver)
         gate_flow = GateTransaction(d.driver)

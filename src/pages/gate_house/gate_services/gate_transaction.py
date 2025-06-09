@@ -1,32 +1,38 @@
+import os
 import time
-from pathlib import Path
 import pandas as pd
-from pandas.errors import EmptyDataError
 
+from pathlib import Path
+from pandas.errors import EmptyDataError
+from src.core.driver import BaseDriver
 from helper.http.TAS_service import AppointmentService
 from helper.io_utils import read_csv
 from helper.logger import logger
+from helper.paths import ProjectPaths
 from helper.win_utils import wait_for_window, send_keys_wlog, find_window, focus_window
-from test_ui.flow_config import BaseFlow
+from src.common.menu import Menu
+from src.pages.inventory_operation.container_details import ContainerDetails
 
-class GateTransaction(BaseFlow):
-    module = "GT"
-    material = "S"
-    max_gross = "32000"
-    gross = "15000"
-    type = "10"
+class GateTransaction(BaseDriver):
+    MODULE = "GT"
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
         self.service = AppointmentService()
-        focus_window("nGen")
+        self.p = ProjectPaths()
+
         self.gt = self.config["gt"]
         self.cp = self.gt["create_pickup"]
         self.cg = self.gt["create_grounding"]
         self.ins = self.cg["inspection"]
 
+        self.type = "10"
+        self.material = "S"
+        self.gross_wt = "17500"
+        self.max_gross = "32000"
+
     def create_gate_pickup(self) -> None:
-        df, p = next(self.get_gate_pickup_data())
+        df, p = next(self.p.get_gate_pickup_data())
         self.get_tractor(df, p)
 
         df_filtered = df[df["mvt"].isna() & df["tractor"].notna() & df["pin"].notna()]
@@ -34,7 +40,7 @@ class GateTransaction(BaseFlow):
             raise EmptyDataError("No data to process")
 
         if not self.properties.visible(self.gt["search_tractor"], timeout=1):
-            self.module_view(self.module)
+            Menu.to_module(self.MODULE)
 
         for tractor, group in df_filtered.groupby("tractor"):
             logger.info(f"Processing tractor group: {tractor}, size: {len(group)}")
@@ -57,7 +63,7 @@ class GateTransaction(BaseFlow):
                 if wait_for_window("Create Pickup"):
                     self.actions.click(self.cp["pin"])
                     send_keys_wlog(str(row["pin"])[:6])
-                    self.actions.click(self.cp["driver"])
+                    self.actions.click(self.cp["core"])
                     send_keys_wlog(row["tractor"])
                     send_keys_wlog("{ENTER}")
                 else:
@@ -86,14 +92,14 @@ class GateTransaction(BaseFlow):
             self.release_print_cwp()
 
     def create_gate_ground(self) -> None:
-        df, p = next(self.get_gate_ground_data())
+        df, p = next(self.p.get_gate_ground_data())
         self.get_tractor(df, p)
         df_filtered = df[df["mvt"].isna()]
         if df_filtered.empty:
             raise EmptyDataError("No data to process")
 
         if not self.properties.visible(self.gt["search_tractor"], timeout=1):
-            self.module_view(self.module)
+            Menu.to_module(self.MODULE)
 
         for tractor, group in df_filtered.groupby("tractor"):
             logger.info(f"Processing tractor group: {tractor}, cntr_id: {group['cntr_id'].tolist()}")
@@ -115,7 +121,7 @@ class GateTransaction(BaseFlow):
                     self.actions.click(self.cg["cntr_id"])
                     send_keys_wlog(row["cntr_id"])
                     if i == 0:
-                        self.actions.click(self.cg["driver"])
+                        self.actions.click(self.cg["core"])
                         send_keys_wlog(row["tractor"])
                     send_keys_wlog("{ENTER}")
                 else:
@@ -162,7 +168,7 @@ class GateTransaction(BaseFlow):
                 self.actions.click(self.cg["ok"])
 
                 if self.properties.editable(self.cg["gross"]):
-                    send_keys_wlog(self.gross)
+                    send_keys_wlog(self.gross_wt)
                 else:
                     raise RuntimeError("Gross field not editable")
 
@@ -270,13 +276,21 @@ class GateTransaction(BaseFlow):
             raise RuntimeError("User Information window not found")
 
     def handle_auth_window(self) -> None:
-        send_keys_wlog(self.ng["username"], with_tab=True)
-        send_keys_wlog(self.ng["password"])
+        send_keys_wlog(os.getenv("USER"), with_tab=True)
+        send_keys_wlog(os.getenv("PASSWORD"))
         send_keys_wlog("{ENTER}")
 
 def main():
     g = GateTransaction()
-    g.actions.click(g.cg["no"])
+    focus_window("nGen")
+
+    Menu.to_module("HR")
+
+    print(os.getenv("USER"))
+    print(os.getenv("PASSWORD"))
+
+    c = ContainerDetails()
+    c.click()
 
 if __name__ == "__main__":
     main()

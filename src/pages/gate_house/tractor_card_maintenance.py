@@ -1,5 +1,5 @@
 from helper.win_utils import send_keys_wlog
-from test_ui.flow_config import BaseFlow
+from src.pages_config import BaseFlow
 import csv
 import os
 
@@ -9,6 +9,7 @@ class TractorCard(BaseFlow):
 
     def __init__(self):
         super().__init__()
+        
         self.detail_config = self.config["tractor_card"]["detail"]
         self.csv_file_path = "data/tractor_usage.csv"
 
@@ -63,9 +64,6 @@ class TractorCard(BaseFlow):
         self.save_to_csv(generated_tractor_ids)
         print(f"Saved {len(generated_tractor_ids)} tractor IDs to {self.csv_file_path}")
 
-
 if __name__ == "__main__":
     t = TractorCard()
     t.create_tractor_card(49, 11)
-
-# python -m test_ui.flow.tractor_card_maintenance
