@@ -5,7 +5,7 @@ from src.core.driver import BaseDriver
 from src.pages.ioc_maintenance.bol_maintenance import BolMaintenance
 from src.pages.inventory_operation.container_details import ContainerDetails
 from src.pages.ioc_maintenance.cro_maintenance import CROMaintenance
-from src.pages.gate_house.gate_services.gate_transaction import GateTransaction
+from src.pages.gate_house.gate_transaction import GateTransaction
 from src.pages.inventory_operation.hold_release import HoldRelease
 
 @pytest.mark.gate_pickup
@@ -22,7 +22,6 @@ def test_gate_pickup_workflow(video_recorder):
     get_pin = False
     release_hold = False
     create_transaction = True
-    release_mvt = True
 
     # Parameters
     count = 2

@@ -1,11 +1,13 @@
-from pathlib import Path
-from helper.io_utils import read_csv
+import time
+
 from helper.logger import logger
-from helper.win_utils import send_keys_wlog, wait_for_window, focus_window, find_window
+from helper.paths import ProjectPaths
+from helper.win_utils import sendkeys, wait_for_window, focus_window, find_window
 from src.pages.guider.voyage import Voyage
+from src.common.menu import Menu
 
 class DischargeContainer(Voyage):
-    module = "DC"
+    MODULE = "DC"
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
@@ -18,13 +20,13 @@ class DischargeContainer(Voyage):
 
     def search_voyage(self):
         if not self.properties.visible(self.dc["voyage"], timeout=1):
-            self.module_view(self.module)
+            Menu.to_module(self.MODULE, self)
 
         self.actions.click(self.dc["voyage"])
-        send_keys_wlog("^a")
-        send_keys_wlog(self.line, field_length=4)
-        send_keys_wlog(self.vessel, field_length=6)
-        send_keys_wlog(self.voyage)
+        sendkeys("^a")
+        sendkeys(self.line, field_length=4)
+        sendkeys(self.vessel, field_length=6)
+        sendkeys(self.voyage)
         self.actions.click(self.dc["search_btn"])
 
         if self.properties.enabled(self.dc["data_confirmed_btn"]):
@@ -37,8 +39,7 @@ class DischargeContainer(Voyage):
             raise Exception("Data Confirmed button is not enabled")
 
     def edit_add(self) -> None:
-        path = Path("data/vessel_discharge_data.csv")
-        df = read_csv(path)
+        df, path = next(ProjectPaths.get_discharge_data())
 
         df_filtered = df[df["planned"].isna() & df["ContainerNum"].notna()]
         if df_filtered.empty:
@@ -58,24 +59,24 @@ class DischargeContainer(Voyage):
     def data_confirm(self) -> None:
         focus_window("nGen")
         if not self.properties.visible(self.dc["data_confirmed"]):
-            self.module_view(self.module)
+            Menu.to_module(self.MODULE, self)
 
-        send_keys_wlog("%r")
+        sendkeys("%r")
         self.actions.click(self.dc["voyage"])
-        send_keys_wlog("^a")
-        send_keys_wlog(self.line, field_length=4)
-        send_keys_wlog(self.vessel, field_length=6)
-        send_keys_wlog(self.voyage)
-        send_keys_wlog("%s")
+        sendkeys("^a")
+        sendkeys(self.line, field_length=4)
+        sendkeys(self.vessel, field_length=6)
+        sendkeys(self.voyage)
+        sendkeys("%s")
 
         if self.properties.visible(self.dc["data_confirmed"]):
-            send_keys_wlog("%t")
+            sendkeys("%t")
         else:
             logger.error("Confirm button is not visible")
             raise
 
         if wait_for_window("confirm"):
-            send_keys_wlog("{ENTER}")
+            sendkeys("{ENTER}")
         else:
             raise Exception("Confirm window not found")
 
@@ -86,44 +87,44 @@ class DischargeContainer(Voyage):
         self.order_out_all()
 
     def reset_voyage(self):
-        import time
+        focus_window("nGen")
+
         module = "VS"
-
         if not self.properties.visible(self.sc["voyage"], timeout=1):
-            self.module_view(module)
+            Menu.to_module(module, self)
 
-        send_keys_wlog("%r")
+        sendkeys("%r")
 
         self.actions.click(self.sc["voyage"])
-        send_keys_wlog("^a")
-        send_keys_wlog(self.line, field_length=4)
-        send_keys_wlog(self.vessel, field_length=6)
-        send_keys_wlog(self.voyage)
+        sendkeys("^a")
+        sendkeys(self.line, field_length=4)
+        sendkeys(self.vessel, field_length=6)
+        sendkeys(self.voyage)
 
         self.actions.click(self.sc["start"])
-        send_keys_wlog("^a")
-        send_keys_wlog("{DEL}")
+        sendkeys("^a")
+        sendkeys("{DEL}")
 
         self.actions.click(self.sc["end"])
-        send_keys_wlog("^a")
-        send_keys_wlog("{DEL}")
+        sendkeys("^a")
+        sendkeys("{DEL}")
 
-        send_keys_wlog("%s")
+        sendkeys("%s")
 
         self.actions.click(self.sc["row"])
-        send_keys_wlog("%l")
-        send_keys_wlog("{F1}")
+        sendkeys("%l")
+        sendkeys("{F1}")
 
-        time.sleep(0.7) # more time for the window to appear
+        time.sleep(1) # more time for the window to appear
         if find_window("Confirm"):
-            send_keys_wlog("{ENTER}")
+            sendkeys("{ENTER}")
         else:
             logger.error("Confirm window not found after reset voyage")
             raise
 
         time.sleep(0.5)
         if find_window(".*sp0516$"):
-            send_keys_wlog("{ENTER}")
+            sendkeys("{ENTER}")
 
 if __name__ == "__main__":
     dc = DischargeContainer()

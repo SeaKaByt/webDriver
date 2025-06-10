@@ -1,36 +1,33 @@
 import pandas as pd
 
-from src.pages_config import BaseFlow
-from helper.win_utils import wait_for_window, send_keys_wlog
+from src.core.driver import BaseDriver
+from helper.win_utils import wait_for_window, sendkeys
 from helper.logger import logger
+from src.common.menu import Menu
 
-class QMon(BaseFlow):
+class QMon(BaseDriver):
     """Handles QM module for backup confirmation of tractor transactions."""
-    module = "QM"
+    MODULE = "QM"
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
-        try:
-            qm_config = self.config.get("qm", {})
-            self.fcl_tab = qm_config.get("fcl_tab")
-            self.row0_cntr_id = qm_config.get("row0_cntr_id")
-            self.bk_confirm_btn = qm_config.get("bk_confirm_btn")
-            self.fcl_tractor = qm_config.get("fcl_tractor")
-            self.new_search = qm_config.get("new_search")
-            self.tab_page_1 = qm_config.get("tab_page_1")
-            self.tab_page_2 = qm_config.get("tab_page_2")
-            self.movement_row_0 = qm_config.get("movement_row_0")
-            self.movement_row_1 = qm_config.get("movement_row_1")
-        except KeyError as e:
-            logger.error(f"Config missing key: {e}")
-            raise ValueError(f"Invalid config: {e}")
+        qm_config = self.config.get("qm", {})
+        self.fcl_tab = qm_config.get("fcl_tab")
+        self.row0_cntr_id = qm_config.get("row0_cntr_id")
+        self.bk_confirm_btn = qm_config.get("bk_confirm_btn")
+        self.fcl_tractor = qm_config.get("fcl_tractor")
+        self.new_search = qm_config.get("new_search")
+        self.tab_page_1 = qm_config.get("tab_page_1")
+        self.tab_page_2 = qm_config.get("tab_page_2")
+        self.movement_row_0 = qm_config.get("movement_row_0")
+        self.movement_row_1 = qm_config.get("movement_row_1")
 
     def search_tractor(self) -> None:
         """Navigate to QM module if FCL tab is not visible."""
         try:
             if not self.properties.visible(self.fcl_tab, timeout=1):
                 logger.info("Opening QM module")
-                self.module_view(self.module)
+                Menu.to_module(self.MODULE, self)
         except Exception as e:
             logger.error(f"Failed to search tractor: {e}")
             raise
@@ -45,7 +42,7 @@ class QMon(BaseFlow):
         try:
             # Ensure FCL tab is visible
             if not self.properties.visible(self.fcl_tractor, timeout=1):
-                self.module_view(self.module)
+                Menu.to_module(self.MODULE, self)
 
             # Group DataFrame by tractor
             grouped = df.groupby(df["tractor"])
@@ -57,9 +54,9 @@ class QMon(BaseFlow):
                     logger.error("FCL tab not found after search")
                     raise RuntimeError("FCL tab not found")
                 self.actions.click(self.fcl_tractor)
-                send_keys_wlog("^a")
-                send_keys_wlog(str(tractor))
-                send_keys_wlog("{ENTER}")
+                sendkeys("^a")
+                sendkeys(str(tractor))
+                sendkeys("{ENTER}")
 
                 # Process each row in the group based on group size
                 group_size = len(group)
@@ -79,12 +76,12 @@ class QMon(BaseFlow):
                             raise ValueError("Group size should be 1 or 2")
 
                     # Perform confirmation steps
-                    send_keys_wlog("{F2}")
+                    sendkeys("{F2}")
                     self.actions.click(self.bk_confirm_btn)
 
                     # Handle a Backup Confirm window
                     if wait_for_window("Backup Confirm"):
-                        send_keys_wlog("{ENTER}")
+                        sendkeys("{ENTER}")
                     else:
                         logger.error("Backup window not found")
                         raise RuntimeError("Backup window not found")

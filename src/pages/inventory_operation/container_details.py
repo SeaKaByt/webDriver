@@ -7,7 +7,7 @@ from helper.paths import ProjectPaths
 from src.core.driver import BaseDriver
 from src.common.menu import Menu
 from src.pages.inventory_operation.hold_release import HoldRelease
-from helper.win_utils import wait_for_window, send_keys_wlog, focus_window
+from helper.win_utils import wait_for_window, sendkeys, focus_window
 from helper.container_utils import next_loc
 from helper.logger import logger
 
@@ -16,12 +16,10 @@ class ContainerDetails(BaseDriver):
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
-        self.p = ProjectPaths()
-
         self.cd_config = self.config["cd"]
         self.cntr_list = []
 
-        self.j = read_json(self.p.DATA / "data_template.json")
+        self.j = read_json(ProjectPaths.DATA / "data_template.json")
         self.cntr_id = self.j["cntr_id"]
         self.block = self.j["block"]
         self.stack = self.j["stack"]
@@ -42,7 +40,7 @@ class ContainerDetails(BaseDriver):
 
         if not self.properties.visible(self.cd_config["cntr_id"], timeout=1):
             logger.info("Opening CD module")
-            Menu.to_module(self.MODULE)
+            Menu.to_module(self.MODULE, self)
 
         for i in range(count):
             logger.info(f"Creating container {i + 1}/{count}")
@@ -51,12 +49,10 @@ class ContainerDetails(BaseDriver):
         self._save_to_csv(df, path)
 
     def _load_data(self, movement: str) -> tuple[pd.DataFrame, Path]:
-        p = ProjectPaths()
-
         if movement == "loading":
-            return next(p.get_loading_data())
+            return next(ProjectPaths.get_loading_data())
         elif movement == "gatePickup":
-            return next(p.get_gate_pickup_data())
+            return next(ProjectPaths.get_gate_pickup_data())
         raise ValueError(f"Invalid movement: {movement}")
 
     def _enter_container_details(self, movement: str, status: str, size: str, type: str) -> None:
@@ -72,9 +68,9 @@ class ContainerDetails(BaseDriver):
 
         # Enter container ID
         self.actions.click(self.cd_config["cntr_id"])
-        send_keys_wlog("^a")
-        send_keys_wlog(self.cntr_id)
-        send_keys_wlog("{ENTER}")
+        sendkeys("^a")
+        sendkeys(self.cntr_id)
+        sendkeys("{ENTER}")
 
         # Handle Create Container window
         if not wait_for_window("Create Container", timeout=5):
@@ -89,7 +85,7 @@ class ContainerDetails(BaseDriver):
         if status in ("XF", "IF"):
             self._set_voyage_details(status)
 
-        send_keys_wlog("{ENTER}")
+        sendkeys("{ENTER}")
 
         # Handle ags4999 window for lane adjustment
         if wait_for_window(".*ags4999$", timeout=1):
@@ -97,8 +93,8 @@ class ContainerDetails(BaseDriver):
 
         # Handle Confirmation window
         if wait_for_window("Confirmation", timeout=1):
-            send_keys_wlog("{TAB}")
-            send_keys_wlog("{ENTER}")
+            sendkeys("{TAB}")
+            sendkeys("{ENTER}")
 
         # Check for User Error
         if wait_for_window("User Error", timeout=1):
@@ -121,28 +117,28 @@ class ContainerDetails(BaseDriver):
     def _set_common_fields(self, status: str, size: str, type: str) -> None:
         """Set common container fields in the UI."""
         self.actions.click(self.cd_config["status"])
-        send_keys_wlog(status)
-        send_keys_wlog(size)
-        send_keys_wlog(type)
+        sendkeys(status)
+        sendkeys(size)
+        sendkeys(type)
         self.actions.click(self.cd_config["owner"])
-        send_keys_wlog(self.owner, with_tab=True)
-        send_keys_wlog("{TAB}")
-        send_keys_wlog(self.block)
-        send_keys_wlog(self.stack, with_tab=True)
-        send_keys_wlog(self.lane)
+        sendkeys(self.owner, with_tab=True)
+        sendkeys("{TAB}")
+        sendkeys(self.block)
+        sendkeys(self.stack, with_tab=True)
+        sendkeys(self.lane)
 
     def _set_voyage_details(self, status: str) -> None:
         self.actions.click(self.cd_config["voyage"])
-        send_keys_wlog("^a")
-        send_keys_wlog(self.line, with_tab=True)
-        send_keys_wlog(self.vessel)
-        send_keys_wlog(self.voyage)
+        sendkeys("^a")
+        sendkeys(self.line, with_tab=True)
+        sendkeys(self.vessel)
+        sendkeys(self.voyage)
 
         if status == "IF":
             self.actions.click(self.cd_config["pol"])
-            send_keys_wlog(self.pol)
+            sendkeys(self.pol)
             self.actions.click(self.cd_config["gross_wt"])
-            send_keys_wlog(self.gross_wt)
+            sendkeys(self.gross_wt)
         elif status == "XF":
             self.actions.set_text(self.cd_config["loading_blk"], self.blk)
             self.actions.set_text(self.cd_config["loading_shipper"], "BOT")
@@ -155,10 +151,10 @@ class ContainerDetails(BaseDriver):
         self.lane = f"{int(self.lane) + 1}"
         self.actions.click(self.cd_config["ags4999"])
         self.actions.click(self.cd_config["yard"])
-        send_keys_wlog("{TAB}")
-        send_keys_wlog("{TAB}")
-        send_keys_wlog(self.lane)
-        send_keys_wlog("{ENTER}")
+        sendkeys("{TAB}")
+        sendkeys("{TAB}")
+        sendkeys(self.lane)
+        sendkeys("{ENTER}")
 
     def _get_tier(self) -> str:
         yard_value = self.properties.text_value(self.cd_config["yard"])

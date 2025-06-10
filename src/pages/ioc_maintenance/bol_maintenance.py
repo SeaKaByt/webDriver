@@ -1,18 +1,18 @@
 import pandas as pd
 
-from pathlib import Path
-from src.pages_config import BaseFlow
-from helper.win_utils import wait_for_window, send_keys_wlog
+from src.core.driver import BaseDriver
+from src.common.menu import Menu
+from helper.win_utils import wait_for_window, sendkeys
 from helper.logger import logger
+from helper.paths import ProjectPaths
 
-class BolMaintenance(BaseFlow):
+class BolMaintenance(BaseDriver):
     """Handles Bill of Lading (BOL) creation and container addition in a UI-based logistics application."""
     MODULE = "BOL"
 
     def __init__(self, external_driver=None):
         """Initialize with configuration and validate attributes."""
         super().__init__(external_driver=external_driver)
-        
         self.bol_config = self.config["bol"]
         self.add_cntr_config = self.bol_config["add_cntr"]
 
@@ -23,14 +23,16 @@ class BolMaintenance(BaseFlow):
 
     def create_bol(self) -> None:
         """Create a new Bill of Lading in the UI."""
-        self._ensure_module_open()
         self._search_bol()
         self._handle_bol_creation()
 
     def add_containers(self) -> None:
         """Add containers to a BOL in the UI and update the DataFrame."""
-        self._ensure_module_open()
-        df, path = self._load_gate_pickup_data()
+        if not self.properties.visible(self.bol_config["line"], timeout=1):
+            logger.info("Opening BOL module")
+            Menu.to_module(self.MODULE, self)
+
+        df, path = next(ProjectPaths.get_gate_pickup_data())
 
         df_filtered = df[df["bol"].isna() & df["cntr_id"].notna()]
         if df_filtered.empty:
@@ -55,12 +57,6 @@ class BolMaintenance(BaseFlow):
         if wait_for_window("Amend Bill", 1):
             self.actions.click(self.bol_config["create_cancel"])
         logger.info("Completed container addition process")
-
-    def _ensure_module_open(self) -> None:
-        """Ensure the BOL module is open."""
-        if not self.properties.visible(self.bol_config["line"], timeout=1):
-            logger.info("Opening BOL module")
-            self.module_view(self.MODULE)
 
     def _search_bol(self) -> None:
         """Search for a BOL in the UI."""
@@ -99,7 +95,7 @@ class BolMaintenance(BaseFlow):
     def _add_container(self, cntr_id: str, is_last: bool = False) -> None:
         """Add a container to the BOL in the UI."""
         self.actions.click(self.add_cntr_config["cntr_id"])
-        send_keys_wlog(cntr_id)
+        sendkeys(cntr_id)
         if is_last:
             self.actions.click(self.add_cntr_config["ok"])
         else:
@@ -113,7 +109,7 @@ class BolMaintenance(BaseFlow):
 
         if wait_for_window(self.bol_config.get("container_error", ".*ioc4665$"), timeout=1):
             logger.warning("Container under bill of lading")
-            send_keys_wlog("{ENTER}")
+            sendkeys("{ENTER}")
 
     def _send_keys_sequence(self, sequence: list[tuple]) -> None:
         """Send a sequence of keys to the UI.
@@ -130,11 +126,7 @@ class BolMaintenance(BaseFlow):
             if element:
                 self.actions.click(element)
             for _ in range(repeat):
-                send_keys_wlog(value, with_tab=with_tab)
-
-    def _load_gate_pickup_data(self) -> tuple[pd.DataFrame, Path]:
-        """Load gate pickup data from CSV."""
-        return next(self.get_gate_pickup_data())
+                sendkeys(value, with_tab=with_tab)
 
     def _update_container_bol(self, df: pd.DataFrame, cntr_id: str, bol: str) -> None:
         """Update the BOL column for a container in the DataFrame."""

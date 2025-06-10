@@ -1,10 +1,13 @@
 import time
 
 from helper.logger import logger
-from helper.win_utils import wait_for_window, send_keys_wlog, focus_window, find_window
-from src.pages_config import BaseFlow
+from helper.win_utils import wait_for_window, sendkeys, focus_window, find_window
+from src.core.driver import BaseDriver
+from src.common.menu import Menu
 
-class BayPlan(BaseFlow):
+class BayPlan(BaseDriver):
+    MODULE = "BP"
+
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
         self.edi = self.config["EDI"]
@@ -13,15 +16,15 @@ class BayPlan(BaseFlow):
         focus_window("nGen")
 
         if not self.properties.visible(self.edi["Inbound"]):
-            self.module_view("BP")
+            Menu.to_module(self.MODULE, self)
 
         self.actions.click(self.edi["Inbound"])
-        send_keys_wlog("%r")
-        send_keys_wlog("%i")
+        sendkeys("%r")
+        sendkeys("%i")
         if wait_for_window("Inbound Bay Plan"):
             self.actions.click(self.edi["row"])
-            send_keys_wlog("{ENTER}")
-            send_keys_wlog("%u")
+            sendkeys("{ENTER}")
+            sendkeys("%u")
         else:
             raise RuntimeError("Inbound Bay Plan window not found")
 
@@ -29,9 +32,3 @@ class BayPlan(BaseFlow):
         if find_window("User Error",):
             logger.error("User Error window appeared")
             raise
-
-if __name__ == "__main__":
-    bp = BayPlan()
-    bp.upload_bay_plan()
-
-

@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException, TimeoutException
 from helper.logger import logger
-from helper.win_utils import send_keys_wlog
+from helper.win_utils import sendkeys
 
 class ElementActions:
     def __init__(self, driver):
@@ -36,7 +36,7 @@ class ElementActions:
     def set_text(self, xpath, text, timeout=10):
         try:
             self.click(xpath, timeout)
-            send_keys_wlog(text)
+            sendkeys(text)
         except Exception as e:
             logger.error(f"Failed to set text for element: {xpath} - {e}")
             raise

@@ -4,10 +4,10 @@ import allure
 from dotenv import load_dotenv
 from pywinauto import Application
 from helper.logger import logger
-from helper.win_utils import send_keys_wlog, wait_for_window, focus_window
+from helper.win_utils import sendkeys, wait_for_window, focus_window
 from src.core.driver import BaseDriver
 
-load_dotenv()
+load_dotenv(override=True)
 
 class ApplicationLauncher(BaseDriver):
     """
@@ -19,7 +19,7 @@ class ApplicationLauncher(BaseDriver):
         self.app = Application(backend="uia")
         self.lanc = self.config["launcher"]
 
-        self.username = os.getenv("USERNAME")
+        self.username = os.getenv("USER")
         self.password = os.getenv("PASSWORD")
 
     @allure.step("Login to nGen section")
@@ -65,10 +65,10 @@ class ApplicationLauncher(BaseDriver):
     def send_credentials(username: str, password: str) -> None:
         """Send username and password to login window."""
         logger.info("Sending credentials")
-        send_keys_wlog(username, with_tab=True)
-        send_keys_wlog(password)
-        send_keys_wlog("{ENTER}")
+        sendkeys(username, with_tab=True)
+        sendkeys(password)
+        sendkeys("{ENTER}")
 
 l = ApplicationLauncher()
-l.initiate_launcher()
-print("end")
+
+print(l.username)

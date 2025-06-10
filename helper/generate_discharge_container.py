@@ -1,14 +1,10 @@
-from pathlib import Path
+from src.core.driver import BaseDriver
+from helper.paths import ProjectPaths
 
-import pandas as pd
-
-from src.pages_config import BaseFlow
-
-
-class GenerateDischarge(BaseFlow):
+class GenerateDischarge(BaseDriver):
     def __init__(self):
-        super().__init__(self.get_discharge_data())
-        self.df, self.p = next(self.get_discharge_data())
+        super().__init__()
+        self.df, self.p = next(ProjectPaths.get_discharge_data())
 
     def debug_planned_0082_positions(self):
         """Debug logger to show all stowage positions ending in 0082 that are planned"""
@@ -286,8 +282,8 @@ if __name__ == "__main__":
     
     # Test auto assignment
     assignments = g.auto_assign_containers(
-        id="DISH100021",
-        count=20,
+        id="DISH100046",
+        count=5,
         size=40
     )
     

@@ -30,3 +30,20 @@ class ProjectPaths:
         df = read_csv(p)
         yield df, p
 
+    @staticmethod
+    def get_tractor_usage_data():
+        p = ProjectPaths.DATA / "tractor_usage.csv"
+        df = read_csv(p)
+        yield df, p
+
+    @staticmethod
+    def get_stowage_usage():
+        p = ProjectPaths.DATA / "stowage_usage.csv"
+        df = read_csv(p)
+        yield df, p
+
+    @staticmethod
+    def get_tractor_card_data():
+        p = ProjectPaths.DATA / "tractor_card_data.csv"
+        df = read_csv(p)
+        yield df, p

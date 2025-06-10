@@ -6,7 +6,7 @@ from src.pages.ship_plan.edi_bay_plan import BayPlan
 from src.pages.guider.cwp_plan import CWP
 from src.pages.ship_plan.discharge_container import DischargeContainer
 from src.pages.inventory_operation.hold_release import HoldRelease
-from src.common.messaging import JMSMessaging
+from helper.JMS.baplie import Baplie
 
 @pytest.mark.vessel_discharge
 @allure.title("Vessel Discharge Workflow")
@@ -26,7 +26,7 @@ def test_vessel_discharge_workflow(video_recorder):
 
     with BaseDriver() as d:
         # Initialize pages components
-        jms_flow = JMSMessaging()
+        jms_flow = Baplie()
         bay_plan_flow = BayPlan(d.driver)
         hold_flow = HoldRelease(d.driver)
         discharge_flow = DischargeContainer(d.driver)

@@ -110,7 +110,16 @@ class Producer:
     def send_bay_plan_message(self, data_path: str = "data/vessel_discharge_data.csv") -> bool:
         """Send bay plan message using vessel discharge data"""
         try:
+            # Handle both absolute and relative paths
             data_file_path = Path(data_path)
+            if not data_file_path.is_absolute():
+                # Try to find the file relative to project root
+                project_root = Path(__file__).parent.parent.parent
+                data_file_path = project_root / data_path
+            
+            if not data_file_path.exists():
+                raise FileNotFoundError(f"Data file not found: {data_file_path}")
+                
             msg = generate_message(data_file_path)
             self.send_message(msg)
             print(f"Bay plan message sent to queue: {self.queue}")

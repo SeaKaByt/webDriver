@@ -149,15 +149,6 @@ gt:
   release_btn: /form[@title>'nGen FAT-AQCT-DC - 14.7.0-1.0']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='releaseButton']
   print_cms_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='printCMSButton']
 
-  create_grounding_cntr: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='pinNoPanel']/text[@name='cntrNoTextField']
-  create_grounding_driver: /form[@title>'Create Gate Grounding Mov']//container[@name='detailPanel']/container[@name='topPanel']/text[@name='driverIdTextField']
-  create_grounding_owner: /form[@title>'Create Gate Grounding Mov']/container[@type='AQCTGroundFunctionView']//container[@name='topPanel']/text[@name='ownerTextField']
-  create_grounding_size: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='sizetype']/?/?/combobox[@name='sizeComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
-  create_grounding_ok_btn: /form[@title>'Create Gate Grounding Mov']//container[@name='buttonPanel']/button[@name='okButton']
-  create_grounding_material: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='regionPanel']/combobox[@name='materialComboBox']/text[@type='GuiAlloyComboBoxUI$PrivateTextField']
-  create_grounding_FA: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='regionPanel']/text[@name='faIndTextField']
-  create_grounding_gross_wt: /form[@title>'Create Gate Grounding Mov']//container[@name='topPanel']/container[@name='grossWtPanel']/text[@name='inputGrossWtTextField']
-
   create_pickup_ok_btn: /form[@title='Create Pickup Movement']//container[@name='buttonPanel']/container[@name='createCard']/button[@name='createOkButton']
 
   exit_gate_inspection_size: /form[@title='Exit Gate Inspection']//container[@name='infoPanel']/?/?/container[@name='sizeTypePanel']/text[@name='sizeTextField']
@@ -265,9 +256,9 @@ guider:
     # fields
     qc: //combobox[@name='qcComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
     mode: //container[@name='qcInOutPanel']/combobox[@name='inOutComboBox']
-    bay: //combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
+    bay: //container[@name='byBayPanel']/combobox[@name='bayComboBox']/text[@type='BasicComboBoxEditor$BorderlessTextField']
 
-    qc_tree: "//tree[@name='tree']/?/?/treeitem[@text>'OQ1']"
+    qc_tree: "//container[@name='viewport']/tree[@name='tree']//treeitem[@text>'OQ1']"
     plan_section: //element[@name='planSectionContainer']
 
     mask_view:
@@ -279,8 +270,12 @@ guider:
 
     filter:
       tag: //container[@name='panelRightPart']//container[@name='tabbedPane']/tabpage[@title='Filter']
+
       # Fields
       size: //container[@name='sizePanel1']/text[@name='sizeMInputText']
+
+      # checkbox
+      inYard: //checkbox[@name='onyardButton']
 
       list: //container[@name='viewport']/list[@name='multiInputList']
 

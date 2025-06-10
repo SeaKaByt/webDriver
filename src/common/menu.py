@@ -1,122 +1,163 @@
-from typing import Optional
-from helper.win_utils import send_keys_wlog, focus_window, find_window
+from typing import Dict, Any, Callable, List, Tuple
+from helper.win_utils import sendkeys, focus_window, find_window
 from helper.logger import logger
-from src.core.driver import BaseDriver
+from helper.io_utils import read_yaml
+from helper.paths import ProjectPaths
+import os
 
-class Menu:
-    """Efficient navigator class using static methods with config caching."""
+class MenuConfig:
+    """Simple configuration loader without driver dependencies."""
     
-    _config_cache = None
-    _ng_cache = None
-    _menu_cache = None
+    _config = None
     
     @classmethod
-    def _get_config(cls):
-        """Cache and return configuration to avoid repeated loading."""
-        if cls._config_cache is None:
-            driver = BaseDriver()
-            cls._config_cache = driver.config
-            cls._menu_cache = cls._config_cache["nGen"]["menu"]
-        return cls._config_cache, cls._menu_cache
+    def get_config(cls) -> Dict[str, Any]:
+        """Load and cache configuration."""
+        if cls._config is None:
+            cls._load_config()
+        return cls._config
     
     @classmethod
-    def _get_elements(cls):
-        """Get commonly used UI elements."""
-        config, menu = cls._get_config()
-        
-        return {
-            'inv': menu["inventory"],
-            'sp': menu["shipPlan"],
-            'ioc': menu["IOC"],
-            'gate': menu["gatehouse"],
-            'mc': menu["movementControl"],
-            'voy': menu["voyage"]
-        }
+    def _load_config(cls):
+        """Load configuration from environment."""
+        bu = os.getenv("TEST_BU")
+        env = os.getenv("TEST_ENV")
+        yaml_path = ProjectPaths.CONFIG / f"{env}" / f"{bu}.yaml"
+        cls._config = read_yaml(yaml_path)
+
+class MenuNavigator:
+    """Clean menu navigation utility with no driver dependencies."""
     
-    @staticmethod
-    def to_module(module: str) -> None:
-        """Navigate to the specified module."""
+    # Module navigation mappings - pure data, no business logic
+    MODULE_ACTIONS = {
+        "HR": [
+            ("click", "inventory"),
+            ("sendkeys", "{F2}"),
+            ("sendkeys", "{F4}")
+        ],
+        "DC": [
+            ("click", "shipPlan"),
+            ("sendkeys", "{F2}")
+        ],
+        "CRO": [
+            ("click", "IOC"),
+            ("sendkeys", "{F1}"),
+            ("sendkeys", "{F7}")
+        ],
+        "BOL": [
+            ("click", "IOC"),
+            ("sendkeys", "{F1}"),
+            ("sendkeys", "{F2}")
+        ],
+        "CD": [
+            ("click", "inventory"),
+            ("sendkeys", "{F2}"),
+            ("sendkeys", "{F1}")
+        ],
+        "GT": [
+            ("click", "gatehouse"),
+            ("sendkeys", "{F1}"),
+            ("sendkeys", "{F1}"),
+            ("special", "gate_terminal")
+        ],
+        "QM": [
+            ("click", "movementControl"),
+            ("sendkeys", "{F3}")
+        ],
+        "BM": [
+            ("click", "IOC"),
+            ("sendkeys", "{F1}"),
+            ("sendkeys", "{F1}")
+        ],
+        "BP": [
+            ("click", "shipPlan"),
+            ("sendkeys", "{F3}")
+        ],
+        "VS": [
+            ("click", "voyage"),
+            ("sendkeys", "{F6}")
+        ],
+        "TC": [
+            ("click", "gatehouse"),
+            ("sendkeys", "{F3}"),
+            ("sendkeys", "{F1}")
+        ]
+    }
+    
+    def __init__(self):
+        self.config = MenuConfig.get_config()
+        self.menu_elements = self.config["nGen"]["menu"]
+        self.home_element = self.config["nGen"]["home"]
+    
+    def navigate_to_module(self, module: str, driver) -> None:
+        """Navigate to specified module using provided driver."""
         logger.info(f"Navigating to module: {module}")
         
-        elements = Menu._get_elements()
+        if module not in self.MODULE_ACTIONS:
+            raise ValueError(f"Unknown module: {module}. Available: {list(self.MODULE_ACTIONS.keys())}")
         
-        # Get BaseDriver actions (we need this for clicking)
-        driver = BaseDriver()
-        actions = driver.actions
+        # Always start from home
+        driver.actions.click(self.home_element)
         
-        actions.click(driver.home)
-
-        module_actions = {
-            "HR": [
-                (actions.click, (elements['inv'],)),
-                (send_keys_wlog, ("{F2}",)),
-                (send_keys_wlog, ("{F4}",))
-            ],
-            "DC": [
-                (actions.click, (elements['sp'],)),
-                (send_keys_wlog, ("{F2}",))
-            ],
-            "CRO": [
-                (actions.click, (elements['ioc'],)),
-                (send_keys_wlog, ("{F1}",)),
-                (send_keys_wlog, ("{F7}",))
-            ],
-            "BOL": [
-                (actions.click, (elements['ioc'],)),
-                (send_keys_wlog, ("{F1}",)),
-                (send_keys_wlog, ("{F2}",))
-            ],
-            "CD": [
-                (actions.click, (elements['inv'],)),
-                (send_keys_wlog, ("{F2}",)),
-                (send_keys_wlog, ("{F1}",))
-            ],
-            "GT": [
-                (actions.click, (elements['gate'],)),
-                (send_keys_wlog, ("{F1}",)),
-                (send_keys_wlog, ("{F1}",)),
-                (Menu.handle_gate_terminal, ())
-            ],
-            "QM": [
-                (actions.click, (elements['mc'],)),
-                (send_keys_wlog, ("{F3}",))
-            ],
-            "BM": [
-                (actions.click, (elements['ioc'],)),
-                (send_keys_wlog, ("{F1}",)),
-                (send_keys_wlog, ("{F1}",))
-            ],
-            "BP": [
-                (actions.click, (elements['sp'],)),
-                (send_keys_wlog, ("{F3}",))
-            ],
-            "VS": [
-                (actions.click, (elements['voy'],)),
-                (send_keys_wlog, ("{F6}",))
-            ],
-            "TC": [
-                (actions.click, (elements['gate'],)),
-                (send_keys_wlog, ("{F3}",),),
-                (send_keys_wlog, ("{F1}",))
-            ]
-        }
-
-        if module in module_actions:
-            for action, args in module_actions[module]:
-                logger.debug(f"Executing action: {action.__name__} with args {args}")
-                action(*args)
+        # Execute module-specific actions
+        actions = self.MODULE_ACTIONS[module]
+        for action_type, action_value in actions:
+            self._execute_action(action_type, action_value, driver)
+    
+    def _execute_action(self, action_type: str, action_value: str, driver) -> None:
+        """Execute a single navigation action."""
+        if action_type == "click":
+            element_xpath = self.menu_elements[action_value]
+            driver.actions.click(element_xpath)
+        elif action_type == "sendkeys":
+            sendkeys(action_value)
+        elif action_type == "special":
+            if action_value == "gate_terminal":
+                self._handle_gate_terminal()
         else:
-            logger.warning(f"Unknown module: {module}")
-            raise ValueError(f"Unknown module: {module}")
-
+            raise ValueError(f"Unknown action type: {action_type}")
+    
     @staticmethod
-    def handle_gate_terminal() -> None:
+    def _handle_gate_terminal() -> None:
         """Handle gate terminal selection window."""
         import time
-        
         time.sleep(0.5)
         if find_window("Select Working Terminal"):
             logger.info("Selecting working terminal")
-            send_keys_wlog("{ENTER}")
+            sendkeys("{ENTER}")
 
-
+# Simple static wrapper for backward compatibility
+class Menu:
+    """Clean static interface for menu navigation."""
+    
+    _navigator = None
+    
+    @classmethod
+    def _get_navigator(cls) -> MenuNavigator:
+        """Lazy initialization of navigator."""
+        if cls._navigator is None:
+            cls._navigator = MenuNavigator()
+        return cls._navigator
+    
+    @staticmethod
+    def to_module(module: str, driver) -> None:
+        """Navigate to the specified module."""
+        navigator = Menu._get_navigator()
+        navigator.navigate_to_module(module, driver)
+    
+    @staticmethod
+    def handle_gate_terminal() -> None:
+        """Handle gate terminal selection window."""
+        MenuNavigator._handle_gate_terminal()
+    
+    @staticmethod
+    def get_available_modules() -> List[str]:
+        """Get list of available modules."""
+        return list(MenuNavigator.MODULE_ACTIONS.keys())
+    
+    @staticmethod
+    def get_module_actions(module: str) -> List[Tuple[str, str]]:
+        """Get the action sequence for a specific module."""
+        if module not in MenuNavigator.MODULE_ACTIONS:
+            raise ValueError(f"Unknown module: {module}")
+        return MenuNavigator.MODULE_ACTIONS[module] 

@@ -4,7 +4,7 @@ from typing import Optional
 from pywinauto.keyboard import send_keys
 from helper.logger import logger
 
-def send_keys_wlog(keys: str, with_tab: bool = False, field_length: Optional[int] = None) -> None:
+def sendkeys(keys: str, with_tab: bool = False, field_length: Optional[int] = None) -> None:
     should_send_tab = with_tab or (field_length is not None and len(keys) < field_length)
 
     logger.info(f"Sending keys: {keys}{' + TAB' if should_send_tab else ''}")

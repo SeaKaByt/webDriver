@@ -17,10 +17,10 @@ def test_vessel_loading_workflow(video_recorder):
     """Clean vessel loading workflow with step controls"""
 
     # Step configuration
-    create_containers = True
+    create_containers = False
     release_hold = False
-    voyage_loading = False
-    release_cwp = False
+    voyage_loading = True
+    release_cwp = True
 
     # Parameters
     count = 1
@@ -29,8 +29,8 @@ def test_vessel_loading_workflow(video_recorder):
     type = "G0"
     movement = "loading"
 
-    size_20 = 10
-    size_40 = 10
+    size_20 = 2
+    size_40 = 2
 
     with BaseDriver() as d:
         # Initialize pages components

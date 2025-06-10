@@ -1,24 +1,25 @@
 from helper.logger import logger
-from helper.win_utils import wait_for_window, send_keys_wlog, focus_window
-from src.pages_config import BaseFlow
+from helper.win_utils import wait_for_window, sendkeys, focus_window
+from src.core.driver import BaseDriver
 
-class CWP(BaseFlow):
+
+class CWP(BaseDriver):
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
-        gui = self.config["guider"]
-        self.cwp = gui["cwp"]
+        self.gui = self.config["guider"]
+        self.cwp = self.gui["cwp"]
 
         self.line = "NVD"
         self.vessel = "TSHM04"
         self.voyage = "V01"
 
-
     def open_cwp_plan(self):
         focus_window("Guider")
+        
         self.actions.click(self.cwp["cwp_plan"])
         if wait_for_window("Open CWP"):
             self.actions.click(self.cwp["voyage"])
-            send_keys_wlog(f"{self.line}-{self.vessel}-{self.voyage}")
+            sendkeys(f"{self.line}-{self.vessel}-{self.voyage}")
             self.actions.click(self.cwp["open"])
             self.actions.click(self.cwp["open"])
         else:
@@ -34,17 +35,17 @@ class CWP(BaseFlow):
         self.actions.click(self.cwp["refresh"])
 
         self.actions.click(self.cwp["row"])
-        send_keys_wlog("^a")
+        sendkeys("^a")
 
         self.actions.click(self.cwp["control"])
         for _ in range(2):
-            send_keys_wlog("{VK_DOWN}")
-        send_keys_wlog("{VK_RIGHT}")
-        send_keys_wlog("{VK_DOWN}")
-        send_keys_wlog("{ENTER}")
+            sendkeys("{VK_DOWN}")
+        sendkeys("{VK_RIGHT}")
+        sendkeys("{VK_DOWN}")
+        sendkeys("{ENTER}")
 
         if wait_for_window(".*(Release CWP|CWP Released).*"):
-            send_keys_wlog("{ENTER}")
+            sendkeys("{ENTER}")
         else:
             logger.error("Release CWP window not found")
             raise

@@ -1,18 +1,15 @@
 import logging
 
 from src.core.driver import BaseDriver
-from src.pages_config import BaseFlow
-from helper.win_utils import send_keys_wlog, find_window
+from src.common.menu import Menu
+from helper.win_utils import sendkeys, find_window, focus_window
 from helper.logger import logger
 
 class HoldRelease(BaseDriver):
     module = "HR"
-    declaration = "automation"
-
 
     def __init__(self, external_driver=None):
         super().__init__(external_driver=external_driver)
-        
         self.hr = self.config["hr"]
         self.tab = self.hr["tab"]
         self.rr = self.hr["release"]["release"]
@@ -21,11 +18,13 @@ class HoldRelease(BaseDriver):
         self.line = "NVD"
         self.vessel = "TSHM04"
         self.voyage = "V01"
+        self.declaration = "automation"
+        self.date = "01012026"
 
     def search_cntr(self, hold_condition) -> None:
         if not self.properties.visible(self.rs["hold"], timeout=1):
             logger.info("Opening HR module")
-            self.module_view(self.module)
+            Menu.to_module(self.module, self)
 
         self.actions.click(self.tab["release"])
         self.actions.click(self.tab["search"])
@@ -34,21 +33,23 @@ class HoldRelease(BaseDriver):
             logging.error("Search tab is not selected")
             raise
 
-        send_keys_wlog("%r")
+        sendkeys("%r")
 
         self.actions.click(self.rs["hold"])
-        send_keys_wlog(hold_condition)
+        sendkeys(hold_condition)
 
         self.actions.click(self.rs["voyage"])
-        send_keys_wlog("^a")
-        send_keys_wlog(self.line, field_length=4)
-        send_keys_wlog(self.vessel, field_length=6)
-        send_keys_wlog(self.voyage)
+        sendkeys("^a")
+        sendkeys(self.line, field_length=4)
+        sendkeys(self.vessel, field_length=6)
+        sendkeys(self.voyage)
 
-        send_keys_wlog("%s")
+        sendkeys("%s")
 
     def release_hold(self, hold_condition: str, hold_condition2: str = None) -> None:
         import time
+
+        focus_window("nGen")
 
         logger.info(f"Releasing hold condition: {hold_condition}, {hold_condition2}")
         self.search_cntr(hold_condition)
@@ -56,7 +57,7 @@ class HoldRelease(BaseDriver):
         time.sleep(0.5)
         if find_window(".*inv0693$"):
             logger.warning("inv0693 window found, no record found!")
-            send_keys_wlog("{ENTER}")
+            sendkeys("{ENTER}")
             return
 
         if self.properties.visible(self.rr["hold"]):
@@ -65,18 +66,20 @@ class HoldRelease(BaseDriver):
             logger.error("Hold release condition not found in the UI")
             raise
 
-        send_keys_wlog(hold_condition)
+        sendkeys(hold_condition)
         if hold_condition2 is not None:
-            send_keys_wlog(f", {hold_condition2}")
+            sendkeys(f", {hold_condition2}")
 
         self.actions.click(self.rr["declaration"])
-        send_keys_wlog(self.declaration)
+        sendkeys(self.declaration, with_tab=True)
+        self.actions.click(self.rr["declaration_date"])
+        sendkeys(self.date)
         self.actions.click(self.hr["select_all"])
         time.sleep(0.5)
         if find_window(".*inv0799$"):
             logger.warning("inv0799 window found")
             raise
-        send_keys_wlog("%b")
+        sendkeys("%b")
 
     def click(self):
         self.actions.click(self.home)
