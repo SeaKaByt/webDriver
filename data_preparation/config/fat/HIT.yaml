@@ -1,0 +1,15 @@
+defaults:
+  bu: HIT
+  env: FAT
+
+nGen:
+  jal_path: D:/jal/HIT-AUTO-RUN.bat
+  password: "abcd1234."
+  username: "rxusr"
+  ngen_login: /form[@title='Login nGen']/container[@type='GuiPanel']/?/?/text[@type='GuiTextField']
+  title: ""
+  home_btn: ""
+
+app:
+  ngen: /form[@title>'Application Launcher 1.3.']/container[@caption>'<html class=" js csstransitions"']//text[@accessiblename='nGen']
+  guider: ""
