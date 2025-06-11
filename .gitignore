@@ -18,3 +18,5 @@ tests/test-results/allure-reports/*
 .env
 .env.local
 .env.*.local
+
+TAS.xlsx
