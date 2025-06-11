@@ -5,10 +5,12 @@ class ProjectPaths:
     ROOT = Path(__file__).resolve().parent.parent
     DATA = ROOT / "data"
     CONFIG = ROOT / "config"
+    LOGS = ROOT / "tests" / "test-results" / "logs"
+    RESPONSES = ROOT / "tests" / "test-results" / "responses"
 
     @staticmethod
     def get_loading_data():
-        p = ProjectPaths.DATA / "container_data.csv"
+        p = ProjectPaths.DATA / "cntr_data.csv"
         df = read_csv(p)
         yield df, p
 

@@ -3,10 +3,16 @@ import os
 from logging.handlers import RotatingFileHandler
 from typing import Optional
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
-LOG_FILE = "app.log"
+# Organized logging structure using project paths
+# Calculate project root and log directory directly to avoid circular import
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+LOG_DIR = PROJECT_ROOT / "tests" / "test-results" / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE = LOG_DIR / "app.log"
 MAX_LOG_SIZE = 5 * 1024 * 1024  # 5 MB
 BACKUP_COUNT = 2
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
@@ -106,7 +112,7 @@ class LoggerSingleton:
 
         # File handler with UTF-8 encoding
         file_handler = TopInsertRotatingFileHandler(
-            LOG_FILE, mode="a", maxBytes=MAX_LOG_SIZE, backupCount=BACKUP_COUNT, encoding="utf-8", delay=False
+            str(LOG_FILE), mode="a", maxBytes=MAX_LOG_SIZE, backupCount=BACKUP_COUNT, encoding="utf-8", delay=False
         )
         file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
         file_handler.setLevel(LOG_LEVEL)
