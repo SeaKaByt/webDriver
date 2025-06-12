@@ -87,8 +87,8 @@ class GateTransaction(BaseDriver):
                 self.actions.click(self.gt["gate_transaction_refresh_btn"])
             self.release_print_cwp()
 
-    def create_gate_ground(self) -> None:
-        df, p = next(ProjectPaths.get_gate_ground_data())
+    def create_gate_ground(self, df, p) -> None:
+        # df, p = next(ProjectPaths.get_gate_ground_data())
         self.get_tractor(df, p)
         df_filtered = df[df["mvt"].isna()]
         if df_filtered.empty:

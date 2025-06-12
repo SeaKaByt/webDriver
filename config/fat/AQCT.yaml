@@ -181,48 +181,49 @@ gt:
     inspection:
       ok: //button[@name='okStyledButton']
 
-qm:
-  fcl_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
-  row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
-  bk_confirm_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='actionPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container/container[2]/container[@name='scrollPane']//button[@text='Mv Bkup Conf']
-  fcl_tractor: /form[@title>'nGen FAT-AQCT-DC']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/container[@name='fclTabPane']/text[@name='fclTractorNoTextField']
-  new_search: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='newSearchButton']
+# qm:
+#   fcl_tab: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/tabpage[@title='FCL ']
+#   row0_cntr_id: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
+#   bk_confirm_btn: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='actionPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/container/container[2]/container[@name='scrollPane']//button[@text='Mv Bkup Conf']
+#   fcl_tractor: /form[@title>'nGen FAT-AQCT-DC']//container[@name='inputPane']/container[@name='null.layeredPane']/container[@name='null.contentPane']/?/?/container[@name='inputTabbedPane']/container[@name='fclTabPane']/text[@name='fclTractorNoTextField']
+#   new_search: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='buttonPanel']/button[@name='newSearchButton']
 
-  tab_page_1: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[1]
-  tab_page_2: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[2]
+#   tab_page_1: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[1]
+#   tab_page_2: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/tabpage[2]
 
-  movement_row_0: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
-  movement_row_1: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='1']/cell[@columnindex='7']
+#   movement_row_0: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='0']/cell[@columnindex='7']
+#   movement_row_1: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='searchPanel']/container[@name='searchTabbedPane']/?//table[@name='searchTable']/row[@index='1']/cell[@columnindex='7']
 
-bm:
+booking:
   # button
-  return_cntr: //container[@name='initButtonCard']/button[@name='returnButton']
+  return: //container[@name='initButtonCard']/button[@name='returnButton']
+  close: ///button[@name='closeButton']
 
-  principal_line: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']/container[@type='GuiPanel']//container[@name='searchPanel']/text[@name='cmpCodeTextField']
-  booking_record_0: /form[@title>'nGen FAT-AQCT-DC']/container[@type='GuiPanel']//container[@name='requestDetailPanel']/container/container[1]/table[@name='requestDetailTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
-  booking_request_record_0: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
-  return_cntr_close: /form[@title='Laden Return Container']/container[@type='AQCTBookingReturnContainerDetailView']/?/?/container[@name='buttonPanel']/?/?/button[@name='closeButton']
-  return_details_close: /form[@title='Booking Request Detail']//container[@name='buttonPane']/container[@name='initButtonCard']/button[@name='closeButton']
-  laden_title: /form[@title='Laden Return Container']/titlebar[@accessiblerole='TitleBar']
-  laden_return_warning: /form[@title='Warning']/?/?/container[@name='OptionPane.buttonArea']/button[@name='OptionPane.button']
-  laden_return_cntr_0: /form[@title='Laden Return Container']//container[@name='bkReturnCntrScrollPanel']/container[1]/table[@name='bookingContainerTable']/row[@index='0']/cell[@columnindex='0' and @rowindex='0']
-  laden_save_btn: /form[@title='Laden Return Container']/container[@type='AQCTBookingReturnContainerDetailView']/?/?/container[@name='buttonPanel']/?/?/button[@name='okButton']
-  add_next_btn: /form[@title='Laden Return Container']//container[@name='buttonPanel']/?/?/container[@name='copyButtonPanel']/button[@name='addNextStyledButton']
-  add_next_cancel_btn: /form[@title='Laden Return Container']//container[@name='buttonPanel']/?/?/container[@name='copyButtonPanel']/button[@name='cancelStyledButton']
-  request_record_close_btn: /form[@title='Booking Request Detail']//container[@name='buttonPane']/container[@name='initButtonCard']/button[@name='closeButton']
-  request_sequence_2862: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2862']
-  request_sequence_2822: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2822']
-  request_sequence_2843: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2843']
-  request_sequence_2882: /form[@title='Booking Request Detail']//container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2882']
+  # fields
+  line: //container[@name='searchPanel']/text[@name='cmpCodeTextField']
 
-  laden_return:
+  # rows
+  request_sequence_3005: //container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='3005']
+  request_sequence_3004: //container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='3004']
+  request_sequence_2843: //container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2843']
+  request_sequence_2882: //container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='2882']
+  request_sequence_3006: //container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='3006']
+  request_sequence_3007: //container[@name='tablePane']//table[@name='dtlTable']/row/cell[@text='3007']
+
+  laden:
     # button
     create: //button[@name='createButton']
     copy: //button[@name='copyButton']
     add_next: //button[@name='addNextStyledButton']
+    cancel: //button[@name='cancelStyledButton']
+    save: //container[@name='buttonPanel']//button[@name='okButton']
+    close: //button[@name='closeButton']
 
     # fields
     new_cntr: ///text[@name='newCntrIdTextField']
+
+    # rows
+    row: //table[@name='bookingContainerTable']/row[@index='0']/cell[@columnindex='0']
 
 guider:
   voyage_plan:
@@ -285,15 +286,6 @@ guider:
 
       row_0: //table[@name='containerManagerTable']/row[@index='0']/cell[@columnindex='0']
       count: //container[@name='jPanel4']/text[@name='countLabel']
-
-  window_1: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/titlebar[@accessiblerole='TitleBar' and @text<'1']
-  window_2: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/titlebar[@accessiblerole='TitleBar' and @text<'2']
-  window_2_penal: /form[@title>'Voyage  (NVD-TSHM04-V01  TSHM04)']/?/?/container[@name='jPanel1']/container[@name='panelRightPart']//container[@name='tabbedPane']/container[@name='filterTabPanel']/?/?/container[@name='viewport']/?/?/container[@name='jPanel26']
-  voyage_plan_btn: /form[@title='Guider']/toolbar[@name='bigToolBar']/toolbar[@type='GuiderToolBarManager$OpenToolBar']/button[1]
-  cwp_plan_btn: /form[@title='Guider']/toolbar[@name='bigToolBar']/toolbar[@type='GuiderToolBarManager$OpenToolBar']/button[4]
-  voyage_plan_voyage: /form[@title='Open Voyage Plan']//container[@name='textPanel']/text[@name='voyageIdField']
-  cwp_voyage: /form[@title='Open CWP']//container[@name='textPanel']/text[@name='voyageIdField']
-  open_module_btn: /form[@title>'Open']//container[@name='inputPanel']/button[@name='btnOpen']
 
 tractor_card:
   detail:

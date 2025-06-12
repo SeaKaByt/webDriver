@@ -32,17 +32,17 @@ def test_workflow(video_recorder):
         cwp = CWP(d.driver)
 
         if create_containers:
-            with allure.step(f"Create {count} containers for vessel loading"):
+            with allure.step(f"Create section"):
                 c.create_cntr(count=count, movement=movement, status=status, size=size, type=type)
 
         if release_hold:
-            with allure.step("Release VM hold for vessel operations"):
+            with allure.step("Hold Release section"):
                 h.release_hold("vm")
 
         if voyage_loading:
-            with allure.step(f"Execute voyage loading: {size_20} x 20ft, {size_40} x 40ft"):
+            with allure.step(f"Voyage Loading section"):
                 v.voyage_loading_actions(size_20, size_40)
 
         if release_cwp:
-            with allure.step("Release Container Work Plan"):
+            with allure.step("CWP section"):
                 cwp.release_cwp()

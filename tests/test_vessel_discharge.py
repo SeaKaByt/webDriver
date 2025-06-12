@@ -26,25 +26,25 @@ def test_workflow(video_recorder):
         cwp = CWP(d.driver)
 
         if send_bay_plan_message:
-            with allure.step("Send bay plan message to JMS queue"):
+            with allure.step("JMS section"):
                 jms.send_bay_plan_message()
 
         if upload_bay_plan:
-            with allure.step("Upload bay plan to system"):
+            with allure.step("Bay Plan section"):
                 bay_plan.upload_bay_plan()
 
         if release_hold:
-            with allure.step("Release hold"):
+            with allure.step("Hold Release section"):
                 hold.release_hold("cc", "hp")
 
         if data_confirm:
-            with allure.step("Confirm bay plan data"):
+            with allure.step("Data Confirm section"):
                 discharge.data_confirm()
 
         if vessel_discharge:
-            with allure.step("Execute voyage discharge actions"):
+            with allure.step("Vessel Discharge section"):
                 discharge.actions_chains()
 
         if release_cwp:
-            with allure.step("Release Container Work Plan"):
+            with allure.step("CWP section"):
                 cwp.release_cwp()

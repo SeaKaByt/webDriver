@@ -10,15 +10,21 @@ from src.pages.inventory_operation.hold_release import HoldRelease
 
 @pytest.mark.gate_pickup
 @allure.title("Gate Pickup Workflow")
-def test_workflow(video_recorder):
-    create_container = False
+def test_workflow(backup_csv, video_recorder):
+    # Backup only CSV files this test will modify
+    backup_csv('gate_pickup', 'tractor_usage')
+    
+    create_container = True
     add_bol = False
     get_pin = False
     release_hold = False
-    create_transaction = True
+    create_transaction = False
 
-    count = 2
+    count = 1
     movement = "gatePickup"
+    status = "XF"
+    size = "20"
+    type = "G0"
 
     with BaseDriver() as d:
         c = ContainerDetails(d.driver)
@@ -28,21 +34,21 @@ def test_workflow(video_recorder):
         g = GateTransaction(d.driver)
 
         if create_container:
-            with allure.step(f"Create {count} containers for gate pickup"):
-                c.create_cntr(count=count, movement=movement)
+            with allure.step(f"Create section"):
+                c.create_cntr(count=count, movement=movement, status=status, size=size, type=type)
 
         if add_bol:
-            with allure.step("Add containers to Bill of Lading"):
+            with allure.step("Bill of Lading section"):
                 b.add_containers()
 
         if get_pin:
-            with allure.step("Create CRO and obtain PIN"):
+            with allure.step("CRO section"):
                 cro.cro_actions()
 
         if release_hold:
-            with allure.step("Release DT hold"):
+            with allure.step("Hold Release section"):
                 h.release_hold("dt")
 
         if create_transaction:
-            with allure.step("Create gate pickup transaction"):
+            with allure.step("Gate Pickup section"):
                 g.create_gate_pickup()

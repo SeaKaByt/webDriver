@@ -20,6 +20,20 @@ def read_csv(path: Union[str, Path]) -> pd.DataFrame:
     logger.debug(f"Read CSV from {path}")
     return df
 
+def save_csv(df: pd.DataFrame, path: Union[str, Path], backup: bool = True) -> None:
+    """Save DataFrame to CSV with optional backup."""
+    path = Path(path)
+    
+    if backup and path.exists():
+        backup_path = path.with_suffix('.bak.csv')
+        # Read existing file and save as backup
+        existing_df = pd.read_csv(path)
+        existing_df.to_csv(backup_path, index=False)
+        logger.info(f"Created backup at {backup_path}")
+    
+    df.to_csv(path, index=False)
+    logger.info(f"Saved CSV to {path}")
+
 def read_yaml(path: Union[str, Path]) -> Dict[str, Any]:
     """Read a YAML file into a dictionary."""
     path = Path(path)
@@ -79,5 +93,31 @@ def update_column(df, cntr_id, column: str, value) -> None:
         df.loc[mask, column] = value
         logger.info(f"Updated {column} for {cntr_id} to {value}")
     else:
-        logger.error(f"Container ID {cntr_id} not found in DataFrame")
-        raise
+        raise Exception(f"Cannot update {column} for {cntr_id}")
+
+def create_csv_snapshot(csv_path: Union[str, Path], snapshot_suffix: str = "_snapshot") -> Path:
+    """Create a snapshot copy of a CSV file."""
+    csv_path = Path(csv_path)
+    if not csv_path.exists():
+        logger.warning(f"CSV file {csv_path} does not exist, skipping snapshot")
+        return None
+    
+    snapshot_path = csv_path.with_name(f"{csv_path.stem}{snapshot_suffix}.csv")
+    df = pd.read_csv(csv_path)
+    df.to_csv(snapshot_path, index=False)
+    logger.debug(f"Created snapshot: {csv_path} → {snapshot_path}")
+    return snapshot_path
+
+def restore_csv_from_snapshot(csv_path: Union[str, Path], snapshot_suffix: str = "_snapshot") -> bool:
+    """Restore CSV file from its snapshot."""
+    csv_path = Path(csv_path)
+    snapshot_path = csv_path.with_name(f"{csv_path.stem}{snapshot_suffix}.csv")
+    
+    if not snapshot_path.exists():
+        logger.warning(f"Snapshot {snapshot_path} does not exist, cannot restore")
+        return False
+    
+    df = pd.read_csv(snapshot_path)
+    df.to_csv(csv_path, index=False)
+    logger.debug(f"Restored: {snapshot_path} → {csv_path}")
+    return True

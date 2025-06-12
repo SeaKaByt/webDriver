@@ -3,14 +3,15 @@ import os
 
 from helper.paths import ProjectPaths
 from helper.win_utils import sendkeys, focus_window
+from src.common.menu import Menu
 from src.core.driver import BaseDriver
 
 class TractorCard(BaseDriver):
-    module = "TC"
+    MODULE = "TC"
 
     def __init__(self):
         super().__init__()
-        self.detail_config = self.config["tractor_card"]["detail"]
+        self.d = self.config["tractor_card"]["detail"]
         
         _, self.path = next(ProjectPaths.get_tractor_card_data())
 
@@ -50,9 +51,12 @@ class TractorCard(BaseDriver):
         
         generated_tractor_ids = []
 
+        if not self.properties.visible(self.d["tractor"]):
+            Menu.to_module(self.MODULE, self)
+
         for i in range(count):
             sendkeys("%a")
-            self.actions.click(self.detail_config["tractor"])
+            self.actions.click(self.d["tractor"])
             sendkeys("^a")
             tractor = f"XT{str(numeric + i).zfill(3)}"
             generated_tractor_ids.append(tractor)
@@ -67,4 +71,4 @@ class TractorCard(BaseDriver):
 
 if __name__ == "__main__":
     t = TractorCard()
-    t.create_tractor_card(49, 11)
+    t.create_tractor_card(61, 20)
